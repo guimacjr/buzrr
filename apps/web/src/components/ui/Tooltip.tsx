@@ -105,7 +105,7 @@ export function Tooltip({
             }}
             className={clsx(
               "pointer-events-none fixed z-50 max-w-sm rounded-xl px-3 py-2 text-[13.5px] font-medium leading-snug text-pretty wrap-break-word shadow-lg",
-              "bg-dark text-white dark:bg-white dark:text-dark",
+              "bg-theme-surface text-theme-onPrimary dark:bg-theme-surface dark:text-theme-onPrimary",
             )}
           >
             {content}

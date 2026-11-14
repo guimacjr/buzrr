@@ -10,7 +10,7 @@ export default function ProfileClient() {
         <span className="md:hidden">
           <NavbarToggle />
         </span>
-        <h1 className="text-2xl font-black text-dark dark:text-white">
+        <h1 className="text-2xl font-black text-theme-text dark:text-theme-text">
           Profile
         </h1>
       </div>

@@ -18,9 +18,9 @@ interface Stats {
 }
 
 const PLACE_COLOR: Record<number, string> = {
-  1: "#f4c542",
-  2: "#b9bfcc",
-  3: "#e0a173",
+  1: "var(--color-theme-gold)",
+  2: "var(--color-theme-silver)",
+  3: "var(--color-theme-bronze)",
 };
 
 const Leaderboard = (params: Stats) => {
@@ -31,35 +31,35 @@ const Leaderboard = (params: Stats) => {
   return (
     <>
       {onPodium && <ConfettiBurst />}
-      <div className="flex flex-col items-center justify-center min-h-[80dvh] px-4 text-dark dark:text-white">
+      <div className="flex flex-col items-center justify-center min-h-[80dvh] px-4 text-theme-text dark:text-theme-text">
         <div
           className={clsx(
             panelClass,
             "w-full max-w-md px-6 sm:px-10 py-10 text-center animate-fade-up",
           )}
         >
-          <span className={labelClass}>Final results</span>
+          <span className={labelClass}>Resultado final</span>
           <div
-            className="mx-auto mt-5 size-28 rounded-full flex items-center justify-center text-4xl font-extrabold tracking-[-0.02em] animate-pop-in [animation-delay:200ms] bg-lprimary/8 dark:bg-white/5 border-[5px]"
+            className="mx-auto mt-5 size-28 rounded-full flex items-center justify-center text-4xl font-extrabold tracking-[-0.02em] animate-pop-in [animation-delay:200ms] bg-theme-primary/8 dark:bg-theme-surface/5 border-[5px]"
             style={{ borderColor: ringColor ?? "transparent" }}
           >
             {params.position ? ordinal(params.position) : "🎉"}
           </div>
           <h1 className="mt-6 text-[28px] md:text-[34px] font-extrabold tracking-[-0.02em] leading-[1.1]">
-            Quiz completed!
+            Quiz concluído!
           </h1>
           <p className={clsx("mt-2 text-[15px]", mutedText)}>
-            Great game — here&apos;s how you did.
+            Boa partida! Veja seu resultado.
           </p>
 
           <div className="mt-8 grid grid-cols-2 gap-3 text-left">
             <StatTile
               value={params.position ? ordinal(params.position) : "—"}
-              label="Your rank"
+              label="Sua posição"
             />
             <StatTile
-              value={params.score.toLocaleString()}
-              label="Total points"
+              value={params.score.toLocaleString("pt-BR")}
+              label="Total de pontos"
             />
           </div>
 
@@ -68,13 +68,13 @@ const Leaderboard = (params: Stats) => {
               href={`/player/joinRoom/${params.playerId}`}
               className={clsx(primaryButtonClass, "w-full px-5")}
             >
-              Join another game
+              Entrar em outra partida
             </Link>
             <Link
               href="/"
-              className="w-full flex items-center justify-center rounded-[14px] border-[1.5px] border-lprimary/15 dark:border-white/10 hover:border-dprimary px-5 py-3.5 text-[15px] font-semibold transition-colors"
+              className="w-full flex items-center justify-center rounded-[14px] border-[1.5px] border-theme-primary/15 dark:border-theme-border/10 hover:border-theme-primary px-5 py-3.5 text-[15px] font-semibold transition-colors"
             >
-              Back to home
+              Voltar ao início
             </Link>
           </div>
         </div>

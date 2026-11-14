@@ -63,6 +63,7 @@ export type Outbound =
  * docs/architecture/realtime.md).
  */
 export type Effect =
+  | { kind: "sync-all" }
   | { kind: "set-questions"; questions: LiveQuestion[] }
   | { kind: "patch-meta"; patch: Partial<GameMeta> }
   /** Write the game's entry in `games:deadlines` (fire-at, epoch ms). */
@@ -89,7 +90,12 @@ export type Effect =
   /** Run the end-of-game claim/persist/cleanup path. */
   | { kind: "end-game" }
   /** Step the machine again with a freshly loaded state. */
-  | { kind: "dispatch"; event: "close-question"; qIndex: number }
+  | {
+      kind: "dispatch";
+      event: "close-question";
+      qIndex: number;
+      revision?: number;
+    }
   | { kind: "log"; level: "warn" | "error"; message: string };
 
 export interface Transition {

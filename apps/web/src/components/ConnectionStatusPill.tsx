@@ -6,10 +6,14 @@ const STATUS: Record<
   ConnectionStatus,
   { label: string; dot: string; pulse: boolean }
 > = {
-  connecting: { label: "Connecting…", dot: "bg-yellow-500", pulse: true },
-  connected: { label: "Live", dot: "bg-green-500", pulse: false },
-  reconnecting: { label: "Reconnecting…", dot: "bg-yellow-500", pulse: true },
-  disconnected: { label: "Offline", dot: "bg-red-500", pulse: false },
+  connecting: { label: "Connecting…", dot: "bg-theme-warning", pulse: true },
+  connected: { label: "Live", dot: "bg-theme-success", pulse: false },
+  reconnecting: {
+    label: "Reconnecting…",
+    dot: "bg-theme-warning",
+    pulse: true,
+  },
+  disconnected: { label: "Offline", dot: "bg-theme-danger", pulse: false },
 };
 
 /**
@@ -27,7 +31,7 @@ export default function ConnectionStatusPill({
   return (
     <span
       role="status"
-      className={`inline-flex items-center gap-2 rounded-full border border-stone-300 dark:border-stone-600 bg-white/90 dark:bg-dark/90 px-3 py-1 text-xs font-bold text-dark dark:text-white shadow-sm ${className}`}
+      className={`inline-flex items-center gap-2 rounded-full border border-stone-300 dark:border-stone-600 bg-theme-surface/90 dark:bg-theme-surface/90 px-3 py-1 text-xs font-bold text-theme-text dark:text-theme-text shadow-sm ${className}`}
     >
       <span
         className={`h-2 w-2 rounded-full ${dot} ${pulse ? "animate-pulse" : ""}`}

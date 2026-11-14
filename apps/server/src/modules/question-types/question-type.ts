@@ -60,8 +60,8 @@ export class QuestionDefinitionError extends Error {}
 
 /**
  * Everything type-specific about a question. The engine, the question
- * editor's API and the duel pool call these and nothing else, so a new type
- * is a new handler plus a renderer on the web — never an engine change.
+ * editor's API and the duel pool call these. Answer types need a handler plus
+ * a renderer; presentation-only items additionally define core pacing rules.
  *
  * Handlers must be pure: no I/O, no clocks, randomness only through the
  * `random` argument. That keeps them trivially testable and lets the pure

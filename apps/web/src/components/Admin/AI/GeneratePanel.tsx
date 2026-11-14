@@ -79,7 +79,7 @@ export default function GeneratePanel({
       {upgradePrompt}
       <label
         htmlFor="ai-prompt"
-        className="block text-sm font-bold text-dark dark:text-white"
+        className="block text-sm font-bold text-theme-text dark:text-theme-text"
       >
         What should I generate?
       </label>
@@ -90,12 +90,12 @@ export default function GeneratePanel({
         disabled={disabled}
         onChange={(event) => setPrompt(event.target.value)}
         placeholder="Generate questions for the topic third law of motion"
-        className="mt-1 w-full rounded-xl border border-gray bg-white dark:bg-dark text-dark dark:text-white px-4 py-3 outline-none focus:border-lprimary dark:focus:border-dprimary disabled:opacity-50"
+        className="mt-1 w-full rounded-xl border border-theme-border bg-theme-surface dark:bg-theme-surface text-theme-text dark:text-theme-text px-4 py-3 outline-none focus:border-theme-primary dark:focus:border-theme-primary disabled:opacity-50"
       />
 
       <div className="mt-4 flex flex-wrap items-end gap-4">
         <div>
-          <span className="block text-xs font-bold text-dark dark:text-white">
+          <span className="block text-xs font-bold text-theme-text dark:text-theme-text">
             Question types
           </span>
           <div className="mt-1 flex gap-1.5">
@@ -109,8 +109,8 @@ export default function GeneratePanel({
                 className={clsx(
                   "rounded-full px-3 py-1.5 text-xs font-bold transition-colors disabled:opacity-50",
                   types.includes(type.value)
-                    ? "bg-lprimary text-white dark:bg-dprimary dark:text-dark"
-                    : "bg-card-light dark:bg-dark text-off-dark dark:text-off-white",
+                    ? "bg-theme-primary text-theme-onPrimary dark:bg-theme-primary dark:text-theme-onPrimary"
+                    : "bg-theme-card dark:bg-theme-surface text-theme-muted dark:text-theme-muted",
                 )}
               >
                 {type.label}
@@ -122,7 +122,7 @@ export default function GeneratePanel({
         <div>
           <label
             htmlFor="ai-count"
-            className="block text-xs font-bold text-dark dark:text-white"
+            className="block text-xs font-bold text-theme-text dark:text-theme-text"
           >
             How many
           </label>
@@ -138,7 +138,7 @@ export default function GeneratePanel({
             // the value that leaves the field is always within range.
             onChange={(event) => setCount(event.target.value)}
             onBlur={() => setCount(String(clampCount(count)))}
-            className="mt-1 w-20 rounded-lg border border-gray bg-white dark:bg-dark text-dark dark:text-white px-3 py-1.5 outline-none focus:border-lprimary dark:focus:border-dprimary disabled:opacity-50"
+            className="mt-1 w-20 rounded-lg border border-theme-border bg-theme-surface dark:bg-theme-surface text-theme-text dark:text-theme-text px-3 py-1.5 outline-none focus:border-theme-primary dark:focus:border-theme-primary disabled:opacity-50"
           />
         </div>
 

@@ -1,14 +1,15 @@
 "use client";
+import { resolveThemeColor } from "@/lib/theme-color";
 import { useEffect, useRef, useState } from "react";
 
 const COLORS = [
-  "#a589fc",
-  "#f7b801",
-  "#20a97c",
-  "#ef5350",
-  "#42a5f5",
-  "#ff8a65",
-];
+  "primary",
+  "warning",
+  "success",
+  "danger",
+  "answer5",
+  "bronze",
+] as const;
 
 interface Piece {
   x: number;
@@ -49,6 +50,7 @@ export default function ConfettiBurst({
     resize();
     window.addEventListener("resize", resize);
 
+    const colors = COLORS.map(resolveThemeColor);
     const pieces: Piece[] = [];
     const spawn = (originX: number, direction: number) => {
       const angle = -Math.PI / 2 + direction * (0.3 + Math.random() * 0.4);
@@ -61,7 +63,7 @@ export default function ConfettiBurst({
         size: 6 + Math.random() * 6,
         rotation: Math.random() * Math.PI * 2,
         vRotation: (Math.random() - 0.5) * 0.3,
-        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        color: colors[Math.floor(Math.random() * colors.length)],
       });
     };
 

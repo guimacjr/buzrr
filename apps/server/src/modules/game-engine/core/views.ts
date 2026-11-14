@@ -1,3 +1,4 @@
+import { playableQuestion } from "./revisit";
 import {
   denseRanks,
   type AnswerResultPayload,
@@ -149,6 +150,9 @@ export function buildSnapshot(
   const { meta, roster, answers, scores } = state;
   const payload: StateSyncPayload = {
     phase: meta.phase,
+    ...(meta.revision ? { revision: meta.revision } : {}),
+    showFinalRanking:
+      meta.mode !== "classic" || meta.showFinalRanking !== false,
     mode: meta.mode,
     qIndex: meta.qIndex,
     qCount: meta.qCount,
@@ -167,7 +171,10 @@ export function buildSnapshot(
   const question = state.questions[meta.qIndex];
   const inReveal = meta.phase === "reveal";
   if (question && (meta.phase === "question" || inReveal)) {
-    payload.question = toPublicQuestion(question);
+    payload.question = {
+      ...toPublicQuestion(playableQuestion(question, meta.reopened)),
+      ...(meta.reopened ? { reopened: true } : {}),
+    };
     if (meta.phase === "question") {
       // Unstamped is only possible for meta written by an older build (the
       // window is durable before the broadcast); fall back to the full window
@@ -186,7 +193,11 @@ export function buildSnapshot(
     }
   }
 
-  if (inReveal || meta.phase === "final" || meta.phase === "ended") {
+  if (
+    (inReveal && question?.config.showRanking !== false) ||
+    ((meta.phase === "final" || meta.phase === "ended") &&
+      (meta.mode !== "classic" || meta.showFinalRanking !== false))
+  ) {
     payload.leaderboard = buildLeaderboard(
       scores,
       roster,

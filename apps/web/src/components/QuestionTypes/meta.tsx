@@ -7,40 +7,46 @@ export const QUESTION_TYPE_META: Record<
   QuestionType,
   { name: string; description: string; scored: boolean }
 > = {
+  media_slide: {
+    name: "Slide de mídia",
+    description: "Imagem ou vídeo · avanço manual pelo administrador",
+    scored: false,
+  },
   multiple_choice: {
-    name: "Multiple choice",
-    description: "4 options, single or multiple answers",
+    name: "Múltipla escolha",
+    description: "4 opções, uma ou várias respostas",
     scored: true,
   },
   true_false: {
-    name: "True / False",
-    description: "Quick two-option check",
+    name: "Verdadeiro / Falso",
+    description: "Pergunta rápida com duas opções",
     scored: true,
   },
   poll: {
-    name: "Poll",
-    description: "Collect opinions, no right answer",
+    name: "Enquete",
+    description: "Colete opiniões, sem resposta correta",
     scored: false,
   },
   word_cloud: {
-    name: "Word cloud",
-    description: "Short answers grouped by frequency",
+    name: "Nuvem de palavras",
+    description: "Respostas curtas agrupadas por frequência",
     scored: false,
   },
   rating: {
-    name: "Rating scale",
-    description: "1–5 or 1–10 sentiment",
+    name: "Escala de avaliação",
+    description: "Avaliação de 1 a 5 ou de 1 a 10",
     scored: false,
   },
   open_text: {
-    name: "Open text",
-    description: "Free responses shown as a wall",
+    name: "Resposta aberta",
+    description: "Respostas livres exibidas em um mural",
     scored: false,
   },
 };
 
 /** Menu order. */
 export const QUESTION_TYPE_ORDER: QuestionType[] = [
+  "media_slide",
   "multiple_choice",
   "true_false",
   "poll",
@@ -50,6 +56,7 @@ export const QUESTION_TYPE_ORDER: QuestionType[] = [
 ];
 
 const ICONS: Record<QuestionType, { width: number; paths: ReactNode }> = {
+  media_slide: { width: 2, paths: <path d="M3 4h18v14H3zM9 22h6M12 18v4" /> },
   multiple_choice: {
     width: 2,
     paths: (
@@ -126,7 +133,7 @@ export function QuestionTypePill({
   return (
     <span
       className={clsx(
-        "inline-flex w-fit items-center gap-1.5 text-[12.5px] font-bold tracking-[0.06em] uppercase rounded-full px-3 py-1.5 text-lprimary dark:text-dprimary bg-lprimary/8 dark:bg-white/5",
+        "inline-flex w-fit items-center gap-1.5 text-[12.5px] font-bold tracking-[0.06em] uppercase rounded-full px-3 py-1.5 text-theme-primary dark:text-theme-primary bg-theme-primary/8 dark:bg-theme-surface/5",
         className,
       )}
     >

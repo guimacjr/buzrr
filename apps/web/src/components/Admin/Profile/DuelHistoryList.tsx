@@ -13,7 +13,7 @@ export default function DuelHistoryList({ limit }: { limit?: number }) {
         {Array.from({ length: 3 }).map((_, index) => (
           <Skeleton
             key={index}
-            className="h-16 w-full rounded-xl bg-white dark:bg-card-dark"
+            className="h-16 w-full rounded-xl bg-theme-surface dark:bg-theme-card"
           />
         ))}
       </div>
@@ -21,14 +21,14 @@ export default function DuelHistoryList({ limit }: { limit?: number }) {
   }
   if (isError) {
     return (
-      <p className="text-dark dark:text-white">
+      <p className="text-theme-text dark:text-theme-text">
         Could not load your duels. Try again later.
       </p>
     );
   }
   if (!duels || duels.length === 0) {
     return (
-      <div className="border border-gray border-dashed rounded-lg p-6 text-center text-dark dark:text-white">
+      <div className="border border-theme-border border-dashed rounded-lg p-6 text-center text-theme-text dark:text-theme-text">
         <p className="text-lg font-black">No duels played yet</p>
         <p className="text-sm mt-2">
           Play a duel and your results will show up here.
@@ -47,24 +47,25 @@ export default function DuelHistoryList({ limit }: { limit?: number }) {
         return (
           <div
             key={entry.id}
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-white dark:bg-card-dark rounded-xl p-4"
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-theme-surface dark:bg-theme-card rounded-xl p-4"
           >
             <div>
-              <p className="font-bold text-dark dark:text-white capitalize">
+              <p className="font-bold text-theme-text dark:text-theme-text capitalize">
                 {entry.result.quizTitle}
               </p>
               <p
-                className="text-xs text-off-dark dark:text-off-white mt-1"
+                className="text-xs text-theme-muted dark:text-theme-muted mt-1"
                 suppressHydrationWarning
               >
                 {new Date(entry.result.endedAt).toLocaleString()}
               </p>
             </div>
-            <div className="flex gap-4 text-sm text-dark dark:text-white items-center">
+            <div className="flex gap-4 text-sm text-theme-text dark:text-theme-text items-center">
               <span
                 className={clsx(
                   "font-bold",
-                  entry.rank === 1 && "text-lprimary dark:text-dprimary",
+                  entry.rank === 1 &&
+                    "text-theme-primary dark:text-theme-primary",
                 )}
               >
                 #{entry.rank}
@@ -75,8 +76,8 @@ export default function DuelHistoryList({ limit }: { limit?: number }) {
                   className={clsx(
                     "font-bold",
                     eloDelta >= 0
-                      ? "text-green-600 dark:text-green-400"
-                      : "text-red-light dark:text-red-dark",
+                      ? "text-theme-success dark:text-theme-success"
+                      : "text-theme-danger dark:text-theme-danger",
                   )}
                 >
                   {eloDelta >= 0 ? "+" : ""}

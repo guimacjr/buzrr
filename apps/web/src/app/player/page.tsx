@@ -4,20 +4,23 @@ import CheckLocalPlayer from "@/components/Player/CheckLocalPlayer";
 import CreatePlayerForm from "@/components/Player/Setup/CreatePlayerForm";
 import JoinShell from "@/components/Player/Setup/JoinShell";
 import ProfilePreview from "@/components/Player/Setup/ProfilePreview";
-import { PROFILES } from "@/components/Player/SelectProfile";
+import { useAvatarSelection } from "@/lib/modules/avatars/hooks";
 
 function Player() {
   const [data, setData] = useState({
     name: "",
-    image: PROFILES[0],
+    image: "",
   });
+
+  const selectedImage = useAvatarSelection(data.image);
+  const profile = { ...data, image: selectedImage };
 
   return (
     <>
       <CheckLocalPlayer />
       <JoinShell
-        form={<CreatePlayerForm data={data} setData={setData} />}
-        preview={<ProfilePreview name={data.name} image={data.image} />}
+        form={<CreatePlayerForm data={profile} setData={setData} />}
+        preview={<ProfilePreview name={data.name} image={selectedImage} />}
       />
     </>
   );

@@ -61,7 +61,9 @@ itself (`PlayersService.create`).
   (`common/guards/roles.guard.ts`). Deliberately does a **fresh DB read of
   `User.role` per request** — JWTs live 7 days and a demotion must bite
   immediately. Never derive role from the token.
-- Public routes (verified): `POST/PATCH/GET /api/players*`, `GET
+- Global avatar management (`/api/avatars/manage`, `POST/PATCH /api/avatars`)
+  requires admin/superadmin; the public picker exposes enabled choices only.
+- Public routes (verified): `GET /api/avatars`, `POST/PATCH/GET /api/players*`, `GET
 /api/game-sessions/player-play/:playerId`, `GET /health`,
   and `POST /api/billing/webhooks/dodo` (authenticated by the Dodo webhook
   signature instead of a JWT).
@@ -169,3 +171,5 @@ reports, invites…), not globally. `TRUST_PROXY` in `main.ts` makes
   into the `buzrr-secrets` volume and every container reads it from there,
   unless `.env` sets one — deleting that volume logs everyone out and
   invalidates all minted tokens.
+
+Platform branding is publicly readable through `GET /api/branding`; palette updates and logo upload/reset require the DB-backed admin/superadmin role guard.

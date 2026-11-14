@@ -52,7 +52,7 @@ export default function EndQuizButton({
         router.push(redirectTo);
         return;
       }
-      toast.error("Could not end the quiz. Please try again.");
+      toast.error("Não foi possível encerrar o quiz. Tente novamente.");
       setEnding(false);
     }
   }
@@ -68,27 +68,27 @@ export default function EndQuizButton({
             alreadyEnded ? router.push(redirectTo) : void confirmEnd()
           }
         >
-          {ending ? "Saving results…" : primaryLabel}
+          {ending ? "Salvando resultados…" : primaryLabel}
         </button>
       ) : inline ? (
         <button
           type="button"
-          className="shrink-0 whitespace-nowrap rounded-xl border-[1.5px] border-red-light dark:border-red-dark px-4 md:px-[18px] py-2 md:py-[9px] text-sm md:text-[14.5px] font-semibold text-red-light dark:text-red-dark transition-colors hover:bg-red-light dark:hover:bg-red-dark hover:text-white dark:hover:text-dark cursor-pointer"
+          className="shrink-0 whitespace-nowrap rounded-xl border-[1.5px] border-theme-danger dark:border-theme-danger px-4 md:px-[18px] py-2 md:py-[9px] text-sm md:text-[14.5px] font-semibold text-theme-danger dark:text-theme-danger transition-colors hover:bg-theme-danger dark:hover:bg-theme-danger hover:text-theme-onPrimary dark:hover:text-theme-text cursor-pointer"
           onClick={() =>
             alreadyEnded ? router.push(redirectTo) : setOpen(true)
           }
         >
-          {alreadyEnded ? "Exit" : "End Quiz"}
+          {alreadyEnded ? "Sair" : "Encerrar quiz"}
         </button>
       ) : (
         <Button
           size="sm"
-          className="fixed top-3 right-4 md:right-8 z-50 bg-red-light dark:bg-red-dark text-white dark:text-dark hover:bg-red-dark"
+          className="fixed top-3 right-4 md:right-8 z-50 bg-theme-danger dark:bg-theme-danger text-theme-onPrimary dark:text-theme-onPrimary hover:bg-theme-danger"
           onClick={() =>
             alreadyEnded ? router.push(redirectTo) : setOpen(true)
           }
         >
-          {alreadyEnded ? "Exit" : "End Quiz"}
+          {alreadyEnded ? "Sair" : "Encerrar quiz"}
         </Button>
       )}
       <ConfirmationModal
@@ -96,9 +96,9 @@ export default function EndQuizButton({
         setOpen={setOpen}
         onClick={confirmEnd}
         confirming={ending}
-        confirmLabel="End Quiz"
-        confirmingLabel="Saving results…"
-        desc="This ends the quiz for everyone and saves the current results. This can't be undone."
+        confirmLabel="Encerrar quiz"
+        confirmingLabel="Salvando resultados…"
+        desc="Isso encerra o quiz para todos e salva os resultados atuais. Essa ação não pode ser desfeita."
       />
     </>
   );

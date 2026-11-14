@@ -20,7 +20,7 @@ function HiddenCardsIllustration() {
             width="112"
             height="86"
             rx="14"
-            className="fill-lprimary/15 dark:fill-dprimary/15"
+            className="fill-theme-primary/15 dark:fill-theme-primary/15"
           />
         </g>
         {/* front card */}
@@ -31,7 +31,7 @@ function HiddenCardsIllustration() {
           height="88"
           rx="14"
           strokeWidth="1.5"
-          className="fill-white dark:fill-dark stroke-lprimary/25 dark:stroke-white/10"
+          className="fill-theme-muted dark:fill-theme-muted stroke-theme-primary/25 dark:stroke-theme-border/10"
         />
         {/* question title */}
         <rect
@@ -40,7 +40,7 @@ function HiddenCardsIllustration() {
           width="62"
           height="8"
           rx="4"
-          className="fill-lprimary/50 dark:fill-dprimary/50"
+          className="fill-theme-primary/50 dark:fill-theme-primary/50"
         />
         <rect
           x="38"
@@ -48,7 +48,7 @@ function HiddenCardsIllustration() {
           width="40"
           height="6"
           rx="3"
-          className="fill-lprimary/20 dark:fill-white/15"
+          className="fill-theme-primary/20 dark:fill-theme-muted/15"
         />
         {/* answer options */}
         {[
@@ -64,22 +64,22 @@ function HiddenCardsIllustration() {
             width="42"
             height="14"
             rx="5"
-            className="fill-lprimary/10 dark:fill-white/5"
+            className="fill-theme-primary/10 dark:fill-theme-muted/5"
           />
         ))}
         {/* sparkle accents */}
         <path
           d="M18 18c.5 4 2.5 6 6.5 6.5-4 .5-6 2.5-6.5 6.5-.5-4-2.5-6-6.5-6.5 4-.5 6-2.5 6.5-6.5Z"
-          className="fill-amber-400"
+          className="fill-theme-warning"
         />
         <circle
           cx="152"
           cy="16"
           r="3"
-          className="fill-lprimary/40 dark:fill-dprimary/40"
+          className="fill-theme-primary/40 dark:fill-theme-primary/40"
         />
       </svg>
-      <span className="absolute right-0 bottom-0 flex size-16 items-center justify-center rounded-full bg-linear-to-br from-[#9a6cf5] to-[#7c4ddb] dark:from-accent dark:to-accent-deep text-white shadow-[0_10px_24px_-10px_#7c4ddb] ring-4 ring-white dark:ring-dark">
+      <span className="absolute right-0 bottom-0 flex size-16 items-center justify-center rounded-full bg-linear-to-br from-theme-accent to-theme-accentDeep dark:from-theme-accent dark:to-theme-accentDeep text-theme-onAccent shadow-[0_10px_24px_-10px_var(--color-theme-accentDeep)] ring-4 ring-theme-border dark:ring-theme-border">
         <LuEyeOff size={28} />
       </span>
     </div>
@@ -112,13 +112,13 @@ export default function HiddenQuestionsOverlay({ quizId }: { quizId: string }) {
     <div className="pointer-events-none absolute inset-0 z-[5] px-4">
       {/* pt-16 leaves the sticky toolbar out of the centring. */}
       <div className="sticky top-0 h-full max-h-dvh pt-16 flex items-center justify-center">
-        <div className="pointer-events-auto w-full max-w-md flex flex-col items-center gap-5 rounded-[26px] border border-lprimary/15 dark:border-white/5 bg-white/90 dark:bg-dark/90 backdrop-blur-sm px-8 py-10 text-center shadow-[0_24px_48px_-24px_rgba(0,0,0,0.45)] animate-pop-in">
+        <div className="pointer-events-auto w-full max-w-md flex flex-col items-center gap-5 rounded-[26px] border border-theme-primary/15 dark:border-theme-border/5 bg-theme-surface/90 dark:bg-theme-surface/90 backdrop-blur-sm px-8 py-10 text-center shadow-[0_24px_48px_-24px_rgba(0,0,0,0.45)] animate-pop-in">
           <HiddenCardsIllustration />
           <div>
-            <h3 className="text-2xl font-bold tracking-[-0.01em] text-dark dark:text-white">
+            <h3 className="text-2xl font-bold tracking-[-0.01em] text-theme-text dark:text-theme-text">
               Questions are hidden
             </h3>
-            <p className="mt-1.5 text-[15px] text-dark/70 dark:text-gray">
+            <p className="mt-1.5 text-[15px] text-theme-text/70 dark:text-theme-muted">
               Handy when your screen is shared, so no one peeks at the answers.
             </p>
           </div>

@@ -13,7 +13,7 @@ export default function DuelPortalLayout({
         <span className="md:hidden inline">
           <NavbarToggle />
         </span>
-        <h1 className="text-md md:text-3xl font-black md:py-2 dark:text-white">
+        <h1 className="text-md md:text-3xl font-black md:py-2 dark:text-theme-text">
           Duel Portal
         </h1>
       </div>

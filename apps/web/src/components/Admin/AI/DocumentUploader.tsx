@@ -100,23 +100,23 @@ export default function DocumentUploader({ spaceId }: { spaceId: string }) {
         className={clsx(
           "rounded-xl border border-dashed p-6 text-center cursor-pointer transition-colors",
           isDragging
-            ? "border-lprimary dark:border-dprimary bg-card-light dark:bg-dark"
-            : "border-gray hover:bg-card-light dark:hover:bg-dark",
+            ? "border-theme-primary dark:border-theme-primary bg-theme-card dark:bg-theme-surface"
+            : "border-theme-border hover:bg-theme-card dark:hover:bg-theme-surface",
         )}
       >
         <LuUpload
           size={22}
-          className="mx-auto text-lprimary dark:text-dprimary"
+          className="mx-auto text-theme-primary dark:text-theme-primary"
           aria-hidden
         />
-        <p className="mt-2 font-bold text-dark dark:text-white">
+        <p className="mt-2 font-bold text-theme-text dark:text-theme-text">
           Drop files here, or click to choose
         </p>
-        <p className="mt-1 text-xs text-off-dark dark:text-off-white">
+        <p className="mt-1 text-xs text-theme-muted dark:text-theme-muted">
           PDF, DOCX, TXT or Markdown · up to {MAX_MB}MB each · {MAX_FILES} at a
           time
         </p>
-        <p className="mt-2 text-2xs text-off-dark dark:text-off-white">
+        <p className="mt-2 text-2xs text-theme-muted dark:text-theme-muted">
           Text is sent to Google Gemini for indexing. Your original file is
           deleted once processing finishes.
         </p>
@@ -136,7 +136,7 @@ export default function DocumentUploader({ spaceId }: { spaceId: string }) {
             {staged.map((file) => (
               <li
                 key={`${file.name}-${file.size}`}
-                className="flex items-center gap-2 rounded-md bg-card-light dark:bg-dark px-2 py-1 text-xs text-dark dark:text-white"
+                className="flex items-center gap-2 rounded-md bg-theme-card dark:bg-theme-surface px-2 py-1 text-xs text-theme-text dark:text-theme-text"
               >
                 <span className="max-w-[16rem] truncate">{file.name}</span>
                 <button
@@ -145,7 +145,7 @@ export default function DocumentUploader({ spaceId }: { spaceId: string }) {
                   onClick={() =>
                     setStaged((current) => current.filter((f) => f !== file))
                   }
-                  className="text-off-dark dark:text-off-white hover:text-red-light dark:hover:text-red-dark"
+                  className="text-theme-muted dark:text-theme-muted hover:text-theme-danger dark:hover:text-theme-danger"
                 >
                   <LuX size={14} />
                 </button>

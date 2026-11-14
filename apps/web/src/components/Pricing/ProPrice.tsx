@@ -39,7 +39,7 @@ export default function ProPrice({
     return (
       <Skeleton
         className={clsx(
-          "rounded-lg bg-card-light dark:bg-dark",
+          "rounded-lg bg-theme-card dark:bg-theme-surface",
           size === "lg" ? "h-10 w-40" : "h-8 w-32",
         )}
       />
@@ -49,9 +49,9 @@ export default function ProPrice({
   const discounted = discount?.discountedAmount ?? null;
   return (
     <div>
-      <p className="flex flex-wrap items-baseline gap-x-2 text-dark dark:text-white">
+      <p className="flex flex-wrap items-baseline gap-x-2 text-theme-text dark:text-theme-text">
         {discounted !== null && (
-          <span className="text-lg font-bold text-off-dark dark:text-off-white line-through">
+          <span className="text-lg font-bold text-theme-muted dark:text-theme-muted line-through">
             {formatMoney(amount, currency)}
           </span>
         )}
@@ -63,12 +63,12 @@ export default function ProPrice({
         >
           {formatMoney(discounted ?? amount, currency)}
         </span>
-        <span className="text-sm text-off-dark dark:text-off-white">
+        <span className="text-sm text-theme-muted dark:text-theme-muted">
           / month
         </span>
       </p>
       {discount && (
-        <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#20A97C]/15 px-2.5 py-1 text-xs font-bold text-[#20A97C]">
+        <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-theme-success/15 px-2.5 py-1 text-xs font-bold text-theme-success">
           <LuTag size={12} />
           {discountLabel(discount)}
         </p>

@@ -1,3 +1,5 @@
+import { PortabilityModule } from "./modules/portability/portability.module";
+import { BrandingModule } from "./modules/branding/branding.module";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
@@ -24,6 +26,8 @@ import { RedisModule } from "./redis/redis.module";
     ConfigModule.forRoot({ isGlobal: true }),
     RedisModule,
     CommonModule,
+    BrandingModule,
+    PortabilityModule,
     PrismaModule,
     AuthModule,
     HealthModule,

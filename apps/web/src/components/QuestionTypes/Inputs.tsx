@@ -15,7 +15,7 @@ import {
 export function SubmitButton({
   disabled,
   onClick,
-  children = "Submit",
+  children = "Enviar",
 }: {
   disabled: boolean;
   onClick: () => void;
@@ -65,9 +65,9 @@ export function ChoiceList({
             className={clsx(
               "flex items-center gap-3.5 rounded-2xl border-[1.5px] px-3.5 py-3 md:px-[18px] md:py-4 text-base md:text-lg font-semibold text-left wrap-break-word min-w-0 transition-all duration-150",
               on
-                ? "border-lprimary dark:border-dprimary bg-lprimary/10 dark:bg-dprimary/15"
+                ? "border-theme-primary dark:border-theme-primary bg-theme-primary/10 dark:bg-theme-primary/15"
                 : subtleCardClass,
-              !disabled && "cursor-pointer hover:border-dprimary",
+              !disabled && "cursor-pointer hover:border-theme-primary",
               disabled && !on && "opacity-50 cursor-default",
             )}
           >
@@ -79,10 +79,10 @@ export function ChoiceList({
             {multi ? (
               <span
                 className={clsx(
-                  "shrink-0 size-[22px] rounded-md border-2 flex items-center justify-center text-white",
+                  "shrink-0 size-[22px] rounded-md border-2 flex items-center justify-center text-theme-onPrimary",
                   on
-                    ? "bg-lprimary dark:bg-dprimary border-lprimary dark:border-dprimary"
-                    : "border-lprimary/25 dark:border-white/20",
+                    ? "bg-theme-primary dark:bg-theme-primary border-theme-primary dark:border-theme-primary"
+                    : "border-theme-primary/25 dark:border-theme-border/20",
                 )}
               >
                 {on && <LuCheck size={14} strokeWidth={3} />}
@@ -92,8 +92,8 @@ export function ChoiceList({
                 className={clsx(
                   "shrink-0 size-[22px] rounded-full",
                   on
-                    ? "border-[7px] border-lprimary dark:border-dprimary"
-                    : "border-2 border-lprimary/25 dark:border-white/20",
+                    ? "border-[7px] border-theme-primary dark:border-theme-primary"
+                    : "border-2 border-theme-primary/25 dark:border-theme-border/20",
                 )}
               />
             )}

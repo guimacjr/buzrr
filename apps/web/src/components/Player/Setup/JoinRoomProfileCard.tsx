@@ -20,7 +20,7 @@ const cleanName = (value: string) =>
   value.replace(/[^a-zA-Z0-9_]/g, "").slice(0, 30);
 
 const editButtonClass =
-  "shrink-0 rounded-[10px] border-[1.5px] border-lprimary/15 dark:border-white/10 bg-white dark:bg-dark px-3.5 py-1.5 text-[13px] font-semibold tracking-normal hover:border-dprimary transition-colors cursor-pointer";
+  "shrink-0 rounded-[10px] border-[1.5px] border-theme-primary/15 dark:border-theme-border/10 bg-theme-surface dark:bg-theme-surface px-3.5 py-1.5 text-[13px] font-semibold tracking-normal hover:border-theme-primary transition-colors cursor-pointer";
 
 /**
  * "Joining as" identity on the room-code step, with inline rename. `card` is
@@ -53,7 +53,7 @@ const JoinRoomProfileCard = (params: {
         onSuccess: (res) => {
           params.onNameSaved(res.name);
           setIsEditing(false);
-          toast.success("Player name updated");
+          toast.success("Nome atualizado");
         },
         onError: (err) => toast.error(getApiErrorMessage(err)),
       },
@@ -69,8 +69,8 @@ const JoinRoomProfileCard = (params: {
             e.target.value = cleanName(e.target.value);
           },
         })}
-        placeholder="Enter display name"
-        aria-label="Display name"
+        placeholder="Digite seu nome de exibição"
+        aria-label="Nome de exibição"
         className={joinInputClass}
         required
         autoComplete="off"
@@ -78,7 +78,7 @@ const JoinRoomProfileCard = (params: {
         maxLength={30}
       />
       {formState.errors.username?.message && (
-        <p className="text-sm text-red-light dark:text-red-dark">
+        <p className="text-sm text-theme-danger dark:text-theme-danger">
           {formState.errors.username.message}
         </p>
       )}
@@ -86,16 +86,16 @@ const JoinRoomProfileCard = (params: {
         <button
           type="submit"
           disabled={mutation.isPending}
-          className="flex-1 rounded-xl bg-linear-to-br from-[#9a6cf5] to-[#7c4ddb] dark:from-accent dark:to-accent-deep px-4 py-2.5 font-bold text-white cursor-pointer disabled:opacity-60"
+          className="flex-1 rounded-xl bg-linear-to-br from-theme-accent to-theme-accentDeep dark:from-theme-accent dark:to-theme-accentDeep px-4 py-2.5 font-bold text-theme-onAccent cursor-pointer disabled:opacity-60"
         >
-          {mutation.isPending ? "Saving…" : "Save"}
+          {mutation.isPending ? "Salvando…" : "Salvar"}
         </button>
         <button
           type="button"
-          className="flex-1 rounded-xl border-[1.5px] border-lprimary/15 dark:border-white/10 px-4 py-2.5 font-semibold cursor-pointer hover:border-dprimary"
+          className="flex-1 rounded-xl border-[1.5px] border-theme-primary/15 dark:border-theme-border/10 px-4 py-2.5 font-semibold cursor-pointer hover:border-theme-primary"
           onClick={() => setIsEditing(false)}
         >
-          Cancel
+          Cancelar
         </button>
       </div>
     </form>
@@ -103,9 +103,10 @@ const JoinRoomProfileCard = (params: {
 
   if (params.variant === "chip") {
     return (
-      <div className="md:hidden flex flex-col gap-3 rounded-[14px] border px-3 py-2.5 bg-light-bg dark:bg-card-dark border-lprimary/15 dark:border-white/5">
+      <div className="md:hidden flex flex-col gap-3 rounded-[14px] border px-3 py-2.5 bg-theme-background dark:bg-theme-card border-theme-primary/15 dark:border-theme-border/5">
         <div className="flex items-center gap-3">
           <Image
+            unoptimized
             src={params.profilePic || DEFAULT_AVATAR}
             width={40}
             height={40}
@@ -115,8 +116,8 @@ const JoinRoomProfileCard = (params: {
           <span
             className={clsx("flex-1 min-w-0 flex flex-col text-xs", mutedText)}
           >
-            Joining as
-            <b className="truncate text-[15px] text-dark dark:text-white">
+            Entrando como
+            <b className="truncate text-[15px] text-theme-text dark:text-theme-text">
               {params.name}
             </b>
           </span>
@@ -126,7 +127,7 @@ const JoinRoomProfileCard = (params: {
               className={editButtonClass}
               onClick={startEdit}
             >
-              Edit
+              Editar
             </button>
           )}
         </div>
@@ -137,7 +138,7 @@ const JoinRoomProfileCard = (params: {
 
   return (
     <>
-      <span className={labelClass}>Joining as</span>
+      <span className={labelClass}>Entrando como</span>
       {isEditing ? (
         <div className="w-full max-w-sm flex flex-col items-center gap-4">
           <MeCard image={params.profilePic} name={null} size="md" />
@@ -153,7 +154,7 @@ const JoinRoomProfileCard = (params: {
               className={editButtonClass}
               onClick={startEdit}
             >
-              Edit
+              Editar
             </button>
           }
         />

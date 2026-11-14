@@ -1,4 +1,11 @@
-import { importQuizSchema, type ImportQuiz } from "@buzrr/contract";
+import {
+  quizPresentationSchema,
+  type QuizPresentation,
+  registrationSettingsSchema,
+  type RegistrationSettings,
+  importQuizSchema,
+  type ImportQuiz,
+} from "@buzrr/contract";
 import {
   Body,
   Controller,
@@ -54,6 +61,25 @@ export class QuizzesController {
     @Body(new ZodValidationPipe(importQuizSchema)) body: ImportQuiz,
   ) {
     return this.quizzes.importQuestions(user, body);
+  }
+
+  @Patch(":id/presentation")
+  presentation(
+    @CurrentAccountUser() user: AuthUser,
+    @Param("id") id: string,
+    @Body(new ZodValidationPipe(quizPresentationSchema)) body: QuizPresentation,
+  ) {
+    return this.quizzes.updatePresentation(user, id, body);
+  }
+
+  @Patch(":id/registration")
+  registration(
+    @CurrentAccountUser() user: AuthUser,
+    @Param("id") id: string,
+    @Body(new ZodValidationPipe(registrationSettingsSchema))
+    body: RegistrationSettings,
+  ) {
+    return this.quizzes.updateRegistration(user, id, body.fields);
   }
 
   @Patch(":id")

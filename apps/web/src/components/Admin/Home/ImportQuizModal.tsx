@@ -225,10 +225,10 @@ export default function ImportQuizModal({ className }: { className?: string }) {
         >
           <form
             onSubmit={handleSubmit}
-            className="w-full md:max-w-[500px] max-h-[92dvh] overflow-y-auto flex flex-col rounded-t-[26px] md:rounded-[26px] border bg-white dark:bg-dark border-lprimary/15 dark:border-white/5 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)] text-dark dark:text-white"
+            className="w-full md:max-w-[500px] max-h-[92dvh] overflow-y-auto flex flex-col rounded-t-[26px] md:rounded-[26px] border bg-theme-surface dark:bg-theme-surface border-theme-primary/15 dark:border-theme-border/5 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)] text-theme-text dark:text-theme-text"
           >
             <div className="flex items-start gap-4 px-5 pt-[22px] md:px-7 md:pt-[26px]">
-              <span className="size-12 shrink-0 rounded-[14px] bg-linear-to-br from-[#10b981] to-[#059669] text-white flex items-center justify-center shadow-[0_10px_24px_-10px_#059669]">
+              <span className="size-12 shrink-0 rounded-[14px] bg-linear-to-br from-theme-success to-theme-success text-theme-onAccent flex items-center justify-center shadow-[0_10px_24px_-10px_var(--color-theme-success)]">
                 <LuDownload size={24} />
               </span>
               <div className="min-w-0 mt-1">
@@ -253,7 +253,7 @@ export default function ImportQuizModal({ className }: { className?: string }) {
                 onClick={close}
                 disabled={isLoading}
                 className={clsx(
-                  "ml-auto size-9 shrink-0 rounded-[10px] flex items-center justify-center hover:bg-lprimary/8 dark:hover:bg-white/5 hover:text-dark dark:hover:text-white transition-colors cursor-pointer",
+                  "ml-auto size-9 shrink-0 rounded-[10px] flex items-center justify-center hover:bg-theme-primary/8 dark:hover:bg-theme-surface/5 hover:text-theme-text dark:hover:text-theme-onPrimary transition-colors cursor-pointer",
                   mutedText,
                   isLoading && "opacity-50 cursor-not-allowed",
                 )}
@@ -263,7 +263,7 @@ export default function ImportQuizModal({ className }: { className?: string }) {
             </div>
 
             <div className="px-5 pt-[22px] md:px-7 md:pt-6">
-              <div className="flex bg-lprimary/5 dark:bg-white/5 rounded-xl p-1 mb-6">
+              <div className="flex bg-theme-primary/5 dark:bg-theme-surface/5 rounded-xl p-1 mb-6">
                 <button
                   type="button"
                   onClick={() => {
@@ -274,8 +274,8 @@ export default function ImportQuizModal({ className }: { className?: string }) {
                   className={clsx(
                     "flex-1 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2",
                     tab === "excel"
-                      ? "bg-white dark:bg-card-dark shadow-sm text-lprimary dark:text-dprimary"
-                      : "text-dark/60 dark:text-white/60 hover:text-dark dark:hover:text-white",
+                      ? "bg-theme-surface dark:bg-theme-card shadow-sm text-theme-primary dark:text-theme-primary"
+                      : "text-theme-text/60 dark:text-theme-text/60 hover:text-theme-text dark:hover:text-theme-onPrimary",
                   )}
                 >
                   <LuFileSpreadsheet size={16} /> Excel
@@ -290,22 +290,22 @@ export default function ImportQuizModal({ className }: { className?: string }) {
                   className={clsx(
                     "flex-1 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2",
                     tab === "csv"
-                      ? "bg-white dark:bg-card-dark shadow-sm text-lprimary dark:text-dprimary"
-                      : "text-dark/60 dark:text-white/60 hover:text-dark dark:hover:text-white",
+                      ? "bg-theme-surface dark:bg-theme-card shadow-sm text-theme-primary dark:text-theme-primary"
+                      : "text-theme-text/60 dark:text-theme-text/60 hover:text-theme-text dark:hover:text-theme-onPrimary",
                   )}
                 >
                   <LuFileJson size={16} /> CSV
                 </button>
               </div>
 
-              <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-lprimary/20 dark:border-white/10 rounded-2xl bg-lprimary/5 dark:bg-white/[0.02]">
+              <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-theme-primary/20 dark:border-theme-border/10 rounded-2xl bg-theme-primary/5 dark:bg-theme-surface/[0.02]">
                 <p className="text-sm font-medium mb-3 text-center">
                   1. Download the template
                 </p>
                 <a
                   href={`/sample-quiz.${tab === "excel" ? "xlsx" : "csv"}`}
                   download
-                  className="px-4 py-2 bg-white dark:bg-white/10 border border-lprimary/20 dark:border-white/20 rounded-xl text-sm font-semibold shadow-sm hover:bg-lprimary/5 dark:hover:bg-white/20 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 bg-theme-surface dark:bg-theme-surface/10 border border-theme-primary/20 dark:border-theme-border/20 rounded-xl text-sm font-semibold shadow-sm hover:bg-theme-primary/5 dark:hover:bg-theme-surface/20 transition-colors flex items-center gap-2"
                 >
                   <LuDownload size={16} />
                   Download {tab === "excel" ? "Excel" : "CSV"} Template
@@ -313,7 +313,7 @@ export default function ImportQuizModal({ className }: { className?: string }) {
               </div>
 
               <div className="mt-6 flex flex-col gap-2">
-                <label className="text-sm font-medium text-dark/80 dark:text-white/80">
+                <label className="text-sm font-medium text-theme-text/80 dark:text-theme-text/80">
                   2. Upload filled document
                 </label>
                 <input
@@ -322,24 +322,24 @@ export default function ImportQuizModal({ className }: { className?: string }) {
                   accept={tab === "excel" ? ".xlsx, .xls" : ".csv"}
                   onChange={handleFileChange}
                   disabled={isLoading}
-                  className="block w-full text-sm text-dark/70 dark:text-white/70
+                  className="block w-full text-sm text-theme-text/70 dark:text-theme-text/70
                     file:mr-4 file:py-2.5 file:px-4
                     file:rounded-xl file:border-0
                     file:text-sm file:font-semibold
-                    file:bg-lprimary/10 file:text-lprimary
-                    dark:file:bg-dprimary/20 dark:file:text-dprimary
-                    hover:file:bg-lprimary/20 dark:hover:file:bg-dprimary/30
+                    file:bg-theme-primary/10 file:text-theme-primary
+                    dark:file:bg-theme-primary/20 dark:file:text-theme-primary
+                    hover:file:bg-theme-primary/20 dark:hover:file:bg-theme-primary/30
                     transition-all file:cursor-pointer cursor-pointer disabled:opacity-50"
                 />
               </div>
             </div>
 
-            <div className="mt-8 flex justify-end gap-3 border-t border-lprimary/15 dark:border-white/10 px-5 py-5 md:px-7 md:py-5">
+            <div className="mt-8 flex justify-end gap-3 border-t border-theme-primary/15 dark:border-theme-border/10 px-5 py-5 md:px-7 md:py-5">
               <button
                 type="button"
                 onClick={close}
                 disabled={isLoading}
-                className="px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors disabled:opacity-50"
+                className="px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-black/5 dark:hover:bg-theme-surface/5 transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>

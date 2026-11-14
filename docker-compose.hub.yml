@@ -1,0 +1,11 @@
+# Use with docker-compose.yml and --env-file .env.intranet.
+# Build/publish: docker compose --env-file .env.intranet -f docker-compose.yml -f docker-compose.hub.yml build migrate web
+# Then: docker compose --env-file .env.intranet -f docker-compose.yml -f docker-compose.hub.yml push migrate web
+# Deploy: docker compose --env-file .env.intranet -f docker-compose.yml -f docker-compose.hub.yml up -d --no-build --pull always
+services:
+  migrate:
+    image: guimacieljr/buzrr:server
+  server:
+    image: guimacieljr/buzrr:server
+  web:
+    image: guimacieljr/buzrr:web

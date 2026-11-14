@@ -11,13 +11,13 @@ import { WordCloudView } from "./Visuals";
 
 function WordChip({ word, onRemove }: { word: string; onRemove?: () => void }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-full pl-3.5 pr-2.5 py-2 font-bold text-lprimary dark:text-dprimary bg-lprimary/8 dark:bg-white/5">
+    <span className="inline-flex items-center gap-2 rounded-full pl-3.5 pr-2.5 py-2 font-bold text-theme-primary dark:text-theme-primary bg-theme-primary/8 dark:bg-theme-surface/5">
       {word}
       {onRemove && (
         <button
           type="button"
           onClick={onRemove}
-          aria-label={`Remove ${word}`}
+          aria-label={`Remover ${word}`}
           className="cursor-pointer opacity-70 hover:opacity-100"
         >
           <LuX size={14} strokeWidth={2.6} />
@@ -55,7 +55,9 @@ function RepeatInput({
       <input
         className={clsx(inputClass, sent.length > 0 ? "mt-3" : "mt-4 md:mt-7")}
         placeholder={
-          sent.length ? "Add another word" : "Type a word or short phrase"
+          sent.length
+            ? "Adicione outra palavra"
+            : "Digite uma palavra ou frase curta"
         }
         value={text}
         maxLength={question.maxLength}
@@ -69,13 +71,13 @@ function RepeatInput({
       />
       <span className={clsx("mt-3 text-[13.5px]", mutedText)}>
         {full
-          ? "That's the most words you can send"
+          ? "Você atingiu o limite de palavras"
           : sent.length
-            ? `Sent ${sent.length} · add as many as you like while time's left`
-            : "Send one word at a time — as many as you like"}
+            ? `Enviadas: ${sent.length} · envie quantas quiser enquanto houver tempo`
+            : "Envie uma palavra por vez — quantas quiser"}
       </span>
       <SubmitButton disabled={disabled || full || word === ""} onClick={send}>
-        {sent.length ? "Submit another" : "Submit"}
+        {sent.length ? "Enviar outra" : "Enviar"}
       </SubmitButton>
     </>
   );
@@ -125,7 +127,7 @@ function BatchInput({
       <div className="flex gap-2 mt-4 md:mt-7">
         <input
           className={inputClass}
-          placeholder="Type a word or short phrase"
+          placeholder="Digite uma palavra ou frase curta"
           value={text}
           maxLength={maxLength}
           disabled={disabled || (toSend.length >= maxAnswers && pending === "")}
@@ -143,8 +145,8 @@ function BatchInput({
             type="button"
             onClick={add}
             disabled={!canAdd}
-            aria-label="Add answer"
-            className="shrink-0 rounded-[14px] px-4 border-[1.5px] border-lprimary/15 dark:border-white/10 text-lprimary dark:text-dprimary disabled:opacity-40 cursor-pointer disabled:cursor-default"
+            aria-label="Adicionar resposta"
+            className="shrink-0 rounded-[14px] px-4 border-[1.5px] border-theme-primary/15 dark:border-theme-border/10 text-theme-primary dark:text-theme-primary disabled:opacity-40 cursor-pointer disabled:cursor-default"
           >
             <LuPlus size={20} />
           </button>
@@ -163,8 +165,8 @@ function BatchInput({
       )}
       <span className={clsx("mt-3 text-[13.5px]", mutedText)}>
         {maxAnswers === 1
-          ? `One answer · up to ${maxLength} characters`
-          : `You can add up to ${maxAnswers} answers · ${Math.max(0, left)} left`}
+          ? `Uma resposta · até ${maxLength} caracteres`
+          : `Você pode adicionar até ${maxAnswers} respostas · ${Math.max(0, left)} restante(s)`}
       </span>
       <SubmitButton
         disabled={disabled || toSend.length === 0}

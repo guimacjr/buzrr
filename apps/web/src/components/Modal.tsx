@@ -43,8 +43,8 @@ export default function BasicModal(props: {
           className={
             props.btnStyle ||
             (props.isEdit
-              ? "p-1 text-lprimary mr-1 hover:bg-cardhover-light rounded-md dark:bg-dark-bg"
-              : "text-white font-sm bg-dark-bg dark:bg-dark-bg rounded-lg w-full mx-auto md:ml-5 p-2")
+              ? "p-1 text-theme-primary mr-1 hover:bg-theme-cardHover rounded-md dark:bg-theme-background"
+              : "text-theme-onPrimary font-sm bg-theme-background dark:bg-theme-background rounded-lg w-full mx-auto md:ml-5 p-2")
           }
         >
           {props.btnContent ?? props.btnTitle}
@@ -71,11 +71,11 @@ export default function BasicModal(props: {
             className={clsx(
               "w-full max-h-[92dvh]",
               props.wide ? "md:max-w-[1040px]" : "md:max-w-[640px]",
-              "overflow-y-auto flex flex-col rounded-t-[26px] md:rounded-[26px] border bg-white dark:bg-dark border-lprimary/15 dark:border-white/5 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)] text-dark dark:text-white",
+              "overflow-y-auto flex flex-col rounded-t-[26px] md:rounded-[26px] border bg-theme-surface dark:bg-theme-surface border-theme-primary/15 dark:border-theme-border/5 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)] text-theme-text dark:text-theme-text",
             )}
           >
             <div className="flex items-start gap-4 px-5 pt-[22px] md:px-7 md:pt-[26px]">
-              <span className="size-12 shrink-0 rounded-[14px] bg-linear-to-br from-[#9a6cf5] to-[#7c4ddb] dark:from-accent dark:to-accent-deep text-white flex items-center justify-center shadow-[0_10px_24px_-10px_#7c4ddb]">
+              <span className="size-12 shrink-0 rounded-[14px] bg-linear-to-br from-theme-accent to-theme-accentDeep dark:from-theme-accent dark:to-theme-accentDeep text-theme-onAccent flex items-center justify-center shadow-[0_10px_24px_-10px_var(--color-theme-accentDeep)]">
                 {props.isEdit ? <LuPencil size={22} /> : <LuPlus size={24} />}
               </span>
               <div className="min-w-0">
@@ -101,7 +101,7 @@ export default function BasicModal(props: {
                 aria-label="Close"
                 onClick={handleClose}
                 className={clsx(
-                  "ml-auto size-9 shrink-0 rounded-[10px] flex items-center justify-center hover:bg-lprimary/8 dark:hover:bg-white/5 hover:text-dark dark:hover:text-white transition-colors cursor-pointer",
+                  "ml-auto size-9 shrink-0 rounded-[10px] flex items-center justify-center hover:bg-theme-primary/8 dark:hover:bg-theme-surface/5 hover:text-theme-text dark:hover:text-theme-onPrimary transition-colors cursor-pointer",
                   mutedText,
                 )}
               >

@@ -17,10 +17,10 @@ import { useEffect, useState } from "react";
 function JoinRoomSkeleton() {
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <Skeleton className="my-4 h-10 w-20 rounded bg-white dark:bg-card-dark" />
+      <Skeleton className="my-4 h-10 w-20 rounded bg-theme-surface dark:bg-theme-card" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 h-[80dvh]">
-        <Skeleton className="h-full rounded-3xl bg-white dark:bg-dark" />
-        <Skeleton className="hidden md:block h-full rounded-3xl bg-white dark:bg-dark" />
+        <Skeleton className="h-full rounded-3xl bg-theme-surface dark:bg-theme-surface" />
+        <Skeleton className="hidden md:block h-full rounded-3xl bg-theme-surface dark:bg-theme-surface" />
       </div>
     </div>
   );
@@ -64,8 +64,8 @@ export default function JoinRoomClient({ playerId }: { playerId: string }) {
       notFound();
     }
     return (
-      <div className="p-8 text-center text-dark dark:text-white">
-        Could not load your player profile. Try again later.
+      <div className="p-8 text-center text-theme-text dark:text-theme-text">
+        Não foi possível carregar seu perfil. Tente novamente mais tarde.
       </div>
     );
   }

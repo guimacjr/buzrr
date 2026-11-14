@@ -10,9 +10,9 @@ export default function ConfirmationModal({
   setOpen,
   onClick,
   desc,
-  confirmLabel = "Submit",
+  confirmLabel = "Enviar",
   confirming = false,
-  confirmingLabel = "Saving…",
+  confirmingLabel = "Salvando…",
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -40,24 +40,27 @@ export default function ConfirmationModal({
     >
       <Box
         sx={style}
-        className="bg-light-bg dark:bg-card-dark rounded-xl w-4/5 sm:w-3/5 md:w-2/5 max-w-[600px]"
+        className="bg-theme-background dark:bg-theme-card rounded-xl w-4/5 sm:w-3/5 md:w-2/5 max-w-[600px]"
       >
         {!confirming && <ModalCloseButton onClose={() => setOpen(false)} />}
         <div className="p-6 flex flex-col justify-center items-center">
           <ClientImage
             props={{
               src: "/images/endGame.svg",
-              alt: "End game",
+              alt: "Encerrar partida",
               width: 140,
               height: 140,
             }}
           />
-          <p id={titleId} className="text-xl font-bold mb-2 dark:text-white">
-            Are you sure?
+          <p
+            id={titleId}
+            className="text-xl font-bold mb-2 dark:text-theme-text"
+          >
+            Tem certeza?
           </p>
           <p
             id={descId}
-            className="text-[#4E4E56] mb-4 dark:text-white text-center"
+            className="text-theme-muted mb-4 dark:text-theme-text text-center"
           >
             {desc}
           </p>
@@ -65,17 +68,17 @@ export default function ConfirmationModal({
             <button
               onClick={() => setOpen(false)}
               disabled={confirming}
-              className="text-white bg-red-light rounded-lg py-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              className="text-theme-onPrimary bg-theme-danger rounded-lg py-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Cancel
+              Cancelar
             </button>
             <button
               onClick={onClick}
               disabled={confirming}
-              className="flex items-center justify-center gap-2 bg-white text-red-light dark:text-red-dark dark:border-red-dark border-2 font-semibold py-2 border-red-light rounded-lg dark:bg-card-dark cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+              className="flex items-center justify-center gap-2 bg-theme-surface text-theme-danger dark:text-theme-danger dark:border-theme-danger border-2 font-semibold py-2 border-theme-danger rounded-lg dark:bg-theme-card cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {confirming && (
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-red-light dark:border-red-dark border-t-transparent dark:border-t-transparent" />
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-theme-danger dark:border-theme-danger border-t-transparent dark:border-t-transparent" />
               )}
               {confirming ? confirmingLabel : confirmLabel}
             </button>

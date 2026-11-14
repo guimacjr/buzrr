@@ -1,4 +1,7 @@
 import {
+  choiceQuestionTextSchema,
+  MAX_OPTIONS,
+  MIN_OPTIONS,
   RATING_LABEL_MAX,
   questionTypeSchema,
   ratingScaleSchema,
@@ -24,18 +27,18 @@ export const createAiQuizSchema = z.object({
 export const createPlayerSchema = z.object({
   username: z
     .string()
-    .min(1, "Name is required")
-    .max(30)
-    .regex(/^[a-zA-Z0-9_]*$/, "Only letters, numbers, and underscore"),
+    .min(1, "Informe seu nome")
+    .max(30, "Use no máximo 30 caracteres")
+    .regex(/^[a-zA-Z0-9_]*$/, "Use apenas letras, números e sublinhados"),
   profile: z.string().min(1),
 });
 
 export const updatePlayerNameSchema = z.object({
   username: z
     .string()
-    .min(1)
-    .max(30)
-    .regex(/^[a-zA-Z0-9_]*$/),
+    .min(1, "Informe seu nome")
+    .max(30, "Use no máximo 30 caracteres")
+    .regex(/^[a-zA-Z0-9_]*$/, "Use apenas letras, números e sublinhados"),
 });
 
 export const hostQuizSchema = z.object({
@@ -55,7 +58,9 @@ const authoredOption = z.object({
 export const addQuestionSchema = z
   .object({
     type: questionTypeSchema,
-    title: z.string().trim().min(1, "Write the question"),
+    showRanking: z.boolean(),
+    fullScreen: z.boolean(),
+    title: z.string().trim(),
     time: z.coerce.number().min(1).optional(),
     options: z.array(authoredOption),
     mcqMulti: z.boolean(),
@@ -70,7 +75,34 @@ export const addQuestionSchema = z
     multipleSubmissions: z.boolean(),
   })
   .superRefine((v, ctx) => {
+    if (v.type === "poll" || v.type === "multiple_choice") {
+      const parsed = choiceQuestionTextSchema.safeParse(v);
+      if (!parsed.success)
+        parsed.error.issues.forEach((issue) =>
+          ctx.addIssue({
+            code: "custom",
+            path: issue.path,
+            message: issue.message,
+          }),
+        );
+    }
+    if (v.type !== "media_slide" && !v.title)
+      ctx.addIssue({
+        code: "custom",
+        path: ["title"],
+        message: "Write the question",
+      });
     if (!["multiple_choice", "true_false", "poll"].includes(v.type)) return;
+    if (
+      v.type !== "true_false" &&
+      (v.options.length < MIN_OPTIONS || v.options.length > MAX_OPTIONS)
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["options"],
+        message: `Use between ${MIN_OPTIONS} and ${MAX_OPTIONS} options`,
+      });
+    }
     v.options.forEach((o, i) => {
       if (o.title.trim() === "") {
         ctx.addIssue({
@@ -109,5 +141,5 @@ export const createSpaceSchema = z.object({
 
 export const generateQuestionsSchema = z.object({
   prompt: z.string().min(3, "Describe what you want generated").max(2000),
-  count: z.coerce.number().int().min(1).max(30),
+  count: z.coerce.number().int().min(1).max(30, "Use no máximo 30 caracteres"),
 });

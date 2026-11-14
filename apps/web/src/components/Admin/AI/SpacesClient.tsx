@@ -20,7 +20,7 @@ import { getApiErrorMessage } from "@/lib/api/errors";
 import { useDeleteSpaceMutation, useSpacesQuery } from "@/lib/modules/ai/hooks";
 
 const CARD =
-  "border border-[#c2b4fe] dark:border-transparent w-full bg-card-light hover:bg-cardhover-light dark:bg-card-dark hover:dark:bg-cardhover-dark transition-all duration-300 ease-in-out text-dark dark:text-white rounded-lg";
+  "border border-[#c2b4fe] dark:border-transparent w-full bg-theme-card hover:bg-theme-cardHover dark:bg-theme-card hover:dark:bg-theme-cardHover transition-all duration-300 ease-in-out text-theme-text dark:text-theme-text rounded-lg";
 
 export default function SpacesClient() {
   const [createOpen, setCreateOpen] = useState(false);
@@ -35,27 +35,27 @@ export default function SpacesClient() {
           <span className="md:hidden inline">
             <NavbarToggle />
           </span>
-          <h1 className="text-2xl font-black text-dark dark:text-white">
+          <h1 className="text-2xl font-black text-theme-text dark:text-theme-text">
             AI Spaces
           </h1>
         </div>
       </div>
-      <p className="mt-1 text-sm text-off-dark dark:text-off-white">
+      <p className="mt-1 text-sm text-theme-muted dark:text-theme-muted">
         Upload your own material, then generate quiz questions grounded in it.
       </p>
 
-      <div className="mt-4 bg-white dark:bg-dark rounded-2xl p-4 md:p-6 min-h-[60vh]">
+      <div className="mt-4 bg-theme-surface dark:bg-theme-surface rounded-2xl p-4 md:p-6 min-h-[60vh]">
         {isPending ? (
           <div className="grid grid-cols-2 gap-3 md:flex md:flex-wrap">
             {[0, 1, 2].map((i) => (
               <Skeleton
                 key={i}
-                className="h-40 w-full md:w-52 rounded-lg bg-card-light dark:bg-card-dark"
+                className="h-40 w-full md:w-52 rounded-lg bg-theme-card dark:bg-theme-card"
               />
             ))}
           </div>
         ) : isError || !spaces ? (
-          <p className="text-dark dark:text-white text-sm">
+          <p className="text-theme-text dark:text-theme-text text-sm">
             Could not load your AI spaces. Check your connection and that the
             Buzrr-AI service is running.
           </p>
@@ -69,9 +69,12 @@ export default function SpacesClient() {
                 "flex flex-col justify-center items-center gap-2 p-3 h-40 md:w-52 md:h-44 cursor-pointer",
               )}
             >
-              <LuPlus size={26} className="text-lprimary dark:text-dprimary" />
+              <LuPlus
+                size={26}
+                className="text-theme-primary dark:text-theme-primary"
+              />
               <span className="text-sm font-bold">New knowledge space</span>
-              <span className="text-xs text-off-dark dark:text-off-white text-center">
+              <span className="text-xs text-theme-muted dark:text-theme-muted text-center">
                 Start from your documents
               </span>
             </button>
@@ -87,16 +90,16 @@ export default function SpacesClient() {
                 >
                   <LuSparkles
                     size={20}
-                    className="text-lprimary dark:text-dprimary"
+                    className="text-theme-primary dark:text-theme-primary"
                     aria-hidden
                   />
                   <span className="mt-2 text-sm font-bold line-clamp-2">
                     {space.name}
                   </span>
-                  <span className="mt-1 text-xs text-off-dark dark:text-off-white line-clamp-2">
+                  <span className="mt-1 text-xs text-theme-muted dark:text-theme-muted line-clamp-2">
                     {space.description || "No description"}
                   </span>
-                  <span className="mt-auto flex items-center gap-1.5 text-xs text-off-dark dark:text-off-white">
+                  <span className="mt-auto flex items-center gap-1.5 text-xs text-theme-muted dark:text-theme-muted">
                     <LuFileText size={13} aria-hidden />
                     {space.documentCount} doc
                     {space.documentCount === 1 ? "" : "s"}
@@ -111,7 +114,7 @@ export default function SpacesClient() {
                   type="button"
                   aria-label={`Delete ${space.name}`}
                   onClick={() => setPendingDelete(space.id)}
-                  className="absolute top-2 right-2 p-1 rounded-md text-off-dark dark:text-off-white hover:bg-white dark:hover:bg-dark"
+                  className="absolute top-2 right-2 p-1 rounded-md text-theme-muted dark:text-theme-muted hover:bg-theme-surface dark:hover:bg-theme-surface"
                 >
                   <LuEllipsisVertical size={16} />
                 </button>

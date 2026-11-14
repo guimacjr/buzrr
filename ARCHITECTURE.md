@@ -80,7 +80,8 @@ tests.
 The engine also doesn't know what a question _is_. Each **question type** is a
 pure handler (check the config, check and score an answer, strip the answer
 key before sending, summarise the reveal) plus a web renderer; the engine only
-calls the handler. Multiple choice is the one type today.
+calls the handler. Seven types are available, including a media slide that
+waits for the host and skips the answer/reveal steps.
 
 Because the server measures time, answers can't be spoofed by a fast client:
 score comes from the server's own clock (for multiple choice, 1000 points at
@@ -135,6 +136,8 @@ instead of replaying missed events.
 | **Holds**    | Everything live: phase, questions, per-question answers, scores, roster, owner lock, deadlines | The lobby record (`GameSession`) and the immutable `GameResult` + entries |
 | **Lifetime** | Deleted when the game ends                                                                     | Permanent (the room row is torn down; the result is kept)                 |
 
+Lobby registration definitions and participant details also live in Postgres;
+classic results snapshot those details and individual responses for host reports.
 Nothing per-answer or mid-game is ever written to Postgres — a finished game is
 persisted once, in a transaction that also applies the duel ELO update. Redis is
 therefore a hard dependency: the server does not boot without it.
@@ -164,3 +167,8 @@ This file is the orientation layer. The full reference lives in
 
 Working on this codebase with an AI agent? [AGENTS.md](AGENTS.md) is the entry
 point, and [docs/CONTEXT.md](docs/CONTEXT.md) describes the current state.
+
+Classic hosts can revisit earlier items through server-owned `host-back`: scored
+questions show stored results; unscored items reopen responses. Redis navigation
+revisions make backwards snapshots distinguishable from stale events, and atomic
+phase/deadline commits protect concurrent navigation. See [realtime.md](docs/architecture/realtime.md#classic-backwards-navigation).

@@ -21,12 +21,12 @@ export default function CategoryChips({
   const { data: categories, isPending } = useCategoriesQuery();
   if (isPending) {
     return (
-      <p className="text-xs text-off-dark dark:text-muted-dark">Loading…</p>
+      <p className="text-xs text-theme-muted dark:text-theme-muted">Loading…</p>
     );
   }
   if (!categories?.length) {
     return (
-      <p className="text-xs text-off-dark dark:text-muted-dark">
+      <p className="text-xs text-theme-muted dark:text-theme-muted">
         No categories yet.
       </p>
     );
@@ -51,8 +51,8 @@ export default function CategoryChips({
             className={clsx(
               "inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold transition-colors disabled:cursor-default disabled:opacity-40",
               on
-                ? "border-lprimary bg-card-light text-lprimary dark:border-dprimary dark:bg-card-dark dark:text-dprimary"
-                : "border-lprimary/15 text-off-dark hover:border-lprimary/40 dark:border-white/10 dark:text-muted-dark",
+                ? "border-theme-primary bg-theme-card text-theme-primary dark:border-theme-primary dark:bg-theme-card dark:text-theme-primary"
+                : "border-theme-primary/15 text-theme-muted hover:border-theme-primary/40 dark:border-theme-border/10 dark:text-theme-muted",
             )}
           >
             <span

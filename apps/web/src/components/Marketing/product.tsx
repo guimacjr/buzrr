@@ -29,17 +29,17 @@ export function FeatureGrid({ ids }: { ids: FeatureId[] }) {
         return (
           <li
             key={id}
-            className="rounded-xl border border-card-light dark:border-off-dark bg-white dark:bg-dark p-5"
+            className="rounded-xl border border-theme-card dark:border-theme-border bg-theme-surface dark:bg-theme-surface p-5"
           >
             <feature.icon
               aria-hidden
               size={22}
-              className="text-lprimary dark:text-dprimary"
+              className="text-theme-primary dark:text-theme-primary"
             />
-            <h3 className="mt-3 font-bold text-dark dark:text-white">
+            <h3 className="mt-3 font-bold text-theme-text dark:text-theme-text">
               {feature.title}
             </h3>
-            <p className="mt-2 text-sm text-dark/70 dark:text-gray leading-relaxed">
+            <p className="mt-2 text-sm text-theme-text/70 dark:text-theme-muted leading-relaxed">
               {feature.text}
             </p>
           </li>
@@ -67,7 +67,7 @@ export function WhatIsBuzrr() {
 export function ProductShots() {
   return (
     <div className="grid gap-6 md:grid-cols-2 items-start">
-      <figure className="rounded-2xl border border-card-light dark:border-off-dark bg-white dark:bg-dark p-3">
+      <figure className="rounded-2xl border border-theme-card dark:border-theme-border bg-theme-surface dark:bg-theme-surface p-3">
         <Image
           src="/images/screenshots/buzrr-quiz-editor.jpg"
           alt="Buzrr quiz editor with the quiz title, a Host quiz button, past sessions and a list of multiple-choice questions"
@@ -76,12 +76,12 @@ export function ProductShots() {
           sizes="(min-width: 768px) 480px, 100vw"
           className="w-full h-auto rounded-xl"
         />
-        <figcaption className="mt-3 px-1 text-sm text-dark/70 dark:text-gray">
+        <figcaption className="mt-3 px-1 text-sm text-theme-text/70 dark:text-theme-muted">
           The quiz editor: questions on the right, hosting and past sessions on
           the left.
         </figcaption>
       </figure>
-      <figure className="rounded-2xl border border-card-light dark:border-off-dark bg-white dark:bg-dark p-3">
+      <figure className="rounded-2xl border border-theme-card dark:border-theme-border bg-theme-surface dark:bg-theme-surface p-3">
         <Image
           src="/images/landing-page.svg"
           alt="Illustration of the Buzrr host dashboard"
@@ -96,7 +96,7 @@ export function ProductShots() {
           height={270}
           className="w-full h-auto hidden dark:block"
         />
-        <figcaption className="mt-3 px-1 text-sm text-dark/70 dark:text-gray">
+        <figcaption className="mt-3 px-1 text-sm text-theme-text/70 dark:text-theme-muted">
           Everything runs in the browser, for hosts and players alike.
         </figcaption>
       </figure>
@@ -108,27 +108,27 @@ const STATUS_ICON = {
   yes: {
     icon: LuCheck,
     label: "Yes",
-    className: "text-lprimary dark:text-dprimary",
+    className: "text-theme-primary dark:text-theme-primary",
   },
   partial: {
     icon: LuMinus,
     label: "Partly",
-    className: "text-dark/60 dark:text-gray",
+    className: "text-theme-text/60 dark:text-theme-muted",
   },
   no: {
     icon: LuX,
     label: "No",
-    className: "text-red-light dark:text-red-dark",
+    className: "text-theme-danger dark:text-theme-danger",
   },
   unverified: {
     icon: LuCircleHelp,
     label: "Not verified",
-    className: "text-dark/50 dark:text-gray",
+    className: "text-theme-text/50 dark:text-theme-muted",
   },
   info: {
     icon: LuInfo,
     label: "Note",
-    className: "text-dark/60 dark:text-gray",
+    className: "text-theme-text/60 dark:text-theme-muted",
   },
 } as const;
 
@@ -151,7 +151,7 @@ function CellView({ cell, sourceHref }: { cell: Cell; sourceHref?: string }) {
               href={sourceHref}
               target="_blank"
               rel="noreferrer nofollow"
-              className="text-xs underline underline-offset-2 text-dark/60 dark:text-gray hover:text-lprimary dark:hover:text-dprimary"
+              className="text-xs underline underline-offset-2 text-theme-text/60 dark:text-theme-muted hover:text-theme-primary dark:hover:text-theme-primary"
             >
               source
             </a>
@@ -177,19 +177,19 @@ export function ComparisonTable({
   const competitor = COMPETITORS[slug];
   return (
     <div>
-      <div className="overflow-x-auto rounded-2xl border border-card-light dark:border-off-dark bg-white dark:bg-dark">
-        <table className="w-full min-w-[640px] text-sm text-left text-dark dark:text-off-white">
+      <div className="overflow-x-auto rounded-2xl border border-theme-card dark:border-theme-border bg-theme-surface dark:bg-theme-surface">
+        <table className="w-full min-w-[640px] text-sm text-left text-theme-text dark:text-theme-muted">
           <caption className="sr-only">
             Buzrr compared with {competitor.displayName}
           </caption>
           <thead>
-            <tr className="border-b border-card-light dark:border-off-dark text-dark dark:text-white">
+            <tr className="border-b border-theme-card dark:border-theme-border text-theme-text dark:text-theme-text">
               <th scope="col" className="p-4 font-bold w-1/4">
                 Feature
               </th>
               <th
                 scope="col"
-                className="p-4 font-bold text-lprimary dark:text-dprimary"
+                className="p-4 font-bold text-theme-primary dark:text-theme-primary"
               >
                 Buzrr
               </th>
@@ -207,11 +207,11 @@ export function ComparisonTable({
               return (
                 <tr
                   key={row}
-                  className="border-b last:border-b-0 border-card-light dark:border-off-dark align-top"
+                  className="border-b last:border-b-0 border-theme-card dark:border-theme-border align-top"
                 >
                   <th
                     scope="row"
-                    className="p-4 font-semibold text-dark dark:text-white"
+                    className="p-4 font-semibold text-theme-text dark:text-theme-text"
                   >
                     {ROW_LABELS[row]}
                   </th>
@@ -234,7 +234,7 @@ export function ComparisonTable({
           </tbody>
         </table>
       </div>
-      <p className="mt-3 text-xs text-dark/60 dark:text-gray max-w-3xl">
+      <p className="mt-3 text-xs text-theme-text/60 dark:text-theme-muted max-w-3xl">
         Buzrr facts come from the Buzrr source code. {competitor.displayName}{" "}
         facts come from the linked public pages, checked {FACTS_CHECKED}.
         &ldquo;Not verified&rdquo; means we couldn&rsquo;t confirm it from a
@@ -264,7 +264,7 @@ export function SourceList({ slug }: { slug: CompetitorSlug }) {
             href={source.href}
             target="_blank"
             rel="noreferrer nofollow"
-            className="underline underline-offset-2 text-dark/70 dark:text-gray hover:text-lprimary dark:hover:text-dprimary"
+            className="underline underline-offset-2 text-theme-text/70 dark:text-theme-muted hover:text-theme-primary dark:hover:text-theme-primary"
           >
             {source.label}
           </a>
@@ -324,7 +324,7 @@ export function InlineLink({
   return (
     <Link
       href={href}
-      className="font-semibold text-lprimary dark:text-dprimary underline underline-offset-4"
+      className="font-semibold text-theme-primary dark:text-theme-primary underline underline-offset-4"
     >
       {children}
     </Link>
@@ -339,7 +339,7 @@ export function QuizizzRebrand() {
   return (
     <Section title={QUIZIZZ_REBRAND.heading}>
       <Prose paragraphs={QUIZIZZ_REBRAND.paragraphs} />
-      <p className="mt-4 max-w-3xl text-dark/80 dark:text-off-white">
+      <p className="mt-4 max-w-3xl text-theme-text/80 dark:text-theme-muted">
         Searching under the new name? See the{" "}
         <InlineLink href={alternativePath("wayground")}>
           open-source Wayground alternative

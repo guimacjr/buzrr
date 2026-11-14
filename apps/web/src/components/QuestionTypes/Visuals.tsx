@@ -1,6 +1,8 @@
 "use client";
 
 import clsx from "clsx";
+import { useLayoutEffect, useRef } from "react";
+import styles from "./PollBars.module.css";
 import Image from "next/image";
 import { DEFAULT_AVATAR } from "@/constants";
 import {
@@ -22,7 +24,7 @@ const pct = (n: number, of: number) =>
 export function NoResponsesYet() {
   return (
     <div className="flex-1 flex items-center justify-center py-10">
-      <WaitingDots>Waiting for the first responses</WaitingDots>
+      <WaitingDots>Aguardando as primeiras respostas</WaitingDots>
     </div>
   );
 }
@@ -38,22 +40,88 @@ export function PollBars({
   responses: number;
 }) {
   const entered = useEntered();
+  const barsRef = useRef<HTMLDivElement>(null);
+  const contentKey = JSON.stringify(options);
+  useLayoutEffect(() => {
+    const bars = barsRef.current;
+    const panel = bars?.closest<HTMLElement>("[data-host-poll-panel]");
+    if (!bars || !panel) return;
+    let frame = 0;
+    let disposed = false;
+    const fit = () => {
+      // Always try the normal size first, including after enlarging the window.
+      bars.style.removeProperty("--poll-font-size");
+      const normal = parseFloat(getComputedStyle(bars).fontSize);
+      const overflows = () =>
+        panel.scrollHeight > panel.clientHeight + 1 ||
+        panel.scrollWidth > panel.clientWidth + 1;
+      if (!overflows()) return;
+      let low = 1;
+      let high = normal;
+      // Find the largest size that fits the actual panel (title/footer included).
+      for (let step = 0; step < 9; step++) {
+        const size = (low + high) / 2;
+        bars.style.setProperty("--poll-font-size", `${size}px`);
+        if (overflows()) high = size;
+        else low = size;
+      }
+      bars.style.setProperty("--poll-font-size", `${low}px`);
+    };
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(fit);
+    };
+    fit();
+    const observer = new ResizeObserver(schedule);
+    observer.observe(panel);
+    for (const child of panel.children) observer.observe(child);
+    window.addEventListener("resize", schedule);
+    window.visualViewport?.addEventListener("resize", schedule);
+    void document.fonts.ready.then(() => {
+      if (!disposed) schedule();
+    });
+    return () => {
+      disposed = true;
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("resize", schedule);
+      window.visualViewport?.removeEventListener("resize", schedule);
+      bars.style.removeProperty("--poll-font-size");
+    };
+  }, [contentKey]);
   const max = Math.max(1, ...counts);
   return (
-    <div className="flex-1 flex flex-col justify-center gap-2.5 md:gap-3.5 mt-5 md:mt-7">
+    <div
+      ref={barsRef}
+      className={clsx(
+        styles.bars,
+        "flex-1 flex flex-col justify-center gap-2.5 md:gap-3.5 mt-5 md:mt-7",
+      )}
+    >
       {options.map((option, i) => {
         const count = counts[i] ?? 0;
         const share = pct(count, responses);
         return (
           <div
             key={option.id}
-            className="grid grid-cols-[34px_minmax(0,1fr)_46px] md:grid-cols-[46px_minmax(0,1fr)_70px] items-center gap-2.5 md:gap-4"
+            className={clsx(
+              styles.row,
+              "grid grid-cols-[34px_minmax(0,1fr)_46px] md:grid-cols-[46px_minmax(0,1fr)_70px] items-center gap-2.5 md:gap-4",
+            )}
           >
             <OptionKey
               index={i}
-              className="size-[34px] md:size-[46px] text-sm md:text-base rounded-[9px] md:rounded-xl"
+              className={clsx(
+                styles.key,
+                "size-[34px] md:size-[46px] text-sm md:text-base rounded-[9px] md:rounded-xl",
+              )}
             />
-            <div className="relative h-[46px] md:h-[58px] rounded-[14px] overflow-hidden flex items-center bg-lprimary/8 dark:bg-white/5">
+            <div
+              className={clsx(
+                styles.bar,
+                "relative h-[46px] md:h-[58px] rounded-[14px] overflow-hidden flex items-center bg-theme-primary/8 dark:bg-theme-surface/5",
+              )}
+            >
               <span
                 className="absolute inset-y-0 left-0 rounded-[14px] transition-[width] duration-700 ease-out motion-reduce:transition-none"
                 style={{
@@ -62,11 +130,16 @@ export function PollBars({
                   opacity: count === max && count > 0 ? 0.34 : 0.2,
                 }}
               />
-              <div className="relative w-full flex items-center justify-between gap-3 px-3 md:px-5 text-[15px] md:text-[19px] font-bold min-w-0">
+              <div
+                className={clsx(
+                  styles.copy,
+                  "relative w-full flex items-center justify-between gap-3 px-3 md:px-5 text-[15px] md:text-[19px] font-bold min-w-0",
+                )}
+              >
                 <Tooltip
                   content={option.title}
                   onlyWhenTruncated
-                  className="min-w-0 truncate"
+                  className={clsx(styles.label, "min-w-0 truncate")}
                 >
                   {option.title}
                 </Tooltip>
@@ -119,7 +192,7 @@ export function WordCloudView({
         return (
           <Tooltip
             key={word}
-            content={`${count} ${count === 1 ? "answer" : "answers"}`}
+            content={`${count} ${count === 1 ? "resposta" : "respostas"}`}
           >
             <span
               className="font-extrabold tracking-[-0.02em] break-all animate-pop-in"
@@ -176,17 +249,22 @@ export function RatingView({
           <AnimatedNumber
             value={average}
             duration={500}
-            format={(v) => v.toFixed(1)}
+            format={(v) =>
+              v.toLocaleString("pt-BR", {
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+              })
+            }
           />
         </b>
-        <div className="flex gap-1 text-[#e0a020]">
+        <div className="flex gap-1 text-theme-warning">
           {[1, 2, 3, 4, 5].map((k) => (
             <Star key={k} filled={k <= stars} size={22} />
           ))}
         </div>
         <span className={clsx("text-sm", mutedText)}>
-          average of {responses} {responses === 1 ? "rating" : "ratings"}
-          {scaleMax === 10 ? " · out of 10" : ""}
+          média de {responses} {responses === 1 ? "avaliação" : "avaliações"}
+          {scaleMax === 10 ? " · de 10" : ""}
         </span>
       </div>
       <div className="flex items-end gap-2.5 md:gap-4 h-40 md:h-60">
@@ -199,7 +277,7 @@ export function RatingView({
               {count}
             </span>
             <i
-              className="block w-full rounded-[12px_12px_4px_4px] bg-lprimary dark:bg-dprimary transition-[height] duration-700 ease-out motion-reduce:transition-none"
+              className="block w-full rounded-[12px_12px_4px_4px] bg-theme-primary dark:bg-theme-primary transition-[height] duration-700 ease-out motion-reduce:transition-none"
               style={{
                 height: `${entered ? Math.max(2, (count / max) * 78) : 0}%`,
                 opacity: 0.45 + (i / Math.max(1, scaleMax - 1)) * 0.55,
@@ -241,6 +319,7 @@ export function TextWall({
           >
             {entry.name ? (
               <Image
+                unoptimized
                 src={entry.profilePic || DEFAULT_AVATAR}
                 width={20}
                 height={20}
@@ -248,9 +327,9 @@ export function TextWall({
                 className="size-5 rounded-full object-cover"
               />
             ) : (
-              <span className="size-5 rounded-full bg-lprimary/8 dark:bg-white/10" />
+              <span className="size-5 rounded-full bg-theme-primary/8 dark:bg-theme-surface/10" />
             )}
-            {entry.name ?? "Anonymous"}
+            {entry.name ?? "Anônimo"}
           </small>
         </div>
       ))}

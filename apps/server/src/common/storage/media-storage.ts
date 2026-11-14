@@ -25,6 +25,13 @@ export interface UploadMeta {
 export abstract class MediaStorage {
   abstract readonly driver: StorageDriver;
 
+  /** Read only objects issued by this driver, never arbitrary user-supplied URLs. */
+  async read(_url: string, _maxBytes: number): Promise<Buffer> {
+    throw new UnsupportedMediaError(
+      "Esta mídia não pertence ao armazenamento configurado. Envie-a novamente antes de exportar.",
+    );
+  }
+
   /** Stores an upload and returns its public URL. */
   abstract upload(buffer: Buffer, meta?: UploadMeta): Promise<StoredMedia>;
 

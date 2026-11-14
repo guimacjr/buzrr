@@ -79,18 +79,18 @@ export default function BulkCategoriesModal({
     <Modal open={open} onClose={close} aria-labelledby="bulk-categories-title">
       <Box
         sx={style}
-        className="bg-light-bg dark:bg-card-dark w-[92vw] max-w-[520px] max-h-[90dvh] overflow-y-auto"
+        className="bg-theme-background dark:bg-theme-card w-[92vw] max-w-[520px] max-h-[90dvh] overflow-y-auto"
       >
         {!mutation.isPending && <ModalCloseButton onClose={close} />}
         <div className="flex flex-col gap-4 p-6">
           <div>
             <h2
               id="bulk-categories-title"
-              className="text-lg font-bold text-dark dark:text-white"
+              className="text-lg font-bold text-theme-text dark:text-theme-text"
             >
               Categories for {ids.length} question{ids.length === 1 ? "" : "s"}
             </h2>
-            <p className="mt-1 text-sm text-off-dark dark:text-off-white">
+            <p className="mt-1 text-sm text-theme-muted dark:text-theme-muted">
               {hint}
             </p>
           </div>

@@ -79,24 +79,26 @@ export default function AdminsListClient() {
         onChange={(e) => setSearchInput(e.target.value)}
         containerClassName="max-w-md"
       />
-      <p className="mt-1 text-xs text-off-dark dark:text-off-white">
+      <p className="mt-1 text-xs text-theme-muted dark:text-theme-muted">
         {search
           ? "Showing search results across all users."
           : "Showing current admins. Search above to find someone to promote."}
       </p>
 
       {query.isPending ? (
-        <p className="mt-4 text-dark dark:text-white">Loading…</p>
+        <p className="mt-4 text-theme-text dark:text-theme-text">Loading…</p>
       ) : query.isError ? (
-        <p className="mt-4 text-red-light dark:text-red-dark">
+        <p className="mt-4 text-theme-danger dark:text-theme-danger">
           {getApiErrorMessage(query.error)}
         </p>
       ) : items.length === 0 ? (
-        <p className="mt-4 text-dark dark:text-white">No users found.</p>
+        <p className="mt-4 text-theme-text dark:text-theme-text">
+          No users found.
+        </p>
       ) : (
         <div
           ref={parentRef}
-          className="mt-4 h-[65dvh] overflow-y-auto rounded-xl border border-gray"
+          className="mt-4 h-[65dvh] overflow-y-auto rounded-xl border border-theme-border"
         >
           <div
             style={{
@@ -118,15 +120,14 @@ export default function AdminsListClient() {
                     height: `${virtualRow.size}px`,
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
-                  className="flex items-center justify-between gap-4 border-b border-gray px-4"
+                  className="flex items-center justify-between gap-4 border-b border-theme-border px-4"
                 >
                   <AdminRow
                     item={item}
                     pending={
                       (promote.isPending &&
                         promote.variables?.userId === item.id) ||
-                      (demote.isPending &&
-                        demote.variables?.userId === item.id)
+                      (demote.isPending && demote.variables?.userId === item.id)
                     }
                     onPromote={() => handlePromote(item.id)}
                     onDemote={() => handleDemote(item.id)}
@@ -163,14 +164,14 @@ function AdminRow({
           className="rounded-full"
         />
         <div>
-          <p className="font-bold text-dark dark:text-white">
+          <p className="font-bold text-theme-text dark:text-theme-text">
             {item.name ?? "Unnamed"}
           </p>
-          <p className="text-sm text-off-dark dark:text-off-white">
+          <p className="text-sm text-theme-muted dark:text-theme-muted">
             {item.email}
           </p>
         </div>
-        <span className="ml-2 rounded-full bg-lprimary/20 dark:bg-dprimary/20 px-2 py-0.5 text-xs font-bold capitalize text-lprimary dark:text-dprimary">
+        <span className="ml-2 rounded-full bg-theme-primary/20 dark:bg-theme-primary/20 px-2 py-0.5 text-xs font-bold capitalize text-theme-primary dark:text-theme-primary">
           {item.role}
         </span>
       </div>
@@ -180,7 +181,12 @@ function AdminRow({
         </Button>
       )}
       {item.role === "admin" && (
-        <Button size="sm" variant="outline" disabled={pending} onClick={onDemote}>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={pending}
+          onClick={onDemote}
+        >
           Demote to user
         </Button>
       )}

@@ -15,6 +15,7 @@ import {
   type QuestionDefinition,
   type QuestionTypeHandler,
 } from "./question-type";
+import { mediaSlideHandler } from "./types/media-slide";
 import { multipleChoiceHandler } from "./types/multiple-choice";
 import { openTextHandler } from "./types/open-text";
 import { pollHandler } from "./types/poll";
@@ -27,6 +28,7 @@ import { wordCloudHandler } from "./types/word-cloud";
  * to the contract without registering its handler here fails to compile.
  */
 const HANDLERS: { [K in QuestionType]: QuestionTypeHandler<K> } = {
+  media_slide: mediaSlideHandler,
   multiple_choice: multipleChoiceHandler,
   true_false: trueFalseHandler,
   poll: pollHandler,
@@ -72,7 +74,12 @@ export function scoreAnswer(
 }
 
 export function toPublicQuestion(question: LiveQuestion): PublicQuestion {
-  return handlerFor(question.type).toPublic(question);
+  return {
+    ...handlerFor(question.type).toPublic(question),
+    ...(question.config.showRanking === undefined
+      ? {}
+      : { showRanking: question.config.showRanking }),
+  };
 }
 
 /** `entries` oldest first — types that list answers show the newest first. */
@@ -154,6 +161,11 @@ type LiveOption = LiveQuestion["options"][number];
  */
 export function toLiveQuestion(row: QuestionRecord): LiveQuestion | null {
   if (!isQuestionType(row.type)) return null;
+  if (
+    row.type === "media_slide" &&
+    (!row.media || !["image", "video"].includes(row.mediaType ?? ""))
+  )
+    return null;
   try {
     const definition = handlerFor(row.type).validateDefinition({
       options: row.options,

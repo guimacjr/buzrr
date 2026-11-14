@@ -64,7 +64,7 @@ const CreateBuzrrForm = (params: {
         type="button"
         onClick={() => router.push("/admin")}
         className={clsx(
-          "self-start flex items-center gap-2 text-[14.5px] font-semibold hover:text-dark dark:hover:text-white transition-colors cursor-pointer",
+          "self-start flex items-center gap-2 text-[14.5px] font-semibold hover:text-theme-text dark:hover:text-theme-onPrimary transition-colors cursor-pointer",
           mutedText,
         )}
       >
@@ -109,7 +109,7 @@ const CreateBuzrrForm = (params: {
               }}
             />
             {fieldState.error?.message && (
-              <span className="text-sm text-red-light dark:text-red-dark">
+              <span className="text-sm text-theme-danger dark:text-theme-danger">
                 {fieldState.error.message}
               </span>
             )}

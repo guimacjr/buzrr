@@ -18,8 +18,8 @@ export default function PlayPageClient({ playerId }: { playerId: string }) {
   if (isPending) {
     return (
       <div className="p-4 md:p-8">
-        <Skeleton className="mb-6 h-20 w-20 rounded bg-white dark:bg-card-dark" />
-        <Skeleton className="h-[75vh] w-full rounded-2xl bg-white dark:bg-card-dark" />
+        <Skeleton className="mb-6 h-20 w-20 rounded bg-theme-surface dark:bg-theme-card" />
+        <Skeleton className="h-[75vh] w-full rounded-2xl bg-theme-surface dark:bg-theme-card" />
       </div>
     );
   }
@@ -27,11 +27,11 @@ export default function PlayPageClient({ playerId }: { playerId: string }) {
   if (!data) {
     return (
       <div
-        className="p-8 text-center text-dark dark:text-white"
+        className="p-8 text-center text-theme-text dark:text-theme-text"
         role="alert"
         aria-atomic="true"
       >
-        Could not load game data. Please try again.
+        Não foi possível carregar a partida. Tente novamente.
       </div>
     );
   }
@@ -50,7 +50,7 @@ export default function PlayPageClient({ playerId }: { playerId: string }) {
           props={{
             src: "/images/logo.svg",
             darksrc: "/images/logo-dark.svg",
-            alt: "Buzrr Logo",
+            alt: "Logo do Buzrr",
             width: 80,
             height: 80,
           }}

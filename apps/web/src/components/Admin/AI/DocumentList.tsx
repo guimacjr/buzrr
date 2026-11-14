@@ -39,7 +39,7 @@ export default function DocumentList({
         {[0, 1, 2].map((i) => (
           <Skeleton
             key={i}
-            className="h-14 w-full rounded-lg bg-card-light dark:bg-dark"
+            className="h-14 w-full rounded-lg bg-theme-card dark:bg-theme-surface"
           />
         ))}
       </div>
@@ -61,13 +61,13 @@ export default function DocumentList({
         {documents.map((document) => (
           <li
             key={document.id}
-            className="flex items-center gap-3 rounded-lg bg-card-light dark:bg-dark px-3 py-2"
+            className="flex items-center gap-3 rounded-lg bg-theme-card dark:bg-theme-surface px-3 py-2"
           >
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold text-dark dark:text-white">
+              <p className="truncate text-sm font-bold text-theme-text dark:text-theme-text">
                 {document.filename}
               </p>
-              <p className="text-2xs text-off-dark dark:text-off-white">
+              <p className="text-2xs text-theme-muted dark:text-theme-muted">
                 {humanSize(document.sizeBytes)}
                 {document.pageCount ? ` · ${document.pageCount} pages` : ""}
                 {document.status === "ready"
@@ -75,7 +75,7 @@ export default function DocumentList({
                   : ""}
               </p>
               {document.status === "failed" && document.error && (
-                <p className="mt-1 text-2xs text-red-light dark:text-red-dark">
+                <p className="mt-1 text-2xs text-theme-danger dark:text-theme-danger">
                   {document.error}
                 </p>
               )}
@@ -93,7 +93,7 @@ export default function DocumentList({
                     onError: (error) => toast.error(getApiErrorMessage(error)),
                   })
                 }
-                className="p-1.5 rounded-md text-off-dark dark:text-off-white hover:bg-white dark:hover:bg-card-dark disabled:opacity-50"
+                className="p-1.5 rounded-md text-theme-muted dark:text-theme-muted hover:bg-theme-surface dark:hover:bg-theme-card disabled:opacity-50"
               >
                 <LuRefreshCw size={15} />
               </button>
@@ -104,7 +104,7 @@ export default function DocumentList({
               aria-label={`Delete ${document.filename}`}
               disabled={remove.isPending}
               onClick={() => setPendingDelete(document)}
-              className="p-1.5 rounded-md text-off-dark dark:text-off-white hover:text-red-light dark:hover:text-red-dark disabled:opacity-50"
+              className="p-1.5 rounded-md text-theme-muted dark:text-theme-muted hover:text-theme-danger dark:hover:text-theme-danger disabled:opacity-50"
             >
               <LuTrash2 size={15} />
             </button>

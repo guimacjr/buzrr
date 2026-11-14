@@ -18,7 +18,7 @@ const LandingNavbar = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 bg-light-bg/90 dark:bg-dark-bg/90 backdrop-blur border-b border-card-light dark:border-card-dark">
+    <header className="sticky top-0 z-40 bg-theme-background/90 dark:bg-theme-background/90 backdrop-blur border-b border-theme-card dark:border-theme-card">
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
         <Link href="/" aria-label="Buzrr home">
           <ClientImage
@@ -37,7 +37,7 @@ const LandingNavbar = () => {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-dark dark:text-gray hover:text-lprimary dark:hover:text-dprimary transition-colors"
+              className="text-sm font-medium text-theme-text dark:text-theme-muted hover:text-theme-primary dark:hover:text-theme-primary transition-colors"
             >
               {link.name}
             </Link>
@@ -46,7 +46,7 @@ const LandingNavbar = () => {
             href={GITHUB_LINK}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1.5 text-sm font-medium text-dark dark:text-gray hover:text-lprimary dark:hover:text-dprimary transition-colors"
+            className="flex items-center gap-1.5 text-sm font-medium text-theme-text dark:text-theme-muted hover:text-theme-primary dark:hover:text-theme-primary transition-colors"
           >
             <LuGithub size={16} />
             GitHub
@@ -61,7 +61,7 @@ const LandingNavbar = () => {
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-            className="flex items-center justify-center size-9 rounded-lg text-dark dark:text-white"
+            className="flex items-center justify-center size-9 rounded-lg text-theme-text dark:text-theme-text"
           >
             {open ? <LuX size={22} /> : <LuMenu size={22} />}
           </button>
@@ -69,13 +69,13 @@ const LandingNavbar = () => {
       </nav>
 
       {open && (
-        <div className="md:hidden border-t border-card-light dark:border-card-dark bg-light-bg dark:bg-dark-bg px-4 pb-4">
+        <div className="md:hidden border-t border-theme-card dark:border-theme-card bg-theme-background dark:bg-theme-background px-4 pb-4">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="block py-3 text-sm font-medium text-dark dark:text-gray border-b border-card-light dark:border-card-dark"
+              className="block py-3 text-sm font-medium text-theme-text dark:text-theme-muted border-b border-theme-card dark:border-theme-card"
             >
               {link.name}
             </Link>
@@ -84,7 +84,7 @@ const LandingNavbar = () => {
             href={GITHUB_LINK}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1.5 py-3 text-sm font-medium text-dark dark:text-gray"
+            className="flex items-center gap-1.5 py-3 text-sm font-medium text-theme-text dark:text-theme-muted"
           >
             <LuGithub size={16} />
             GitHub

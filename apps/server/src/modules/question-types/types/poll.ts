@@ -2,7 +2,7 @@ import { MAX_POLL_OPTIONS, MIN_POLL_OPTIONS, poll } from "@buzrr/contract";
 import type { QuestionTypeHandler } from "../question-type";
 import { checkOptions, countOptions, parseConfig, pickOne } from "./shared";
 
-/** Collect opinions: 2–4 options, no right answer, not scored. */
+/** Collect opinions: 2–6 options, no right answer, not scored. */
 export const pollHandler: QuestionTypeHandler<"poll"> = {
   type: "poll",
   scored: false,
@@ -30,6 +30,15 @@ export const pollHandler: QuestionTypeHandler<"poll"> = {
     return { answer: { optionIds }, correct: false };
   },
 
+  acceptsMoreAnswers(question) {
+    return question.config.multiSelect;
+  },
+
+  // Each click sends the complete current selection, not additional votes.
+  mergeAnswers(_question, _previous, next) {
+    return next;
+  },
+
   score() {
     return 0;
   },
@@ -48,7 +57,9 @@ export const pollHandler: QuestionTypeHandler<"poll"> = {
   },
 
   summarize(question, entries) {
-    const answers = entries.map((e) => e.answer);
+    const answers = entries
+      .map((e) => e.answer)
+      .filter((answer) => answer.optionIds.length > 0);
     return {
       type: "poll",
       counts: countOptions(question.options, answers),

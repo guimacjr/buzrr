@@ -39,13 +39,13 @@ export function LegalDocument({
       />
       <header className="pt-8 pb-8 sm:pt-10">
         <Breadcrumbs crumbs={crumbs} />
-        <h1 className="mt-8 text-3xl sm:text-5xl font-black text-dark dark:text-white leading-tight">
+        <h1 className="mt-8 text-3xl sm:text-5xl font-black text-theme-text dark:text-theme-text leading-tight">
           {title}
         </h1>
-        <p className="mt-3 text-sm font-semibold text-dark/60 dark:text-gray">
+        <p className="mt-3 text-sm font-semibold text-theme-text/60 dark:text-theme-muted">
           Last updated: {LEGAL_UPDATED}
         </p>
-        <p className="mt-5 text-base sm:text-lg text-dark/70 dark:text-gray max-w-3xl">
+        <p className="mt-5 text-base sm:text-lg text-theme-text/70 dark:text-theme-muted max-w-3xl">
           {description}
         </p>
       </header>
@@ -54,13 +54,13 @@ export function LegalDocument({
 
       <nav
         aria-label="Legal"
-        className="mt-10 pt-6 border-t border-card-light dark:border-card-dark flex flex-wrap gap-x-6 gap-y-2 text-sm"
+        className="mt-10 pt-6 border-t border-theme-card dark:border-theme-card flex flex-wrap gap-x-6 gap-y-2 text-sm"
       >
         {LEGAL_PAGES.filter((page) => page.path !== path).map((page) => (
           <Link
             key={page.path}
             href={page.path}
-            className="text-lprimary dark:text-dprimary underline underline-offset-2"
+            className="text-theme-primary dark:text-theme-primary underline underline-offset-2"
           >
             {page.name}
           </Link>
@@ -78,11 +78,11 @@ export function LegalSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="py-8 border-t border-card-light dark:border-card-dark">
-      <h2 className="text-xl sm:text-2xl font-black text-dark dark:text-white">
+    <section className="py-8 border-t border-theme-card dark:border-theme-card">
+      <h2 className="text-xl sm:text-2xl font-black text-theme-text dark:text-theme-text">
         {title}
       </h2>
-      <div className="mt-4 space-y-4 max-w-3xl text-dark/80 dark:text-off-white leading-relaxed [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_a]:text-lprimary dark:[&_a]:text-dprimary [&_a]:underline [&_a]:underline-offset-2 [&_strong]:text-dark dark:[&_strong]:text-white">
+      <div className="mt-4 space-y-4 max-w-3xl text-theme-text/80 dark:text-theme-muted leading-relaxed [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_a]:text-theme-primary dark:[&_a]:text-theme-primary [&_a]:underline [&_a]:underline-offset-2 [&_strong]:text-theme-text dark:[&_strong]:text-theme-onPrimary">
         {children}
       </div>
     </section>

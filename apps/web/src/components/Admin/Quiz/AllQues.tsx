@@ -20,6 +20,7 @@ import { HideQuestions } from "@/state/hideQuestionsSlice";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import type { QuestionWithOptions } from "@/lib/modules/questions/api";
 import {
+  useUpsertQuestionMutation,
   useDeleteQuestionMutation,
   useQuestionsQuery,
   useReorderQuestionsMutation,
@@ -31,6 +32,7 @@ export default function AllQues(props: { quizId: string }) {
   const queryClient = useQueryClient();
   const { data, isPending, isError } = useQuestionsQuery(props.quizId);
   const reorderMutation = useReorderQuestionsMutation(props.quizId);
+  const updateMutation = useUpsertQuestionMutation(props.quizId);
   const deleteMutation = useDeleteQuestionMutation(props.quizId);
 
   const questions = useMemo(() => {
@@ -40,6 +42,31 @@ export default function AllQues(props: { quizId: string }) {
 
   const [delQuesModalOpen, setDelQuesModalOpen] = useState(false);
   const [delQuesId, setDelQuesId] = useState("");
+
+  function toggleRanking(q: QuestionRow) {
+    const config =
+      q.config && typeof q.config === "object" && !Array.isArray(q.config)
+        ? q.config
+        : {};
+    const showRanking = config.showRanking === false;
+    const fd = new FormData();
+    fd.append("ques_id", q.id);
+    fd.append("type", q.type);
+    fd.append("title", q.title);
+    fd.append("time", String(q.timeOut));
+    fd.append("config", JSON.stringify({ ...config, showRanking }));
+    fd.append(
+      "options",
+      JSON.stringify(
+        q.options.map(({ title, isCorrect }) => ({ title, isCorrect })),
+      ),
+    );
+    fd.append("file_link", q.media ?? "");
+    fd.append("media_type", q.mediaType ?? "");
+    updateMutation.mutate(fd, {
+      onError: (err) => toast.error(getApiErrorMessage(err)),
+    });
+  }
 
   function clientDltAction(quesId: string) {
     deleteMutation.mutate(quesId, {
@@ -94,7 +121,7 @@ export default function AllQues(props: { quizId: string }) {
 
   if (isError) {
     return (
-      <div className="p-4 text-red-500">
+      <div className="p-4 text-theme-danger">
         Failed to load questions. Try again.
       </div>
     );
@@ -107,7 +134,7 @@ export default function AllQues(props: { quizId: string }) {
           {Array.from({ length: 4 }).map((_, index) => (
             <div
               key={index}
-              className="h-44 w-full rounded-[18px] animate-pulse bg-lprimary/10 dark:bg-white/10"
+              className="h-44 w-full rounded-[18px] animate-pulse bg-theme-primary/10 dark:bg-theme-surface/10"
             />
           ))}
         </div>
@@ -124,17 +151,17 @@ export default function AllQues(props: { quizId: string }) {
         {questions.map((ques) => (
           <div
             key={ques.id}
-            className="w-full mb-4 rounded-[18px] border bg-light-bg dark:bg-card-dark border-lprimary/15 dark:border-white/5 px-4 md:px-[22px] pt-4 md:pt-5 pb-5"
+            className="w-full mb-4 rounded-[18px] border bg-theme-background dark:bg-theme-card border-theme-primary/15 dark:border-theme-border/5 px-4 md:px-[22px] pt-4 md:pt-5 pb-5"
           >
             <div className="flex items-center justify-between gap-4 mb-4">
-              <div className="h-4 w-3/5 rounded-full bg-lprimary/15 dark:bg-white/10" />
-              <div className="h-7 w-16 rounded-[9px] bg-lprimary/10 dark:bg-white/5" />
+              <div className="h-4 w-3/5 rounded-full bg-theme-primary/15 dark:bg-theme-surface/10" />
+              <div className="h-7 w-16 rounded-[9px] bg-theme-primary/10 dark:bg-theme-surface/5" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
               {Array.from({ length: 4 }, (_, i) => (
                 <div
                   key={i}
-                  className="h-11 rounded-xl bg-lprimary/8 dark:bg-white/5"
+                  className="h-11 rounded-xl bg-theme-primary/8 dark:bg-theme-surface/5"
                 />
               ))}
             </div>
@@ -164,34 +191,36 @@ export default function AllQues(props: { quizId: string }) {
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                       >
-                        <div className="relative rounded-[18px] overflow-hidden border bg-light-bg dark:bg-card-dark border-lprimary/15 dark:border-white/5 transition-[border-color,box-shadow] hover:border-lprimary dark:hover:border-dprimary hover:shadow-[0_12px_28px_-16px_rgba(0,0,0,0.5)]">
+                        <div className="relative rounded-[18px] overflow-hidden border bg-theme-background dark:bg-theme-card border-theme-primary/15 dark:border-theme-border/5 transition-[border-color,box-shadow] hover:border-theme-primary dark:hover:border-theme-primary hover:shadow-[0_12px_28px_-16px_rgba(0,0,0,0.5)]">
                           <div className="flex gap-3.5 px-4 md:px-[22px] pt-4 md:pt-5 pb-4">
-                            <span className="hidden md:flex shrink-0 pt-[3px] cursor-grab text-[#8a8896] dark:text-muted-dark">
+                            <span className="hidden md:flex shrink-0 pt-[3px] cursor-grab text-theme-muted dark:text-theme-muted">
                               <LuGripVertical size={18} />
                             </span>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-start justify-between gap-4 mb-3.5">
                                 <p className="text-base md:text-[17px] font-bold leading-[1.35] wrap-break-word min-w-0">
-                                  <span className="text-lprimary dark:text-dprimary">
+                                  <span className="text-theme-primary dark:text-theme-primary">
                                     {index + 1}.
                                   </span>{" "}
                                   {ques?.title}
                                 </p>
                                 <div className="shrink-0 flex flex-col md:flex-row items-end md:items-center gap-1.5">
                                   <QuestionTypeTag type={cardType(ques)} />
-                                  <span className="shrink-0 inline-flex items-center gap-1.5 whitespace-nowrap rounded-[9px] px-3 py-1.5 text-[13px] font-bold bg-lprimary/10 dark:bg-white/5">
+                                  <span className="shrink-0 inline-flex items-center gap-1.5 whitespace-nowrap rounded-[9px] px-3 py-1.5 text-[13px] font-bold bg-theme-primary/10 dark:bg-theme-surface/5">
                                     <LuClock size={14} />
-                                    {ques?.timeOut} sec
+                                    {ques.type === "media_slide"
+                                      ? "Manual"
+                                      : `${ques.timeOut} sec`}
                                   </span>
                                 </div>
                               </div>
                               <QuestionCardBody question={ques} />
                             </div>
                           </div>
-                          <div className="flex items-center gap-[22px] px-4 md:px-[22px] py-3 bg-lprimary/10 dark:bg-dprimary/10 border-t border-lprimary/15 dark:border-white/10">
+                          <div className="flex items-center gap-[22px] px-4 md:px-[22px] py-3 bg-theme-primary/10 dark:bg-theme-primary/10 border-t border-theme-primary/15 dark:border-theme-border/10">
                             <button
                               type="button"
-                              className="text-sm font-semibold text-red-light dark:text-red-dark hover:underline cursor-pointer"
+                              className="text-sm font-semibold text-theme-danger dark:text-theme-danger hover:underline cursor-pointer"
                               onClick={() => {
                                 setDelQuesId(ques.id);
                                 setDelQuesModalOpen(true);
@@ -199,12 +228,35 @@ export default function AllQues(props: { quizId: string }) {
                             >
                               Delete
                             </button>
+                            {ques.type !== "media_slide" && (
+                              <button
+                                type="button"
+                                disabled={updateMutation.isPending}
+                                onClick={() => toggleRanking(ques)}
+                                aria-pressed={
+                                  !(
+                                    ques.config &&
+                                    typeof ques.config === "object" &&
+                                    !Array.isArray(ques.config) &&
+                                    ques.config.showRanking === false
+                                  )
+                                }
+                                className="text-sm font-semibold text-theme-primary dark:text-theme-primary hover:underline cursor-pointer"
+                              >
+                                {ques.config &&
+                                typeof ques.config === "object" &&
+                                !Array.isArray(ques.config) &&
+                                ques.config.showRanking === false
+                                  ? "Ranking: hidden"
+                                  : "Ranking: shown"}
+                              </button>
+                            )}
                             <BasicModal
                               isEdit={true}
                               wide
                               btnTitle="Edit Question"
                               subtitle={`Question ${index + 1} · changes apply the next time you host.`}
-                              btnStyle="text-sm font-semibold text-lprimary dark:text-dprimary hover:underline cursor-pointer"
+                              btnStyle="text-sm font-semibold text-theme-primary dark:text-theme-primary hover:underline cursor-pointer"
                             >
                               {(close) => (
                                 <AddQuesForm
@@ -227,7 +279,7 @@ export default function AllQues(props: { quizId: string }) {
                   </Draggable>
                 ))
               ) : (
-                <div className="border-2 border-gray rounded-2xl border-dashed w-[95%] p-6 py-16 mt-8 mx-auto flex flex-col justify-center items-center">
+                <div className="border-2 border-theme-border rounded-2xl border-dashed w-[95%] p-6 py-16 mt-8 mx-auto flex flex-col justify-center items-center">
                   <div className="w-full py-2 flex justify-center">
                     <Image
                       src="/images/no-questions.svg"

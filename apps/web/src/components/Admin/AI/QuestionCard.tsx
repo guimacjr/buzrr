@@ -20,13 +20,13 @@ export default function QuestionCard({
   return (
     <article
       className={clsx(
-        "rounded-xl p-4 bg-white dark:bg-card-dark transition-opacity",
+        "rounded-xl p-4 bg-theme-surface dark:bg-theme-card transition-opacity",
         question.discarded && "opacity-50",
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-black text-off-dark dark:text-off-white">
+          <span className="text-xs font-black text-theme-muted dark:text-theme-muted">
             Q{index + 1}
           </span>
           <Badge tone="info">
@@ -45,13 +45,13 @@ export default function QuestionCard({
               ? "Restore this question"
               : "Discard this question"
           }
-          className="shrink-0 p-1.5 rounded-md text-off-dark dark:text-off-white hover:bg-card-light dark:hover:bg-dark transition-colors disabled:opacity-50"
+          className="shrink-0 p-1.5 rounded-md text-theme-muted dark:text-theme-muted hover:bg-theme-card dark:hover:bg-theme-surface transition-colors disabled:opacity-50"
         >
           {question.discarded ? <LuUndo2 size={16} /> : <LuTrash2 size={16} />}
         </button>
       </div>
 
-      <p className="mt-2 font-bold text-dark dark:text-white">
+      <p className="mt-2 font-bold text-theme-text dark:text-theme-text">
         {question.stem}
       </p>
 
@@ -62,14 +62,14 @@ export default function QuestionCard({
             className={clsx(
               "flex items-center gap-2 rounded-lg px-3 py-2 text-sm",
               option.isCorrect
-                ? "bg-[#20A97C]/15 text-dark dark:text-white font-bold"
-                : "bg-card-light dark:bg-dark text-off-dark dark:text-off-white",
+                ? "bg-theme-success/15 text-theme-text dark:text-theme-text font-bold"
+                : "bg-theme-card dark:bg-theme-surface text-theme-muted dark:text-theme-muted",
             )}
           >
             {option.isCorrect && (
               <LuCheck
                 size={14}
-                className="shrink-0 text-[#20A97C]"
+                className="shrink-0 text-theme-success"
                 aria-label="Correct"
               />
             )}
@@ -79,7 +79,7 @@ export default function QuestionCard({
       </ul>
 
       {question.explanation && (
-        <p className="mt-3 text-xs text-off-dark dark:text-off-white">
+        <p className="mt-3 text-xs text-theme-muted dark:text-theme-muted">
           {question.explanation}
         </p>
       )}

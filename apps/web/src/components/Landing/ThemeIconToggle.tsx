@@ -36,7 +36,7 @@ const ThemeIconToggle = () => {
       type="button"
       aria-label="Toggle dark mode"
       onClick={handler}
-      className="flex items-center justify-center size-9 rounded-full text-dark dark:text-white bg-card-light dark:bg-card-dark hover:bg-cardhover-light dark:hover:bg-cardhover-dark transition-colors"
+      className="flex items-center justify-center size-9 rounded-full text-theme-text dark:text-theme-text bg-theme-card dark:bg-theme-card hover:bg-theme-cardHover dark:hover:bg-theme-cardHover transition-colors"
     >
       {shown === PageTheme.dark ? <LuSun size={16} /> : <LuMoon size={16} />}
     </button>

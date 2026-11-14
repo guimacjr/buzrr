@@ -31,37 +31,38 @@ import {
 
 const STATUS = {
   correct: {
-    heading: "Correct!",
+    heading: "Resposta correta!",
     icon: <LuCheck size={56} strokeWidth={3} />,
     circle:
-      "bg-green-500 shadow-[0_0_0_8px_rgba(34,197,94,0.14),0_0_0_16px_rgba(34,197,94,0.06)] md:shadow-[0_0_0_14px_rgba(34,197,94,0.14),0_0_0_30px_rgba(34,197,94,0.06)]",
-    accent: "text-green-600 dark:text-green-500",
-    answer: "border-green-500 bg-green-500/8",
+      "bg-theme-success shadow-[0_0_0_8px_color-mix(in_srgb,var(--color-theme-success)_14%,transparent),0_0_0_16px_color-mix(in_srgb,var(--color-theme-success)_6%,transparent)] md:shadow-[0_0_0_14px_color-mix(in_srgb,var(--color-theme-success)_14%,transparent),0_0_0_30px_color-mix(in_srgb,var(--color-theme-success)_6%,transparent)]",
+    accent: "text-theme-success dark:text-theme-success",
+    answer: "border-theme-success bg-theme-success/8",
   },
   incorrect: {
-    heading: "Not quite",
+    heading: "Resposta incorreta",
     icon: <LuX size={56} strokeWidth={3} />,
     circle:
-      "bg-[#e5544e] shadow-[0_0_0_8px_rgba(229,84,78,0.14),0_0_0_16px_rgba(229,84,78,0.06)] md:shadow-[0_0_0_14px_rgba(229,84,78,0.14),0_0_0_30px_rgba(229,84,78,0.06)]",
-    accent: "text-[#e5544e]",
-    answer: "border-[#e5544e] bg-[#e5544e]/8",
+      "bg-theme-danger shadow-[0_0_0_8px_color-mix(in_srgb,var(--color-theme-danger)_14%,transparent),0_0_0_16px_color-mix(in_srgb,var(--color-theme-danger)_6%,transparent)] md:shadow-[0_0_0_14px_color-mix(in_srgb,var(--color-theme-danger)_14%,transparent),0_0_0_30px_color-mix(in_srgb,var(--color-theme-danger)_6%,transparent)]",
+    accent: "text-theme-danger",
+    answer: "border-theme-danger bg-theme-danger/8",
   },
   /** An unscored question (poll, word cloud, …): nothing to get right. */
   received: {
-    heading: "Response received",
+    heading: "Resposta recebida",
     icon: <LuSend size={48} strokeWidth={2.6} />,
     circle:
-      "bg-lprimary dark:bg-dprimary shadow-[0_0_0_8px_rgba(124,77,219,0.14),0_0_0_16px_rgba(124,77,219,0.06)] md:shadow-[0_0_0_14px_rgba(124,77,219,0.14),0_0_0_30px_rgba(124,77,219,0.06)]",
-    accent: "text-lprimary dark:text-dprimary",
-    answer: "border-lprimary/40 dark:border-dprimary/40 bg-lprimary/8",
+      "bg-theme-primary dark:bg-theme-primary shadow-[0_0_0_8px_color-mix(in_srgb,var(--color-theme-primary)_14%,transparent),0_0_0_16px_color-mix(in_srgb,var(--color-theme-primary)_6%,transparent)] md:shadow-[0_0_0_14px_color-mix(in_srgb,var(--color-theme-primary)_14%,transparent),0_0_0_30px_color-mix(in_srgb,var(--color-theme-primary)_6%,transparent)]",
+    accent: "text-theme-primary dark:text-theme-primary",
+    answer:
+      "border-theme-primary/40 dark:border-theme-primary/40 bg-theme-primary/8",
   },
   timesout: {
-    heading: "Time's up!",
+    heading: "Tempo esgotado!",
     icon: <LuClock size={52} strokeWidth={2.6} />,
     circle:
-      "bg-[#e0a020] shadow-[0_0_0_8px_rgba(224,160,32,0.14),0_0_0_16px_rgba(224,160,32,0.06)] md:shadow-[0_0_0_14px_rgba(224,160,32,0.14),0_0_0_30px_rgba(224,160,32,0.06)]",
-    accent: "text-[#c98a0e] dark:text-[#e0a020]",
-    answer: "border-[#e0a020] bg-[#e0a020]/8",
+      "bg-theme-warning shadow-[0_0_0_8px_color-mix(in_srgb,var(--color-theme-warning)_14%,transparent),0_0_0_16px_color-mix(in_srgb,var(--color-theme-warning)_6%,transparent)] md:shadow-[0_0_0_14px_color-mix(in_srgb,var(--color-theme-warning)_14%,transparent),0_0_0_30px_color-mix(in_srgb,var(--color-theme-warning)_6%,transparent)]",
+    accent: "text-theme-warning dark:text-theme-warning",
+    answer: "border-theme-warning bg-theme-warning/8",
   },
 } as const;
 
@@ -80,7 +81,7 @@ function RankMove({ move }: { move: number }) {
     <span
       className={clsx(
         "inline-flex items-center gap-0.5 font-bold",
-        up ? "text-green-600 dark:text-green-500" : "text-[#e5544e]",
+        up ? "text-theme-success dark:text-theme-success" : "text-theme-danger",
       )}
     >
       {up ? (
@@ -88,7 +89,7 @@ function RankMove({ move }: { move: number }) {
       ) : (
         <LuArrowDown size={14} strokeWidth={3} />
       )}
-      <span className="sr-only">{up ? "up" : "down"}</span>
+      <span className="sr-only">{up ? "subiu" : "desceu"}</span>
       {Math.abs(move)}
     </span>
   );
@@ -98,15 +99,15 @@ function RankMove({ move }: { move: number }) {
 function StandingChip({ standing }: { standing: Standing }) {
   return (
     <span
-      title="Your rank after the last question"
-      className="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-lprimary/15 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-1.5 text-[13px] font-semibold"
+      title="Sua posição após a última pergunta"
+      className="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-theme-primary/15 dark:border-theme-border/10 bg-theme-surface dark:bg-theme-surface/5 px-3 py-1.5 text-[13px] font-semibold"
     >
       <LuTrophy
         size={14}
-        className="text-lprimary dark:text-dprimary"
+        className="text-theme-primary dark:text-theme-primary"
         aria-hidden="true"
       />
-      <span className="sr-only">Your rank</span>
+      <span className="sr-only">Sua posição</span>
       {ordinal(standing.rank)}
     </span>
   );
@@ -114,20 +115,20 @@ function StandingChip({ standing }: { standing: Standing }) {
 
 /** Podium places in medal colours; everyone else in the brand colour. */
 const PLACE_TEXT: Record<number, string> = {
-  1: "text-[#c99a0e] dark:text-[#f4c542]",
-  2: "text-[#7d8494] dark:text-[#b9bfcc]",
-  3: "text-[#b8703c] dark:text-[#e0a173]",
+  1: "text-theme-gold dark:text-theme-gold",
+  2: "text-theme-silver dark:text-theme-muted",
+  3: "text-theme-bronze dark:text-theme-bronze",
 };
 
 /** A line of encouragement for where the player stands. */
 function standingMessage(rank: number, playerCount: number): string {
-  if (playerCount <= 1) return "Playing solo — every point counts!";
-  if (rank === 1) return "You're in the lead — keep it up!";
-  if (rank <= 3) return "Congrats, you're on the podium — keep it up!";
+  if (playerCount <= 1) return "Jogando sozinho — cada ponto conta!";
+  if (rank === 1) return "Você está na liderança — continue assim!";
+  if (rank <= 3) return "Parabéns, você está no pódio — continue assim!";
   const below = rank - 3;
   return below === 1
-    ? "Just 1 place below the podium — you've got this!"
-    : `${below} places below the podium — keep going!`;
+    ? "Falta só uma posição para o pódio — você consegue!"
+    : `${below} posições abaixo do pódio — continue!`;
 }
 
 /** The player's place after this question, under the answers. */
@@ -152,22 +153,23 @@ function StandingCard({
           mutedText,
         )}
       >
-        Your standing
+        Sua classificação
       </span>
       <p className="flex flex-wrap items-baseline justify-center gap-x-2 text-lg md:text-xl font-semibold">
-        <span>You&apos;re in</span>
+        <span>Você está em</span>
         <b
           className={clsx(
             "inline-flex items-center gap-1.5 text-[30px] md:text-[36px] font-extrabold tracking-[-0.02em] leading-none",
-            PLACE_TEXT[standing.rank] ?? "text-lprimary dark:text-dprimary",
+            PLACE_TEXT[standing.rank] ??
+              "text-theme-primary dark:text-theme-primary",
           )}
         >
           {podium && <LuTrophy size={24} aria-hidden="true" />}
           {ordinal(standing.rank)}
         </b>
         <span>
-          place
-          {playerCount > 1 && ` out of ${playerCount}`}
+          lugar
+          {playerCount > 1 && ` entre ${playerCount}`}
         </span>
         <RankMove move={rankMove(standing)} />
       </p>
@@ -175,10 +177,10 @@ function StandingCard({
         {standingMessage(standing.rank, playerCount)}
       </p>
       <p className={clsx("text-[13.5px]", mutedText)}>
-        <b className="text-dark dark:text-white tabular-nums">
-          {standing.totalScore.toLocaleString()}
+        <b className="text-theme-text dark:text-theme-text tabular-nums">
+          {standing.totalScore.toLocaleString("pt-BR")}
         </b>{" "}
-        points in total
+        pontos no total
       </p>
     </div>
   );
@@ -198,7 +200,7 @@ function AnswerRow({
 }) {
   return (
     <div className="flex flex-col gap-1.5 md:gap-2 w-full">
-      <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#8a8896] dark:text-muted-dark">
+      <span className="text-xs font-semibold tracking-[0.1em] uppercase text-theme-muted dark:text-theme-muted">
         {label}
       </span>
       <div
@@ -270,7 +272,7 @@ const QuestionAndResult = (params: {
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto flex flex-col px-4 sm:px-6 lg:px-8 pb-16 md:pb-6 md:min-h-[calc(100dvh-7.5rem)] text-dark dark:text-white">
+    <div className="w-full max-w-7xl mx-auto flex flex-col px-4 sm:px-6 lg:px-8 pb-16 md:pb-6 md:min-h-[calc(100dvh-7.5rem)] text-theme-text dark:text-theme-text">
       <GameTopBar
         title={params.quizTitle}
         qIndex={qIndex}
@@ -310,7 +312,7 @@ const QuestionAndResult = (params: {
               <TimerRing
                 value={0}
                 max={1}
-                label="time's up"
+                label="tempo esgotado"
                 className="size-[150px]"
                 valueClassName="text-5xl"
               />
@@ -326,8 +328,8 @@ const QuestionAndResult = (params: {
                     mutedText,
                   )}
                 >
-                  Room code{" "}
-                  <b className="tracking-[0.08em] text-dark dark:text-white">
+                  Código da sala{" "}
+                  <b className="tracking-[0.08em] text-theme-text dark:text-theme-text">
                     {params.gameCode}
                   </b>
                 </span>
@@ -339,7 +341,7 @@ const QuestionAndResult = (params: {
                     mutedText,
                   )}
                 >
-                  Question {qIndex + 1} of {qCount}
+                  Pergunta {qIndex + 1} de {qCount}
                 </span>
               )}
             </div>
@@ -359,8 +361,8 @@ const QuestionAndResult = (params: {
                 className="size-[42px] rounded-full object-cover"
               />
               <div className={clsx("flex flex-col text-[12.5px]", mutedText)}>
-                Quiz by
-                <b className="text-[15px] font-semibold text-dark dark:text-white">
+                Quiz de
+                <b className="text-[15px] font-semibold text-theme-text dark:text-theme-text">
                   {params.hostName}
                 </b>
               </div>
@@ -371,11 +373,11 @@ const QuestionAndResult = (params: {
               <StatTile
                 value={you.rank ? ordinal(you.rank) : "—"}
                 suffix={players.length > 0 ? ` /${players.length}` : undefined}
-                label="Your rank"
+                label="Sua posição"
               />
               <StatTile
-                value={you.totalScore.toLocaleString()}
-                label="Total points"
+                value={you.totalScore.toLocaleString("pt-BR")}
+                label="Total de pontos"
               />
             </div>
           )}
@@ -393,7 +395,7 @@ const QuestionAndResult = (params: {
                 <Image
                   src={params.question.media}
                   className="mb-4 md:mb-5 mx-auto max-h-[28dvh] w-auto rounded-2xl"
-                  alt="Question image"
+                  alt="Imagem da pergunta"
                   height={320}
                   width={500}
                 />
@@ -408,9 +410,9 @@ const QuestionAndResult = (params: {
                 params.question.type !== "multiple_choice" && (
                   <QuestionTypePill type={params.question.type} />
                 )}
-              <span className="hidden md:inline-block w-fit text-[12.5px] font-bold tracking-[0.06em] uppercase rounded-full px-3 py-1.5 text-lprimary dark:text-dprimary bg-lprimary/8 dark:bg-white/5">
-                Question {qIndex + 1}
-                {qCount > 0 && ` of ${qCount}`}
+              <span className="hidden md:inline-block w-fit text-[12.5px] font-bold tracking-[0.06em] uppercase rounded-full px-3 py-1.5 text-theme-primary dark:text-theme-primary bg-theme-primary/8 dark:bg-theme-surface/5">
+                Pergunta {qIndex + 1}
+                {qCount > 0 && ` de ${qCount}`}
               </span>
             </div>
             <h2
@@ -434,7 +436,7 @@ const QuestionAndResult = (params: {
             {params.locked && !params.canAddMore && (
               <div className="mt-6 flex justify-center animate-fade-up">
                 <WaitingDots>
-                  Answer received — waiting for the results
+                  Resposta recebida — aguardando o resultado
                 </WaitingDots>
               </div>
             )}
@@ -448,7 +450,7 @@ const QuestionAndResult = (params: {
           >
             <div
               className={clsx(
-                "size-16 md:size-[120px] rounded-full text-white flex items-center justify-center mb-5 md:mb-[22px] animate-pop-in [&_svg]:size-8 md:[&_svg]:size-auto",
+                "size-16 md:size-[120px] rounded-full text-theme-onPrimary flex items-center justify-center mb-5 md:mb-[22px] animate-pop-in [&_svg]:size-8 md:[&_svg]:size-auto",
                 status.circle,
                 params.status === "incorrect" && "animate-shake",
               )}
@@ -465,16 +467,16 @@ const QuestionAndResult = (params: {
               )}
             >
               {params.status === "timesout"
-                ? "No answer this round"
+                ? "Você não respondeu nesta rodada"
                 : params.status === "received"
-                  ? "Not scored — thanks for answering"
-                  : `+${params.points ?? 0} points`}
+                  ? "Sem pontuação — obrigado por responder"
+                  : `+${params.points ?? 0} pontos`}
             </span>
             <div className="mt-3 md:mt-[22px] flex flex-col gap-3 md:gap-4 w-full max-w-[420px] animate-fade-up [animation-delay:150ms]">
               <AnswerRow
-                label="Your answer"
+                label="Sua resposta"
                 className={status.answer}
-                emptyText="You didn't answer in time"
+                emptyText="Você não respondeu a tempo"
               >
                 {params.yourAnswer}
               </AnswerRow>
@@ -483,7 +485,7 @@ const QuestionAndResult = (params: {
                 params.correctAnswers?.map((node, i) => (
                   <AnswerRow
                     key={i}
-                    label="Correct answer"
+                    label="Resposta correta"
                     className={STATUS.correct.answer}
                   >
                     {node}
@@ -497,11 +499,11 @@ const QuestionAndResult = (params: {
               <WaitingDots>
                 {params.hideRoomCode
                   ? isLast
-                    ? "Final results coming up"
-                    : "Next question coming up"
+                    ? "O resultado final vem a seguir"
+                    : "A próxima pergunta vem a seguir"
                   : isLast
-                    ? "Waiting for the final results"
-                    : `Waiting for the host to start question ${qIndex + 2}`}
+                    ? "Aguardando o resultado final"
+                    : `Aguardando o administrador iniciar a pergunta ${qIndex + 2}`}
               </WaitingDots>
             </div>
           </section>

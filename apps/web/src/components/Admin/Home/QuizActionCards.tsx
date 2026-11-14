@@ -1,5 +1,6 @@
 "use client";
 
+import PackageImport from "../Packages/PackageImport";
 import clsx from "clsx";
 import { LuPlus } from "react-icons/lu";
 import ActionCard from "./ActionCard";
@@ -14,7 +15,7 @@ export default function QuizActionCards() {
     <div
       className={clsx(
         "gap-3 md:gap-4",
-        view === "grid" ? "grid grid-cols-2 md:grid-cols-3" : "flex flex-col",
+        view === "grid" ? "grid grid-cols-2 xl:grid-cols-4" : "flex flex-col",
       )}
     >
       <ActionCard
@@ -25,9 +26,8 @@ export default function QuizActionCards() {
         subtitle="Build from the ground up"
       />
       <ImportQuizModal />
-      <CreateAIQuiz
-        className={view === "grid" ? "col-span-2 md:col-span-1" : undefined}
-      />
+      <PackageImport kind="quiz" view={view} />
+      <CreateAIQuiz />
     </div>
   );
 }

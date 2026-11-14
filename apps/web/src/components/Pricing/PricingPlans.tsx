@@ -18,9 +18,9 @@ const CHECKOUT_PATH = "/billing/checkout";
 
 const ctaBase =
   "mt-8 flex w-full items-center justify-center rounded-xl px-5 py-3 font-bold transition-opacity";
-const ctaPrimary = `${ctaBase} bg-lprimary dark:bg-dprimary text-white dark:text-dark hover:opacity-90`;
-const ctaOutline = `${ctaBase} border-2 border-lprimary dark:border-dprimary text-lprimary dark:text-dprimary hover:opacity-80`;
-const ctaDisabled = `${ctaBase} bg-gray/30 text-off-dark dark:text-off-white cursor-default`;
+const ctaPrimary = `${ctaBase} bg-theme-primary dark:bg-theme-primary text-theme-onPrimary dark:text-theme-onPrimary hover:opacity-90`;
+const ctaOutline = `${ctaBase} border-2 border-theme-primary dark:border-theme-primary text-theme-primary dark:text-theme-primary hover:opacity-80`;
+const ctaDisabled = `${ctaBase} bg-theme-border/30 text-theme-muted dark:text-theme-muted cursor-default`;
 
 function FeatureList({ items }: { items: string[] }) {
   return (
@@ -28,11 +28,11 @@ function FeatureList({ items }: { items: string[] }) {
       {items.map((item) => (
         <li
           key={item}
-          className="flex items-start gap-2 text-sm text-dark dark:text-white"
+          className="flex items-start gap-2 text-sm text-theme-text dark:text-theme-text"
         >
           <LuCheck
             size={18}
-            className="mt-0.5 shrink-0 text-lprimary dark:text-dprimary"
+            className="mt-0.5 shrink-0 text-theme-primary dark:text-theme-primary"
           />
           {item}
         </li>
@@ -112,19 +112,21 @@ export default function PricingPlans() {
 
   return (
     <div className="mt-12 grid gap-6 md:grid-cols-2">
-      <section className="rounded-2xl bg-white dark:bg-card-dark p-6 md:p-8 border border-card-light dark:border-card-dark">
+      <section className="rounded-2xl bg-theme-surface dark:bg-theme-card p-6 md:p-8 border border-theme-card dark:border-theme-card">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-black text-dark dark:text-white">Free</h2>
+          <h2 className="text-xl font-black text-theme-text dark:text-theme-text">
+            Free
+          </h2>
           {signedIn && plan === "free" && <Badge>Your plan</Badge>}
         </div>
-        <p className="mt-1 text-sm text-off-dark dark:text-off-white">
+        <p className="mt-1 text-sm text-theme-muted dark:text-theme-muted">
           Everything you need to run your first games.
         </p>
-        <p className="mt-6 text-dark dark:text-white">
+        <p className="mt-6 text-theme-text dark:text-theme-text">
           <span className="text-4xl font-black">
             {resolved ? formatMoney(0, currency) : " "}
           </span>
-          <span className="text-sm text-off-dark dark:text-off-white">
+          <span className="text-sm text-theme-muted dark:text-theme-muted">
             {" "}
             / forever
           </span>
@@ -145,12 +147,12 @@ export default function PricingPlans() {
 
       <section
         className={clsx(
-          "relative rounded-2xl bg-white dark:bg-card-dark p-6 md:p-8 border-2",
-          "border-lprimary dark:border-dprimary shadow-lg",
+          "relative rounded-2xl bg-theme-surface dark:bg-theme-card p-6 md:p-8 border-2",
+          "border-theme-primary dark:border-theme-primary shadow-lg",
         )}
       >
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-black text-dark dark:text-white">
+          <h2 className="text-xl font-black text-theme-text dark:text-theme-text">
             Buzrr Pro
           </h2>
           {signedIn && plan === "pro" ? (
@@ -159,7 +161,7 @@ export default function PricingPlans() {
             <Badge tone="info">For hosts & classrooms</Badge>
           )}
         </div>
-        <p className="mt-1 text-sm text-off-dark dark:text-off-white">
+        <p className="mt-1 text-sm text-theme-muted dark:text-theme-muted">
           Bigger rooms, no quiz cap, weekly AI.
         </p>
         <div className="mt-6">

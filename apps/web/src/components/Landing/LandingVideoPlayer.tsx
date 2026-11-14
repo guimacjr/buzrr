@@ -94,7 +94,7 @@ export default function LandingVideoPlayer({
   }, []);
 
   return (
-    <div className="aspect-video overflow-hidden rounded-2xl border border-card-light dark:border-off-dark">
+    <div className="aspect-video overflow-hidden rounded-2xl border border-theme-card dark:border-theme-border">
       <video
         ref={videoRef}
         src={src}

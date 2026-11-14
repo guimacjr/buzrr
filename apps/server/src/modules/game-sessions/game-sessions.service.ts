@@ -1,5 +1,6 @@
 import {
   ForbiddenException,
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -11,7 +12,13 @@ import { GameEngineService } from "../game-engine/game-engine.service";
 import { PrismaService } from "../../prisma/prisma.service";
 import type { AuthUser } from "../../common/decorators/current-user.decorator";
 import { CreateRoomDto } from "./dto/create-room.dto";
-import { JoinRoomDto } from "./dto/join-room.dto";
+import {
+  registrationFieldsSchema,
+  validateRegistrationAnswers,
+  sessionReportSchema,
+  type JoinRoomBody,
+} from "@buzrr/contract";
+import { reportCsv } from "./report-csv";
 
 const generateGameCode = customAlphabet("ABCDEFGHJKMNPQRSTUVWXYZ23456789", 6);
 
@@ -25,7 +32,7 @@ export class GameSessionsService {
 
   async join(
     playerId: string,
-    dto: JoinRoomDto,
+    dto: JoinRoomBody,
   ): Promise<{ roomId: string; playerId: string }> {
     const game = await this.prisma.db.gameSession.findUnique({
       where: { gameCode: dto.gameCode },
@@ -42,6 +49,21 @@ export class GameSessionsService {
     if (await this.engine.isBanned(game.gameCode, playerId)) {
       throw new ForbiddenException(
         "The host has banned you from this room. You can still join other rooms.",
+      );
+    }
+    const fields = registrationFieldsSchema.parse(game.registrationFields);
+    const existing = await this.prisma.db.gameRegistration.findUnique({
+      where: { sessionId_playerId: { sessionId: game.id, playerId } },
+    });
+    let registrationAnswers;
+    try {
+      registrationAnswers = validateRegistrationAnswers(
+        fields,
+        dto.registrationAnswers ?? existing?.answers ?? {},
+      );
+    } catch (error) {
+      throw new BadRequestException(
+        error instanceof Error ? error.message : "Invalid registration answers",
       );
     }
     // Serializable so concurrent joins can't both pass the count and
@@ -65,6 +87,16 @@ export class GameSessionsService {
             );
           }
         }
+        await tx.gameRegistration.upsert({
+          where: { sessionId_playerId: { sessionId: game.id, playerId } },
+          create: {
+            sessionId: game.id,
+            playerId,
+            playerName: player.name,
+            answers: registrationAnswers,
+          },
+          update: { playerName: player.name, answers: registrationAnswers },
+        });
         await tx.player.update({
           where: { id: playerId },
           data: { gameId: game.id },
@@ -73,6 +105,25 @@ export class GameSessionsService {
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
     return { roomId: game.id, playerId };
+  }
+
+  async registrationFields(code: string) {
+    const room = await this.prisma.db.gameSession.findUnique({
+      where: { gameCode: code.toUpperCase() },
+      select: { registrationFields: true },
+    });
+    if (!room) throw new NotFoundException("Game not found");
+    return { fields: registrationFieldsSchema.parse(room.registrationFields) };
+  }
+
+  async downloadReport(user: AuthUser, resultId: string) {
+    const result = await this.getResult(user, resultId);
+    if (result.hostId !== user.userId)
+      throw new ForbiddenException("Only the host can download this report");
+    return reportCsv(
+      result,
+      result.report ? sessionReportSchema.parse(result.report) : null,
+    );
   }
 
   async createRoom(
@@ -94,6 +145,9 @@ export class GameSessionsService {
             gameCode,
             quizId: dto.quizId,
             creatorId: user.userId,
+            registrationFields: registrationFieldsSchema.parse(
+              quiz.registrationFields,
+            ),
           },
         });
         return { id: room.id };
@@ -118,6 +172,7 @@ export class GameSessionsService {
       where: { hostId: user.userId },
       orderBy: { endedAt: "desc" },
       take: 50,
+      omit: { report: true },
       include: { _count: { select: { entries: true } } },
     });
   }

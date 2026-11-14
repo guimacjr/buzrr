@@ -3,5 +3,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <>{children}</>;
+  return (
+    <div lang="pt-BR" className="contents">
+      {children}
+    </div>
+  );
 }

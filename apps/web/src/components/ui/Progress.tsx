@@ -23,9 +23,9 @@ export function Progress({
       aria-valuemax={100}
       aria-label={label ?? "Progress"}
     >
-      <div className="h-2 w-full rounded-full bg-card-light dark:bg-dark overflow-hidden">
+      <div className="h-2 w-full rounded-full bg-theme-card dark:bg-theme-surface overflow-hidden">
         <div
-          className="h-full rounded-full bg-lprimary dark:bg-dprimary transition-[width] duration-500 ease-out"
+          className="h-full rounded-full bg-theme-primary dark:bg-theme-primary transition-[width] duration-500 ease-out"
           style={{ width: `${pct}%` }}
         />
       </div>

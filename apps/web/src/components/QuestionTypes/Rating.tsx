@@ -11,7 +11,9 @@ import { RatingView, Star } from "./Visuals";
 export const ratingRenderer: QuestionRenderer<"rating"> = {
   AnswerInput({ question, selected, disabled, onSubmit }) {
     const [draft, setDraft] = useState<number | null>(null);
-    const value = selected?.value ?? draft;
+    const value = question.reopened
+      ? (draft ?? selected?.value ?? null)
+      : (selected?.value ?? draft);
     const max = ratingMax(question.scale);
     const stars = question.scale === "stars";
     return (
@@ -31,7 +33,9 @@ export const ratingRenderer: QuestionRenderer<"rating"> = {
                 type="button"
                 role="radio"
                 aria-checked={value === k}
-                aria-label={stars ? `${k} star${k === 1 ? "" : "s"}` : `${k}`}
+                aria-label={
+                  stars ? `${k} estrela${k === 1 ? "" : "s"}` : `${k}`
+                }
                 disabled={disabled || Boolean(selected)}
                 onClick={() => setDraft(k)}
                 className={clsx(
@@ -40,15 +44,15 @@ export const ratingRenderer: QuestionRenderer<"rating"> = {
                     ? clsx(
                         "border-transparent bg-transparent",
                         on
-                          ? "text-[#e0a020]"
-                          : "text-lprimary/25 dark:text-white/20",
+                          ? "text-theme-warning"
+                          : "text-theme-primary/25 dark:text-theme-text/20",
                       )
                     : on
-                      ? "bg-lprimary dark:bg-dprimary border-lprimary dark:border-dprimary text-white"
+                      ? "bg-theme-primary dark:bg-theme-primary border-theme-primary dark:border-theme-primary text-theme-onPrimary"
                       : subtleCardClass,
                   !disabled &&
                     !selected &&
-                    "cursor-pointer hover:border-dprimary",
+                    "cursor-pointer hover:border-theme-primary",
                 )}
               >
                 {stars ? (
@@ -80,7 +84,7 @@ export const ratingRenderer: QuestionRenderer<"rating"> = {
             <span className="text-right">{question.highLabel}</span>
           </div>
         )}
-        {!selected && (
+        {(!selected || question.reopened) && (
           <SubmitButton
             disabled={disabled || draft === null}
             onClick={() => {
@@ -112,7 +116,7 @@ export const ratingRenderer: QuestionRenderer<"rating"> = {
   describeAnswer(question, answer) {
     if (question.scale === "stars") {
       return (
-        <span className="flex gap-1 text-[#e0a020]">
+        <span className="flex gap-1 text-theme-warning">
           {[1, 2, 3, 4, 5].map((k) => (
             <Star key={k} filled={k <= answer.value} size={22} />
           ))}

@@ -127,9 +127,11 @@ export default function SelfHostedQuizPage() {
       </Section>
 
       <Section title="What you need">
-        <h3 className="font-bold text-dark dark:text-white mb-3">Required</h3>
+        <h3 className="font-bold text-theme-text dark:text-theme-text mb-3">
+          Required
+        </h3>
         <BulletList items={REQUIRED} />
-        <h3 className="mt-8 font-bold text-dark dark:text-white mb-3">
+        <h3 className="mt-8 font-bold text-theme-text dark:text-theme-text mb-3">
           Optional
         </h3>
         <BulletList items={OPTIONAL} />
@@ -140,7 +142,7 @@ export default function SelfHostedQuizPage() {
         intro="From the repository's README. The whole bootstrap is one script."
       >
         <Steps steps={LOCAL_STEPS} />
-        <pre className="mt-6 overflow-x-auto rounded-xl bg-dark text-off-white p-4 text-sm">
+        <pre className="mt-6 overflow-x-auto rounded-xl bg-theme-surface text-theme-muted p-4 text-sm">
           <code>{`git clone ${REPO_URL}.git
 cd buzrr
 corepack enable
@@ -175,7 +177,7 @@ yarn dev       # web :3000, api :3001`}</code>
             "Redis is required for all live play and matchmaking. If it goes down, games stop.",
           ]}
         />
-        <p className="mt-4 text-dark/80 dark:text-off-white">
+        <p className="mt-4 text-theme-text/80 dark:text-theme-muted">
           Rather not run servers? The{" "}
           <InlineLink href="/pricing">hosted version</InlineLink> has a free
           plan.

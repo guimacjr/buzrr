@@ -17,19 +17,19 @@ export const metadata: Metadata = buildPageMetadata({
 
 export default function PricingPage() {
   return (
-    <div className="min-h-dvh flex flex-col bg-light-bg dark:bg-dark-bg">
+    <div className="min-h-dvh flex flex-col bg-theme-background dark:bg-theme-background">
       <JsonLd nodes={siteGraph()} />
       <LandingNavbar />
       <main className="flex-1 px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="max-w-5xl mx-auto">
           <div className="text-center animate-fade-up">
-            <span className="rounded-full border border-lprimary/30 dark:border-dprimary/30 bg-lprimary/10 dark:bg-dprimary/10 px-3 py-1 text-xs font-bold text-lprimary dark:text-dprimary">
+            <span className="rounded-full border border-theme-primary/30 dark:border-theme-primary/30 bg-theme-primary/10 dark:bg-theme-primary/10 px-3 py-1 text-xs font-bold text-theme-primary dark:text-theme-primary">
               Pricing
             </span>
-            <h1 className="mt-5 text-4xl sm:text-5xl font-black text-dark dark:text-white">
+            <h1 className="mt-5 text-4xl sm:text-5xl font-black text-theme-text dark:text-theme-text">
               Free to start. Pro when you outgrow it.
             </h1>
-            <p className="mt-4 max-w-xl mx-auto text-dark/70 dark:text-gray">
+            <p className="mt-4 max-w-xl mx-auto text-theme-text/70 dark:text-theme-muted">
               Host bigger rooms, build an unlimited quiz library and let AI
               draft your questions every week.
             </p>

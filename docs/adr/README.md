@@ -25,6 +25,10 @@ Format: Title · Status · Context · Decision · Consequences · Alternatives
 | [013](013-shared-contract-package.md)                  | One shared zod contract package for socket + REST shapes                      | Accepted                            |
 | [014](014-self-hosting-without-saas.md)                | Self-hosting with no SaaS lock-in (storage, models, local accounts, compose)  | Accepted                            |
 | [015](015-duel-categories-and-standalone-questions.md) | Duel categories with per-category ratings, standalone questions, daily streak | Accepted                            |
+| [016](016-global-platform-branding.md)                 | Global platform branding                                                      | Accepted                            |
+| [017](017-classic-history-navigation.md)               | Server-owned classic history navigation                                       | Accepted                            |
+
+| [018](018-portable-content-packages.md) | Portable quiz and appearance ZIP packages | Accepted |
 
 New ADRs: next number, same format, add a row here. Reversing a decision:
 mark the old one "Superseded by NNN", don't delete it.

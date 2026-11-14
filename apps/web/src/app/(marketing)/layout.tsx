@@ -10,7 +10,7 @@ export default function MarketingLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="min-h-dvh flex flex-col bg-light-bg dark:bg-dark-bg">
+    <div className="min-h-dvh flex flex-col bg-theme-background dark:bg-theme-background">
       <LandingNavbar />
       <main className="flex-1">{children}</main>
       <LandingFooter />

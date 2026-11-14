@@ -8,7 +8,7 @@ function Bone({ className }: { className?: string }) {
   return (
     <div
       className={clsx(
-        "animate-pulse rounded-md bg-lprimary/10 dark:bg-white/10",
+        "animate-pulse rounded-md bg-theme-primary/10 dark:bg-theme-surface/10",
         className,
       )}
     />
@@ -35,7 +35,7 @@ function CardSkeleton({ view }: { view: "grid" | "list" }) {
         <Bone className="h-4 w-1/2" />
       </div>
       <Bone className="h-3 w-3/4" />
-      <div className="mt-auto pt-3 border-t border-lprimary/15 dark:border-white/10 flex gap-4">
+      <div className="mt-auto pt-3 border-t border-theme-primary/15 dark:border-theme-border/10 flex gap-4">
         <Bone className="h-3 w-20" />
         <Bone className="h-3 w-14" />
       </div>

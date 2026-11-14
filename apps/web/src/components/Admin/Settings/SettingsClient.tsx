@@ -1,5 +1,8 @@
 "use client";
 
+import AppearancePackages from "../Packages/AppearancePackages";
+import BrandingSettings from "./BrandingSettings";
+import AvatarSettings from "./AvatarSettings";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -49,10 +52,12 @@ function SettingsCard({
 }) {
   return (
     <section
-      className={`bg-white dark:bg-card-dark rounded-xl p-6 ${className ?? ""}`}
+      className={`bg-theme-surface dark:bg-theme-card rounded-xl p-6 ${className ?? ""}`}
     >
-      <h2 className="text-lg font-black text-dark dark:text-white">{title}</h2>
-      <p className="text-xs text-off-dark dark:text-off-white mt-1">
+      <h2 className="text-lg font-black text-theme-text dark:text-theme-text">
+        {title}
+      </h2>
+      <p className="text-xs text-theme-muted dark:text-theme-muted mt-1">
         {description}
       </p>
       <div className="mt-4 flex flex-col gap-4">{children}</div>
@@ -72,8 +77,10 @@ function PreferenceRow({
   return (
     <div className="flex items-center justify-between gap-4">
       <div>
-        <p className="text-sm font-bold text-dark dark:text-white">{label}</p>
-        <p className="text-xs text-off-dark dark:text-off-white">
+        <p className="text-sm font-bold text-theme-text dark:text-theme-text">
+          {label}
+        </p>
+        <p className="text-xs text-theme-muted dark:text-theme-muted">
           {description}
         </p>
       </div>
@@ -93,6 +100,7 @@ function PreferencesCard() {
         description="Switch between light and dark mode."
         control={<ThemeToggle />}
       />
+      <BrandingSettings />
       <PreferenceRow
         label="Default quiz view"
         description="How your quizzes are laid out on the Quizzes page."
@@ -179,8 +187,10 @@ function AccountCard() {
           />
         </div>
         <div>
-          <p className="text-sm font-bold text-dark dark:text-white">Email</p>
-          <p className="text-sm text-off-dark dark:text-off-white">
+          <p className="text-sm font-bold text-theme-text dark:text-theme-text">
+            Email
+          </p>
+          <p className="text-sm text-theme-muted dark:text-theme-muted">
             {session?.user.email} · Signed in with Google — email can&apos;t be
             changed here.
           </p>
@@ -207,7 +217,7 @@ function PlanCard() {
       description="Your Buzrr plan, usage and subscription."
     >
       <div className="flex items-center justify-between gap-4">
-        <p className="text-sm text-dark dark:text-white">
+        <p className="text-sm text-theme-text dark:text-theme-text">
           {data
             ? data.plan === "pro"
               ? "You're on Buzrr Pro."
@@ -216,7 +226,7 @@ function PlanCard() {
         </p>
         <Link
           href="/admin/billing"
-          className="text-sm font-bold text-lprimary dark:text-dprimary underline underline-offset-2"
+          className="text-sm font-bold text-theme-primary dark:text-theme-primary underline underline-offset-2"
         >
           Plan & Billing
         </Link>
@@ -230,14 +240,14 @@ function DangerZoneCard() {
     <SettingsCard
       title="Danger zone"
       description="Sign out of this device, or permanently delete your profile."
-      className="border border-red-light dark:border-red-dark"
+      className="border border-theme-danger dark:border-theme-danger"
     >
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="w-full sm:w-64">
           <SignOutButton
             btnTitle="Sign out"
             confirmText="Are you sure you want to sign out?"
-            btnStyle="text-sm text-white dark:text-dark dark:font-bold rounded-lg py-2 px-4 bg-red-light dark:bg-red-dark w-full cursor-pointer"
+            btnStyle="text-sm text-theme-onPrimary dark:text-theme-onPrimary dark:font-bold rounded-lg py-2 px-4 bg-theme-danger dark:bg-theme-danger w-full cursor-pointer"
           />
         </div>
         <div className="w-full sm:w-64">
@@ -255,12 +265,14 @@ export default function SettingsClient() {
         <span className="md:hidden">
           <NavbarToggle />
         </span>
-        <h1 className="text-2xl font-black text-dark dark:text-white">
+        <h1 className="text-2xl font-black text-theme-text dark:text-theme-text">
           Settings
         </h1>
       </div>
       <div className="flex flex-col gap-6">
         <PreferencesCard />
+        <AvatarSettings />
+        <AppearancePackages />
         <AccountCard />
         <PlanCard />
         <DangerZoneCard />

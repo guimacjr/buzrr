@@ -17,6 +17,35 @@ stats/history, health endpoint, Vercel Analytics.
 
 ## Recent architectural moves (still fresh, know they exist)
 
+- **Portable packages (2026-11-14):** versioned `.buzrr.zip` export/import for
+  a single quiz (all seven types, media, entry-field definitions and ranking
+  settings; no game reports) and global appearance (palettes, logo, avatars).
+  Quiz imports create private draft copies; admin appearance imports support
+  selective sections and add/replace avatar catalogs. Preview, bounded archive
+  validation and storage transfer are implemented; see ADR-018 and backend.md.
+
+- **Global avatars (2026-10-18):** global Settings also supports disabling image
+  choices in favor of random solid colors for new participants (2026-11-13).
+  The saved image catalog is preserved when switching modes.
+  Admin/superadmin manage image uploads, active
+  choices and the initial avatar in Settings. Bulk upload supports multiple images,
+  per-file progress/results and retries of failed files. The public catalog replaces the
+  hardcoded player picker for code/QR entry, retaining old image references.
+  Migration `20261018000002_avatar_catalog`; see data.md and backend.md.
+
+- **Classic registration and reports (2026-10-18):** quizzes configure optional/
+  required text, alphanumeric, checkbox and dropdown entry fields. Rooms snapshot
+  definitions; lobby registrations survive kicks until finalization. Finished
+  classic results snapshot participant details and per-question responses for
+  host-only CSV download. Migration `20261018000001_registration_reports`;
+  older results retain standings only. See data.md and backend.md.
+
+- **Classic presentation controls (2026-10-18):** `media_slide` displays an image
+  or MP4/WebM video on the admin screen, advances manually and takes no answers.
+  Players wait. `config.showRanking=false` hides per-question standings in favor
+  of response statistics, without changing points or final ranking. Existing
+  columns are reused; no migration. See ADR-011 and realtime.md.
+
 - **Duel categories, standalone questions, daily streak** (2026-10, ADR-015):
   `Question.quizId` is optional (`createdById` owns it; admin-only
   `POST /api/questions` for standalone/bulk content); questions have 0..n
@@ -30,8 +59,8 @@ stats/history, health endpoint, Vercel Analytics.
   - **Pluggable question types** (ADR-011): `Question.type` + `config`
     (migration `20261006000001`); one pure server handler + one web renderer
     per type; the socket contract is type-agnostic (`submit-answer
-{ qIndex, answer }`, `question-end.summary`). Six types now:
-    multiple choice, true / false, poll, word cloud, rating, open text; the
+{ qIndex, answer }`, `question-end.summary`). Seven types now:
+    multiple choice, true / false, poll, word cloud, rating, open text, media slide; the
     unscored ones send the host throttled `live-summary` results.
   - **Pure engine core** (ADR-012): `step(state, event, now) → { state,
 effects }` in `game-engine/core/`, unit-tested; `GameEngineService` is
@@ -79,7 +108,7 @@ effects }` in `game-engine/core/`, unit-tested; `GameEngineService` is
 
 1. **vinext/Vite parallel toolchain** — present, non-default, end-state
    unknown (ADR-008).
-2. **Question types — follow-ups.** Six types ship (ADR-011 amendment);
+2. **Question types — follow-ups.** Seven types ship (ADR-011 amendment);
    still missing from the design: "show results on players' screens", the
    word-cloud profanity filter and open-text host review. The spreadsheet
    import and `POST /quizzes/ai` still produce multiple choice only.
@@ -161,6 +190,8 @@ effects }` in `game-engine/core/`, unit-tested; `GameEngineService` is
     (`set-state-in-effect`, `refs`); `apps/web/eslint.config.mjs` downgrades
     both to `warn` until those effects are refactored.
 
+Global branding is available in admin Settings: separate light/dark palettes, local preview, and a custom platform logo shared by all quizzes. Writes require admin/superadmin; defaults remain available.
+
 ## Active development areas (inferred from recent PR cadence)
 
 Duel-mode depth (bots were last), host quality-of-life (kick/ban, room caps),
@@ -178,3 +209,12 @@ and UX polish. There is no public roadmap; planned work lives in GitHub issues.
   "No duel questions". The self-host `migrate` container seeds it on start.
 - MinIO no longer publishes pullable Docker images; S3 support was verified
   against SeaweedFS, and the compose stack defaults to local disk.
+
+Multiple-choice and poll questions support up to six options in the editor and API.
+
+Quiz-wide final ranking visibility is configurable. Disabling it ends classic sessions without a final podium/participant list while preserving history and reports. Requires migration `20261112000001_quiz_final_ranking`.
+
+Classic hosts can navigate backwards: scored questions are review-only, unscored questions reopen with editable/additional responses. See realtime.md for revision and concurrency semantics.
+
+Polls submit on option click; multi-select polls update live totals on each
+toggle, including deselection, without changing scored-question behavior.

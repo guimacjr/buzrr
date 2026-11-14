@@ -108,7 +108,7 @@ export default function DuelClient({
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-40 border-b border-card-light dark:border-card-dark bg-light-bg/90 dark:bg-dark-bg/90 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b border-theme-card dark:border-theme-card bg-theme-background/90 dark:bg-theme-background/90 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <Link href="/" aria-label="Buzrr home">
             <ClientImage
@@ -138,12 +138,12 @@ export default function DuelClient({
 
       <div className="flex w-full flex-1 flex-col items-center px-4 pb-44 pt-5 sm:justify-center sm:px-6 sm:pb-16 sm:pt-10">
         <div className="flex w-full max-w-[660px] flex-col gap-3.5 sm:gap-[18px]">
-          <h1 className="text-[28px] font-extrabold tracking-tight text-dark dark:text-white sm:text-center sm:text-5xl md:text-6xl animate-fade-up">
+          <h1 className="text-[28px] font-extrabold tracking-tight text-theme-text dark:text-theme-text sm:text-center sm:text-5xl md:text-6xl animate-fade-up">
             1v1 Duel
           </h1>
 
           {isPending ? (
-            <Skeleton className="h-16 w-full rounded-2xl bg-white dark:bg-card-dark sm:h-40" />
+            <Skeleton className="h-16 w-full rounded-2xl bg-theme-surface dark:bg-theme-card sm:h-40" />
           ) : profile ? (
             <>
               <div className="sm:hidden">
@@ -176,19 +176,19 @@ export default function DuelClient({
               onCancel={cancel}
             />
           ) : status === "matched" ? (
-            <p className="animate-pulse text-center font-bold text-dark dark:text-white">
+            <p className="animate-pulse text-center font-bold text-theme-text dark:text-theme-text">
               Opponent found — starting…
             </p>
           ) : (
             <>
               <div className="mt-1.5 hidden items-baseline justify-between sm:flex">
                 <span className={labelClass}>Category</span>
-                <span className="text-[13.5px] text-off-dark dark:text-muted-dark">
+                <span className="text-[13.5px] text-theme-muted dark:text-theme-muted">
                   Each category has its own rating
                 </span>
               </div>
               {catalogPending ? (
-                <Skeleton className="h-64 w-full rounded-2xl bg-white dark:bg-card-dark" />
+                <Skeleton className="h-64 w-full rounded-2xl bg-theme-surface dark:bg-theme-card" />
               ) : (
                 <CategoryPicker
                   categories={catalog?.categories ?? []}
@@ -199,18 +199,18 @@ export default function DuelClient({
               )}
 
               {status === "timeout" && (
-                <p className="text-center text-sm text-dark dark:text-white">
+                <p className="text-center text-sm text-theme-text dark:text-theme-text">
                   No opponent found this time. Try again?
                 </p>
               )}
               {status === "error" && error && (
-                <p className="text-center text-sm text-red-light dark:text-red-dark">
+                <p className="text-center text-sm text-theme-danger dark:text-theme-danger">
                   {error}
                 </p>
               )}
 
               {/* Floating on mobile so the CTAs stay reachable while scrolling. */}
-              <div className="fixed inset-x-0 bottom-0 z-30 flex flex-col gap-2 bg-linear-to-t from-light-bg from-70% to-transparent px-4 pb-[22px] pt-3.5 dark:from-dark-bg sm:static sm:mt-2 sm:gap-3 sm:bg-none sm:p-0">
+              <div className="fixed inset-x-0 bottom-0 z-30 flex flex-col gap-2 bg-linear-to-t from-theme-muted from-70% to-transparent px-4 pb-[22px] pt-3.5 dark:from-theme-muted sm:static sm:mt-2 sm:gap-3 sm:bg-none sm:p-0">
                 <Button
                   fullWidth
                   size="lg"
@@ -225,7 +225,7 @@ export default function DuelClient({
                   size="lg"
                   disabled={createInvite.isPending}
                   onClick={invite}
-                  className="bg-white! dark:bg-dark! sm:bg-transparent!"
+                  className="bg-theme-surface! dark:bg-theme-surface! sm:bg-transparent!"
                 >
                   {createInvite.isPending
                     ? "Creating link…"
@@ -263,28 +263,28 @@ function SearchingCard({
   }, [queuedAt]);
 
   return (
-    <div className="flex w-full flex-col items-center gap-3.5 rounded-[22px] border border-lprimary/15 dark:border-white/5 bg-white dark:bg-dark px-6 py-8 text-center shadow-[0_10px_30px_-18px_rgba(70,40,160,0.35)] animate-fade-up">
-      <div className="h-16 w-16 animate-spin rounded-full border-[5px] border-card-light dark:border-card-dark border-t-lprimary dark:border-t-dprimary" />
-      <h3 className="mt-1.5 text-xl font-bold text-dark dark:text-white sm:text-[22px]">
+    <div className="flex w-full flex-col items-center gap-3.5 rounded-[22px] border border-theme-primary/15 dark:border-theme-border/5 bg-theme-surface dark:bg-theme-surface px-6 py-8 text-center shadow-[0_10px_30px_-18px_rgba(70,40,160,0.35)] animate-fade-up">
+      <div className="h-16 w-16 animate-spin rounded-full border-[5px] border-theme-card dark:border-theme-card border-t-lprimary dark:border-t-dprimary" />
+      <h3 className="mt-1.5 text-xl font-bold text-theme-text dark:text-theme-text sm:text-[22px]">
         Searching for an opponent… {queuedAt ? `${elapsed}s` : ""}
       </h3>
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-card-light dark:bg-card-dark px-3 py-1.5 text-[13.5px] font-bold text-lprimary dark:text-dprimary">
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-theme-card dark:bg-theme-card px-3 py-1.5 text-[13.5px] font-bold text-theme-primary dark:text-theme-primary">
         <span
           className="h-[9px] w-[9px] rounded-[3px]"
           style={{ background: categorySwatch(category?.hue ?? RANDOM_HUE) }}
         />
         {category?.name ?? "Random"}
       </span>
-      <p className="text-[15px] text-off-dark dark:text-muted-dark">
+      <p className="text-[15px] text-theme-muted dark:text-theme-muted">
         The rating range widens the longer you wait.
       </p>
       {category && queuedAt && elapsed >= SWITCH_TO_RANDOM_AFTER_S && (
-        <p className="text-sm text-off-dark dark:text-muted-dark">
+        <p className="text-sm text-theme-muted dark:text-theme-muted">
           Taking a while?{" "}
           <button
             type="button"
             onClick={onSwitchToRandom}
-            className="cursor-pointer font-semibold text-lprimary hover:underline dark:text-dprimary"
+            className="cursor-pointer font-semibold text-theme-primary hover:underline dark:text-theme-primary"
           >
             Switch to Random
           </button>{" "}

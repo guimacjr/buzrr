@@ -15,7 +15,7 @@ export default function DuelPortalTabs() {
   return (
     <nav
       aria-label="Duel Portal sections"
-      className="mt-3 flex gap-1 overflow-x-auto border-b border-gray"
+      className="mt-3 flex gap-1 overflow-x-auto border-b border-theme-border"
     >
       {TABS.map((tab) => {
         const active = pathname === tab.href;
@@ -27,8 +27,8 @@ export default function DuelPortalTabs() {
             className={clsx(
               "-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-sm font-semibold transition-colors",
               active
-                ? "border-lprimary dark:border-dprimary text-lprimary dark:text-dprimary"
-                : "border-transparent text-off-dark dark:text-off-white hover:text-dark dark:hover:text-white",
+                ? "border-theme-primary dark:border-theme-primary text-theme-primary dark:text-theme-primary"
+                : "border-transparent text-theme-muted dark:text-theme-muted hover:text-theme-text dark:hover:text-theme-onPrimary",
             )}
           >
             {tab.label}

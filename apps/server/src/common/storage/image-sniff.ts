@@ -52,3 +52,34 @@ export function sniffImage(buffer: Buffer): { type: string; ext: string } {
   }
   return { type: match.type, ext: match.ext };
 }
+
+/** Browser-playable video containers, detected from bytes rather than a filename. */
+export function sniffMedia(buffer: Buffer): {
+  type: string;
+  ext: string;
+  mediaType: "image" | "video";
+} {
+  try {
+    return { ...sniffImage(buffer), mediaType: "image" };
+  } catch (error) {
+    if (!(error instanceof UnsupportedMediaError)) throw error;
+  }
+  if (
+    buffer.length >= 16 &&
+    buffer.toString("ascii", 4, 8) === "ftyp" &&
+    ["isom", "iso2", "mp41", "mp42", "avc1", "M4V "].includes(
+      buffer.toString("ascii", 8, 12),
+    )
+  ) {
+    return { type: "video/mp4", ext: "mp4", mediaType: "video" };
+  }
+  if (
+    buffer.subarray(0, 4).equals(Buffer.from([0x1a, 0x45, 0xdf, 0xa3])) &&
+    buffer.subarray(4, 4096).includes(Buffer.from("webm"))
+  ) {
+    return { type: "video/webm", ext: "webm", mediaType: "video" };
+  }
+  throw new UnsupportedMediaError(
+    "Upload a PNG, JPEG, GIF, WebP, AVIF, MP4 or WebM file",
+  );
+}

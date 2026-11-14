@@ -1,0 +1,1 @@
+ALTER TABLE "Quiz" ADD COLUMN "showFinalRanking" BOOLEAN NOT NULL DEFAULT true;

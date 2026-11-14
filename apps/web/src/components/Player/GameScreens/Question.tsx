@@ -21,6 +21,7 @@ const Question = (params: {
   hostName?: string | null;
   hostImage?: string | null;
 }) => {
+  const revision = useAppSelector((state) => state.game.revision);
   const qIndex = useAppSelector((state) => state.game.qIndex);
   const you = useAppSelector((state) => state.game.you);
   const deadline = useAppSelector((state) => state.game.deadline);
@@ -36,16 +37,16 @@ const Question = (params: {
    */
   const unacked = useRef<QuestionAnswer | null>(null);
   /** The question the UI is on, for discarding acks from a previous one. */
-  const liveQuestionId = useRef(params.question.id);
+  const liveQuestionId = useRef(`${params.question.id}:${revision}`);
 
   // A new question means a fresh answer state.
   useEffect(() => {
-    liveQuestionId.current = params.question.id;
+    liveQuestionId.current = `${params.question.id}:${revision}`;
     setAnswer(null);
     setSubmitted(false);
     setPending(false);
     unacked.current = null;
-  }, [params.question.id]);
+  }, [params.question.id, revision]);
 
   const send = useCallback(
     (picked: QuestionAnswer, opts?: { silent?: boolean }) => {
@@ -58,7 +59,7 @@ const Question = (params: {
       setPending(true);
       params.socket.emit(
         "submit-answer",
-        { qIndex, answer: picked },
+        { qIndex, answer: picked, revision },
         (result) => {
           // An ack that arrives after the question moved on describes a
           // question this screen has left. Acting on it would clobber the new
@@ -81,13 +82,13 @@ const Question = (params: {
             setAnswer(null);
           }
           if (!opts?.silent) {
-            toast.error(result.reason ?? "Answer was not accepted");
+            toast.error(result.reason ?? "A resposta não foi aceita");
           }
           params.socket.emit("request-sync");
         },
       );
     },
-    [params.socket, qIndex, more],
+    [params.socket, qIndex, more, revision],
   );
 
   /**
@@ -122,9 +123,17 @@ const Question = (params: {
     send(picked);
   };
 
+  if (params.question.type === "media_slide")
+    return (
+      <div className="flex min-h-[70dvh] items-center justify-center text-xl">
+        Aguardando a próxima pergunta
+      </div>
+    );
+
   return (
     <>
       <QuestionAndResult
+        key={`${params.question.id}:${revision}`}
         question={params.question}
         quizTitle={params.quizTitle}
         gameCode={params.gameCode}

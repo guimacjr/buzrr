@@ -1,5 +1,7 @@
 "use client";
 
+import QuizPresentationSettings from "./QuizPresentationSettings";
+import RegistrationEditor from "./RegistrationEditor";
 import { useState } from "react";
 import clsx from "clsx";
 import { RxCross2 } from "react-icons/rx";
@@ -28,7 +30,7 @@ export default function QuizDetailClient({ quizId }: { quizId: string }) {
       notFound();
     }
     return (
-      <div className="text-dark dark:text-white w-full h-full flex items-center justify-center p-8">
+      <div className="text-theme-text dark:text-theme-text w-full h-full flex items-center justify-center p-8">
         Could not load this quiz. Try again later.
       </div>
     );
@@ -38,8 +40,8 @@ export default function QuizDetailClient({ quizId }: { quizId: string }) {
     return (
       <div className="w-full max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-2 md:py-4">
         <div className="w-full flex gap-3">
-          <Skeleton className="hidden md:block md:w-2/5 lg:w-1/3 h-[80vh] rounded-xl bg-white dark:bg-card-dark" />
-          <Skeleton className="w-full h-[80vh] rounded-xl bg-white dark:bg-card-dark" />
+          <Skeleton className="hidden md:block md:w-2/5 lg:w-1/3 h-[80vh] rounded-xl bg-theme-surface dark:bg-theme-card" />
+          <Skeleton className="w-full h-[80vh] rounded-xl bg-theme-surface dark:bg-theme-card" />
         </div>
       </div>
     );
@@ -47,7 +49,7 @@ export default function QuizDetailClient({ quizId }: { quizId: string }) {
 
   if (!quiz) {
     return (
-      <div className="text-dark dark:text-white w-full h-full flex items-center justify-center p-8">
+      <div className="text-theme-text dark:text-theme-text w-full h-full flex items-center justify-center p-8">
         Could not load this quiz. Try again later.
       </div>
     );
@@ -57,7 +59,7 @@ export default function QuizDetailClient({ quizId }: { quizId: string }) {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-2 md:py-4">
-      <div className="text-dark dark:text-white w-full flex flex-col md:flex-row gap-3 md:h-[calc(100dvh-8.5rem)]">
+      <div className="text-theme-text dark:text-theme-text w-full flex flex-col md:flex-row gap-3 md:h-[calc(100dvh-8.5rem)]">
         <QuizInfoSection quiz={quiz} onShowLeaderboard={setLeaderboardId} />
 
         {/* Mobile drawer: the quiz info the top bar has no room for
@@ -72,14 +74,14 @@ export default function QuizDetailClient({ quizId }: { quizId: string }) {
         ></div>
         <div
           className={clsx(
-            "z-20 p-4 bg-white dark:bg-dark flex-col h-dvh fixed w-[80vw] left-0 top-0 md:hidden overflow-y-auto",
+            "z-20 p-4 bg-theme-surface dark:bg-theme-surface flex-col h-dvh fixed w-[80vw] left-0 top-0 md:hidden overflow-y-auto",
             sidebarOpen ? "flex" : "hidden",
           )}
         >
           <div className="flex justify-end">
             <IconButton
               aria-label="Close quiz info"
-              className="text-dark dark:text-white"
+              className="text-theme-text dark:text-theme-text"
               onClick={() => setSidebarOpen(false)}
               icon={<RxCross2 size={22} />}
             />
@@ -94,7 +96,7 @@ export default function QuizDetailClient({ quizId }: { quizId: string }) {
           />
         </div>
 
-        <div className="bg-white dark:bg-dark rounded-xl w-full flex-1 flex flex-col min-h-0">
+        <div className="bg-theme-surface dark:bg-theme-surface rounded-xl w-full flex-1 flex flex-col min-h-0">
           {leaderboardId ? (
             <div className="flex-1 min-h-0 overflow-y-auto p-4">
               <LeaderboardView
@@ -108,7 +110,7 @@ export default function QuizDetailClient({ quizId }: { quizId: string }) {
               <div className="p-3 flex items-center gap-2 justify-start md:hidden">
                 <IconButton
                   aria-label="Open quiz info"
-                  className="text-dark dark:text-white"
+                  className="text-theme-text dark:text-theme-text"
                   onClick={() => setSidebarOpen(true)}
                   icon={
                     <svg
@@ -127,10 +129,10 @@ export default function QuizDetailClient({ quizId }: { quizId: string }) {
                     </svg>
                   }
                 />
-                <p className="text-dark dark:text-white font-black">
+                <p className="text-theme-text dark:text-theme-text font-black">
                   {quiz.title}
                 </p>
-                <span className="ml-auto text-xs font-semibold rounded-lg px-2 py-1 bg-[#c4ee4f] text-[#2c3a08] dark:bg-[#b8e94a] dark:text-[#15200a]">
+                <span className="ml-auto text-xs font-semibold rounded-lg px-2 py-1 bg-theme-secondary text-theme-onSecondary dark:bg-theme-secondary dark:text-theme-onSecondary">
                   {`Questions: ${questionCount}`}
                 </span>
               </div>
@@ -143,10 +145,19 @@ export default function QuizDetailClient({ quizId }: { quizId: string }) {
               </div>
               <div className="relative flex flex-col flex-1 min-h-0">
                 <div className="relative flex flex-col flex-1 min-h-0 md:overflow-y-auto p-4 md:px-6 gap-4 md:gap-[18px]">
-                  <div className="sticky -top-4 z-10 -mx-4 -mt-4 px-4 pt-4 pb-1 md:-mx-6 md:px-6 md:rounded-t-xl bg-white dark:bg-dark flex items-center gap-2 md:gap-3.5">
+                  <div className="sticky -top-4 z-10 -mx-4 -mt-4 px-4 pt-4 pb-1 md:-mx-6 md:px-6 md:rounded-t-xl bg-theme-surface dark:bg-theme-surface flex items-center gap-2 md:gap-3.5">
                     <AddQuestionMenu quizId={quizId} />
                     <HideQuestions />
                   </div>
+                  <QuizPresentationSettings
+                    quizId={quizId}
+                    showFinalRanking={quiz.showFinalRanking}
+                  />
+                  <RegistrationEditor
+                    key={quizId}
+                    quizId={quizId}
+                    initialFields={quiz.registrationFields}
+                  />
                   <AllQues quizId={quizId} />
                 </div>
                 <HiddenQuestionsOverlay quizId={quizId} />

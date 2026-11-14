@@ -123,7 +123,7 @@ export default async function ComparePage({ params }: { params: Params }) {
             `We don't quote ${c.displayName}'s prices: they vary by plan, region and account type, and change over time. Check the official page linked in the table.`,
           ]}
         />
-        <p className="mt-4 text-dark/80 dark:text-off-white">
+        <p className="mt-4 text-theme-text/80 dark:text-theme-muted">
           Current Buzrr prices are on the{" "}
           <InlineLink href="/pricing">Buzrr pricing page</InlineLink>.
         </p>
@@ -131,7 +131,7 @@ export default async function ComparePage({ params }: { params: Params }) {
 
       <Section title={`What ${c.displayName} and Buzrr are`}>
         <Prose paragraphs={[c.summary.text, ...compare.overview]} />
-        <p className="mt-6 max-w-3xl text-dark/80 dark:text-off-white">
+        <p className="mt-6 max-w-3xl text-theme-text/80 dark:text-theme-muted">
           Deciding whether to switch? The{" "}
           <InlineLink href={alternativePath(c.slug)}>
             open-source {c.searchName} alternative guide
@@ -147,7 +147,7 @@ export default async function ComparePage({ params }: { params: Params }) {
 
       <Section title="Sources">
         <SourceList slug={c.slug} />
-        <p className="mt-3 text-sm text-dark/60 dark:text-gray">
+        <p className="mt-3 text-sm text-theme-text/60 dark:text-theme-muted">
           Buzrr&rsquo;s column is based on the Buzrr source code on GitHub.
         </p>
       </Section>
@@ -175,7 +175,7 @@ export default async function ComparePage({ params }: { params: Params }) {
           href: "https://github.com/buzrr/buzrr",
         }}
       />
-      <p className="mt-6 text-center text-sm text-dark/60 dark:text-gray">
+      <p className="mt-6 text-center text-sm text-theme-text/60 dark:text-theme-muted">
         {c.displayName} is a trademark of its owner. Buzrr is not affiliated
         with {c.displayName}.
       </p>

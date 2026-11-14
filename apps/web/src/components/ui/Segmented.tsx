@@ -20,7 +20,7 @@ export function Segmented<T extends string | number>({
     <span
       role="group"
       aria-label={label}
-      className="flex shrink-0 gap-1 rounded-[10px] p-[3px] bg-lprimary/8 dark:bg-white/5"
+      className="flex shrink-0 gap-1 rounded-[10px] p-[3px] bg-theme-primary/8 dark:bg-theme-surface/5"
     >
       {options.map((option) => {
         const on = option.value === value;
@@ -33,8 +33,8 @@ export function Segmented<T extends string | number>({
             className={clsx(
               "rounded-lg px-2.5 py-[5px] text-xs font-semibold cursor-pointer transition-colors whitespace-nowrap",
               on
-                ? "bg-white dark:bg-dark text-dark dark:text-white shadow-[0_1px_3px_rgba(0,0,0,0.12)]"
-                : "text-off-dark dark:text-muted-dark",
+                ? "bg-theme-surface dark:bg-theme-surface text-theme-text dark:text-theme-text shadow-[0_1px_3px_rgba(0,0,0,0.12)]"
+                : "text-theme-muted dark:text-theme-muted",
             )}
           >
             {option.label}

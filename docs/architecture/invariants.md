@@ -16,7 +16,7 @@ the docs, and write an ADR.
    core in `game-engine/core/` (`step`, `judgeAnswer`), executed by
    `GameEngineService` (comments at the top of both). The gateway relays
    intent; clients render pushed state. The host's only pacing intent is
-   `host-next` — the server derives what "next" means from the current phase,
+   `host-next` and `host-back` — the server derives the destination and phase,
    so no client ever supplies a question index. Client countdowns are
    display-only (`useServerCountdown.ts`).
 2. **[explicit] Answer timing is server-measured.** `submitAnswer` computes
@@ -47,9 +47,11 @@ the docs, and write an ADR.
 7. **[explicit] Game end is single-claimant.** `claimEnded` atomically flips
    phase→`ended`; only the winner persists and cleans up. Any new
    end-of-game side effect belongs inside/behind that claim.
-8. **[explicit] First answer wins.** `HSETNX` per (game, question, player),
+8. **[explicit] First scored answer wins.** `HSETNX` per (game, question, player),
    with the score added in the same script (`RECORD_ANSWER_SCRIPT`) —
-   duplicates must never re-score.
+   duplicates must never re-score. Reopened unscored polls/ratings replace their
+   answer, and word-cloud/open-text responses can append within the existing caps;
+   those changes never touch points.
 9. **[explicit] Ban beats connect.** The ban set is written before the kick;
    roster registration is atomic with the ban check
    (`REGISTER_PLAYER_SCRIPT`); the HTTP ban writes Redis **before** detaching

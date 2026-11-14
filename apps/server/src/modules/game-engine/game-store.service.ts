@@ -25,6 +25,8 @@ const keys = {
 };
 
 const NUMERIC_META = new Set([
+  "revision",
+  "maxVisitedIndex",
   "qIndex",
   "qStartAt",
   "qDeadline",
@@ -35,7 +37,12 @@ const NUMERIC_META = new Set([
   "botAnswerAt",
   "pausedAt",
 ]);
-const BOOLEAN_META = new Set(["hostConnected", "rated"]);
+const BOOLEAN_META = new Set([
+  "hostConnected",
+  "rated",
+  "showFinalRanking",
+  "reopened",
+]);
 
 function parseMeta(raw: Record<string, string>): GameMeta | null {
   if (!raw || Object.keys(raw).length === 0) return null;
@@ -157,6 +164,11 @@ return 1
 // same atomic step. Returns who has answered so far (the early-close check
 // needs it) or nil for a duplicate.
 const RECORD_ANSWER_SCRIPT = `
+if redis.call('HGET', KEYS[3], 'phase') ~= 'question' or
+  tonumber(redis.call('HGET', KEYS[3], 'qIndex')) ~= tonumber(ARGV[5]) or
+  tonumber(redis.call('HGET', KEYS[3], 'revision') or '0') ~= tonumber(ARGV[6]) or
+  redis.call('HEXISTS', KEYS[4], ARGV[1]) == 0 then return false end
+
 if redis.call('HSETNX', KEYS[1], ARGV[1], ARGV[2]) == 0 then
   return false
 end
@@ -171,6 +183,11 @@ return redis.call('HKEYS', KEYS[1])
 // two answers racing from one player can't drop either. Scores are untouched
 // — only unscored types take more than one answer.
 const REPLACE_ANSWER_SCRIPT = `
+if redis.call('HGET', KEYS[3], 'phase') ~= 'question' or
+  tonumber(redis.call('HGET', KEYS[3], 'qIndex')) ~= tonumber(ARGV[5]) or
+  tonumber(redis.call('HGET', KEYS[3], 'revision') or '0') ~= tonumber(ARGV[6]) or
+  redis.call('HEXISTS', KEYS[4], ARGV[1]) == 0 then return 0 end
+
 if redis.call('HGET', KEYS[1], ARGV[1]) ~= ARGV[2] then
   return 0
 end
@@ -180,6 +197,12 @@ return 1
 `;
 
 const CLAIM_ENDED_SCRIPT = `
+if ARGV[2] ~= '' and (
+  redis.call('HGET', KEYS[1], 'phase') ~= ARGV[2] or
+  tonumber(redis.call('HGET', KEYS[1], 'qIndex')) ~= tonumber(ARGV[3]) or
+  tonumber(redis.call('HGET', KEYS[1], 'revision') or '0') ~= tonumber(ARGV[4])
+) then return 0 end
+
 local phase = redis.call('HGET', KEYS[1], 'phase')
 if phase == 'ended' or phase == false then
   return 0
@@ -264,6 +287,39 @@ export class GameStoreService {
     return state;
   }
 
+  async commitTransition(
+    code: string,
+    expected: GameMeta,
+    patch: Partial<GameMeta>,
+    deadline: number,
+  ): Promise<boolean> {
+    const result = await this.redis.eval(
+      `
+      if redis.call('HGET', KEYS[1], 'phase') ~= ARGV[1] or
+        tonumber(redis.call('HGET', KEYS[1], 'qIndex')) ~= tonumber(ARGV[2]) or
+        tonumber(redis.call('HGET', KEYS[1], 'revision') or '0') ~= tonumber(ARGV[3]) then return 0 end
+      if #ARGV >= 7 then redis.call('HSET', KEYS[1], unpack(ARGV, 7)) end
+      redis.call('EXPIRE', KEYS[1], ARGV[4])
+      redis.call('EXPIRE', KEYS[3], ARGV[4])
+      if tonumber(ARGV[5]) < 0 then redis.call('ZREM', KEYS[2], ARGV[6])
+      else redis.call('ZADD', KEYS[2], ARGV[5], ARGV[6]) end
+      return 1
+    `,
+      3,
+      keys.meta(code),
+      keys.deadlines(),
+      keys.banned(code),
+      expected.phase,
+      expected.qIndex,
+      expected.revision ?? 0,
+      TTL_SECONDS,
+      deadline,
+      code,
+      ...this.flattenMeta(patch),
+    );
+    return result === 1;
+  }
+
   async patchMeta(code: string, patch: Partial<GameMeta>): Promise<void> {
     const flat = this.flattenMeta(patch);
     if (flat.length === 0) return;
@@ -301,12 +357,15 @@ export class GameStoreService {
    * already claimed it (or the game is gone), so only one claimant persists
    * the result and cleans up.
    */
-  async claimEnded(code: string): Promise<boolean> {
+  async claimEnded(code: string, expected?: GameMeta): Promise<boolean> {
     const claimed = await this.redis.eval(
       CLAIM_ENDED_SCRIPT,
       1,
       keys.meta(code),
       TTL_SECONDS,
+      expected?.phase ?? "",
+      expected?.qIndex ?? 0,
+      expected?.revision ?? 0,
     );
     return claimed === 1;
   }
@@ -381,16 +440,21 @@ export class GameStoreService {
     qIndex: number,
     playerId: string,
     answer: StoredAnswer,
+    revision = 0,
   ): Promise<string[] | null> {
     const answered = await this.redis.eval(
       RECORD_ANSWER_SCRIPT,
-      2,
+      4,
       keys.answers(code, qIndex),
       keys.lb(code),
+      keys.meta(code),
+      keys.players(code),
       playerId,
       JSON.stringify(answer),
       answer.score,
       TTL_SECONDS,
+      qIndex,
+      revision,
     );
     return (answered as string[] | null) ?? null;
   }
@@ -414,15 +478,21 @@ export class GameStoreService {
     playerId: string,
     previousRaw: string,
     next: StoredAnswer,
+    revision = 0,
   ): Promise<boolean> {
     const replaced = await this.redis.eval(
       REPLACE_ANSWER_SCRIPT,
-      1,
+      4,
       keys.answers(code, qIndex),
+      keys.lb(code),
+      keys.meta(code),
+      keys.players(code),
       playerId,
       previousRaw,
       JSON.stringify(next),
       TTL_SECONDS,
+      qIndex,
+      revision,
     );
     return replaced === 1;
   }

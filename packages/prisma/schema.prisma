@@ -105,19 +105,21 @@ model Verification {
 }
 
 model Quiz {
-  id           String        @id @default(cuid())
-  title        String
-  description  String?
-  userId       String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  thumbnail    String?
+  id                 String        @id @default(cuid())
+  title              String
+  description        String?
+  userId             String
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  thumbnail          String?
   /// Public quizzes feed the duel-mode question pool.
-  isPublic     Boolean       @default(false)
-  gameResults  GameResult[]
-  gameSessions GameSession[]
-  questions    Question[]
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isPublic           Boolean       @default(false)
+  showFinalRanking   Boolean       @default(true)
+  registrationFields Json          @default("[]")
+  gameResults        GameResult[]
+  gameSessions       GameSession[]
+  questions          Question[]
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Question {
@@ -238,20 +240,34 @@ model Player {
 /// gameplay flag kept here is `isPlaying`, which join checks read to tell a
 /// waiting lobby from a room already in progress.
 model GameSession {
-  id        String   @id @default(cuid())
-  quizId    String
-  creatorId String
-  gameCode  String   @unique
-  isPlaying Boolean  @default(false)
-  createdAt DateTime @default(now())
-  creator   User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  players   Player[]
+  id                 String             @id @default(cuid())
+  quizId             String
+  creatorId          String
+  gameCode           String             @unique
+  isPlaying          Boolean            @default(false)
+  createdAt          DateTime           @default(now())
+  creator            User               @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  quiz               Quiz               @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  registrationFields Json               @default("[]")
+  registrations      GameRegistration[]
+  players            Player[]
 }
 
-/// Immutable record of a finished game. Live state lives in Redis during
-/// play; this (plus its entries) is the only thing that survives a game.
+/// Lobby entry snapshot; survives a kick and is copied into the final report.
+model GameRegistration {
+  id         String      @id @default(cuid())
+  sessionId  String
+  playerId   String
+  playerName String
+  answers    Json        @default("{}")
+  session    GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, playerId])
+}
+
+/// Immutable record of a finished game. Live answers stay in Redis until finalization.
 model GameResult {
+  report        Json?
   id            String            @id @default(cuid())
   gameCode      String
   mode          GameMode          @default(classic)
@@ -416,4 +432,19 @@ enum ModerationStatus {
   pending
   approved
   unapproved
+}
+
+/// Global avatar choices. Revision supports atomic concurrent admin edits.
+model AvatarCatalog {
+  id String @id
+  data Json
+  revision Int @default(0)
+}
+
+/// Global visual identity. Palettes and logo are updated independently.
+model BrandingSettings {
+  id String @id
+  light Json
+  dark Json
+  logoUrl String?
 }

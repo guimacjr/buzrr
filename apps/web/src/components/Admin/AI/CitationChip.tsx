@@ -21,11 +21,11 @@ export default function CitationChip({ citation }: { citation: Citation }) {
 
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-md bg-card-light dark:bg-dark px-2 py-1 text-2xs text-off-dark dark:text-off-white max-w-full"
+      className="inline-flex items-center gap-1.5 rounded-md bg-theme-card dark:bg-theme-surface px-2 py-1 text-2xs text-theme-muted dark:text-theme-muted max-w-full"
       title={[citation.documentName, section, page].filter(Boolean).join(" — ")}
     >
       <LuFileText size={12} className="shrink-0" aria-hidden />
-      <span className="truncate font-bold text-dark dark:text-white">
+      <span className="truncate font-bold text-theme-text dark:text-theme-text">
         {citation.documentName}
       </span>
       {section && <span className="truncate">· {section}</span>}

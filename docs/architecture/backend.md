@@ -82,6 +82,31 @@ services.
   no model configured → 400. Whole quiz insert is one transaction. Reserves
   one AI token before generating; any failure refunds it.
 
+## Portable content packages
+
+`PortabilityModule` exposes authenticated `GET /packages/quizzes/:id` (owner-only
+export), `POST /packages/quizzes/preview` and `POST /packages/quizzes/import`.
+The corresponding `/packages/appearance` GET and `/preview`, `/import` POST
+routes require admin/superadmin, checked against the DB. POSTs accept multipart
+`file`; appearance import also accepts JSON `options` (colors, logo, avatar mode).
+All routes use the rate-limit guard. Exports are ZIP attachments with no-store.
+
+The versioned schemas live in `@buzrr/contract`. Preview fully validates without
+writing; import repeats validation before uploads. Quiz imports create private,
+untagged drafts with new IDs and check entitlement capacity inside the insert
+transaction. All question types, media slides, entry-field definitions and
+ranking settings are supported; gameplay records and moderation decisions are
+excluded. Appearance writes are one DB transaction; avatar revision checks
+prevent lost concurrent updates. Failed writes clean up new uploads, and old
+published appearance images remain available.
+
+`MediaStorage.read` reads only driver-owned objects (local disk directly,
+configured S3 public URLs, or this Cloudinary cloud's upload URLs). Remote reads
+have time/size limits and refuse redirects. Unknown/old-provider URLs fail
+export explicitly; imports upload embedded bytes through the current driver.
+Builtins are validated bundled avatar references. See [ADR-018](../adr/018-portable-content-packages.md)
+for archive layout, limits and failure semantics.
+
 ## Moderation
 
 `moderation.service.ts` — the gate feeding the duel pool
@@ -206,14 +231,14 @@ max, resetsAt? }`; the web client's upgrade prompt keys on that body.
 
 ## Cross-cutting services (`src/common/`)
 
-- `MediaStorage` (`storage/`) — where question images go: `cloudinary`, `s3`
+- `MediaStorage` (`storage/`) — where question images and media-slide videos go: `cloudinary`, `s3`
   (any S3-compatible store; built-in SigV4 signer) or `local` (API disk,
   served at `/uploads`), or `none`. Chosen by `STORAGE_DRIVER`; unset =
   Cloudinary if `CLOUDINARY_CLOUD_NAME` is set, else `none` — never a silent
   fall back to disk. `none` rejects uploads with 503 "Media upload is currently unavailable"; it is
   also bound when `CLOUDINARY_*` or `S3_BUCKET`/`S3_ACCESS_KEY_ID`/
   `S3_SECRET_ACCESS_KEY` are incomplete. `s3`/`local` accept only
-  magic-byte-sniffed PNG/JPEG/GIF/WebP/AVIF (no SVG — they serve bytes as-is).
+  magic-byte-sniffed PNG/JPEG/GIF/WebP/AVIF and MP4/WebM (no SVG — they serve bytes as-is).
   Only an unknown `STORAGE_DRIVER` fails at boot.
 - `TextGenerator` (`llm/`) — prompt in, text out: `GeminiGenerator` or
   `OpenAICompatibleGenerator` (plain `fetch` to `/chat/completions`). Chosen
@@ -237,3 +262,54 @@ max, resetsAt? }`; the web client's upgrade prompt keys on that body.
    bodies defined in `@buzrr/contract` are shared; other response types there
    are **hand-written mirrors** — when you change one of those, update the
    mirror or nothing fails until runtime.
+
+### Media slide uploads
+
+The multipart question upsert accepts `media_slide` with a required image or
+video, no options and no score. JSON-only imports/standalone creation exclude
+slides because those envelopes carry no media. Question media uploads have no
+application-enforced file-size limit in the editor or API; Multer buffers files
+in memory, and infrastructure/storage-provider limits still apply.
+Local, S3 and Cloudinary accept sniffed raster
+images and MP4/WebM video containers, ignoring client MIME declarations.
+Cloudinary uses the detected resource type for upload and deletion. Video
+playback uses browser controls; ending playback never advances the game.
+
+### Registration and session CSV reports
+
+- Owner-only `PATCH /api/quizzes/:id/registration` accepts `{ fields }` via the
+  shared contract. Field IDs are unique; dropdown choices are nonempty/distinct.
+- Public, rate-limited `GET /api/game-sessions/registration/:code` exposes only
+  the room's field definitions. Code and QR entry use this same endpoint.
+- Player-authenticated `POST /api/game-sessions/join` accepts optional
+  `registrationAnswers`. Validation is authoritative here (including mandatory
+  fields, checkbox acceptance, letters/numbers and dropdown membership).
+  Rejoins with omitted answers reuse their prior registration; unknown keys
+  are discarded. Registration and lobby membership share the join transaction.
+- Host-only `GET /api/game-sessions/results/:resultId/report` returns UTF-8 CSV
+  with BOM, one row per registered participant (including removed players),
+  with registration and per-question columns. Quotes/newlines are escaped and
+  spreadsheet formula prefixes neutralized. Old sessions export standings with
+  a clear missing-detail note. Result lists omit the potentially large snapshot.
+
+See [data.md](data.md#classic-entry-fields-and-detailed-reports) for persistence.
+
+### Global player avatar catalog
+
+`GET /api/avatars` exposes active choices and the initial avatar, without auth.
+`GET /api/avatars/manage`, `POST /api/avatars` (multipart `file` + `label`) and
+`PATCH /api/avatars` (shared `AvatarAction`) require admin/superadmin via the
+DB-backed RolesGuard. Uploads use the existing MediaStorage provider and raster
+magic-byte validation; videos/SVG are rejected and no file-size cap is added.
+The shared `mode` action switches between images and random colors. In color
+mode the public catalog exposes only bundled color URLs; new player creation
+rejects image URLs. Image mode accepts only an enabled catalog URL. Existing players and
+history retain their stored image URL when an avatar is hidden.
+
+## Platform branding (`src/modules/branding`)
+
+Public `GET /api/branding` returns both palettes and the optional logo URL with no-store caching. `PATCH /api/branding` validates complete light/dark palettes using the shared contract. `POST /api/branding/logo` validates raster image bytes and uploads through `MediaStorage`; `DELETE /api/branding/logo` restores the original logo. All writes use `RolesGuard` with admin/superadmin roles. Color writes preserve the logo, and logo writes preserve colors. Published image URLs are retained for cached clients.
+
+`PATCH /quizzes/:id/presentation` validates `quizPresentationSchema` from the contract and updates `showFinalRanking` for the quiz owner only. Existing quizzes default to showing the final ranking.
+
+Poll and multiple-choice titles and option text are limited to 400 characters on authoring (multipart and contract-based REST imports), using the shared `choiceQuestionTextSchema`. Existing stored game content is not truncated.

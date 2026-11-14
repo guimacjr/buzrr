@@ -4,6 +4,20 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/modules/query-keys";
 import { quizzesApi } from "./api";
 
+export function useQuizPresentationMutation(quizId: string) {
+  const cache = useQueryClient();
+  return useMutation({
+    mutationFn: (body: import("@buzrr/contract").QuizPresentation) =>
+      quizzesApi.presentation(quizId, body),
+    onSuccess: async () => {
+      await cache.invalidateQueries({ queryKey: queryKeys.quizzes.all });
+      await cache.invalidateQueries({
+        queryKey: queryKeys.quizzes.detail(quizId),
+      });
+    },
+  });
+}
+
 export function useQuizzesQuery() {
   return useQuery({
     queryKey: queryKeys.quizzes.all,

@@ -28,7 +28,7 @@ export default function DuelInviteGuestView({
   const busy = status === "accepting" || status === "matched";
 
   return (
-    <div className="flex flex-col items-center gap-5 bg-white dark:bg-dark rounded-2xl p-6 w-full max-w-sm shadow border border-card-light dark:border-off-dark animate-fade-up">
+    <div className="flex flex-col items-center gap-5 bg-theme-surface dark:bg-theme-surface rounded-2xl p-6 w-full max-w-sm shadow border border-theme-card dark:border-theme-border animate-fade-up">
       <Image
         src={invite.host.image || DEFAULT_AVATAR}
         width={80}
@@ -38,26 +38,26 @@ export default function DuelInviteGuestView({
       />
 
       <div className="flex flex-col items-center gap-1">
-        <p className="text-2xl font-black text-dark dark:text-white text-center">
+        <p className="text-2xl font-black text-theme-text dark:text-theme-text text-center">
           {invite.host.name}
         </p>
-        <p className="text-sm text-off-dark dark:text-off-white text-center">
+        <p className="text-sm text-theme-muted dark:text-theme-muted text-center">
           challenged you to a 1v1
         </p>
-        <p className="text-xs text-off-dark dark:text-off-white text-center">
+        <p className="text-xs text-theme-muted dark:text-theme-muted text-center">
           {invite.category ? `${invite.category.name} · ` : ""}Friendly duel, no
           rating at stake
         </p>
       </div>
 
       {!invite.hostOnline && (
-        <p className="text-sm text-off-dark dark:text-off-white text-center">
+        <p className="text-sm text-theme-muted dark:text-theme-muted text-center">
           Waiting for {invite.host.name} to open the challenge…
         </p>
       )}
 
       {status === "error" && error && (
-        <p className="text-sm text-red-light dark:text-red-dark text-center">
+        <p className="text-sm text-theme-danger dark:text-theme-danger text-center">
           {error}
         </p>
       )}
@@ -73,7 +73,7 @@ export default function DuelInviteGuestView({
 
       <Link
         href="/duel"
-        className="text-xs text-lprimary dark:text-dprimary font-bold hover:underline"
+        className="text-xs text-theme-primary dark:text-theme-primary font-bold hover:underline"
       >
         Find a random match instead
       </Link>

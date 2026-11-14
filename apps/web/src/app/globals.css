@@ -298,14 +298,14 @@ html.theme-anim *::after {
 
 /* Not utilities, so plain custom properties rather than @theme tokens. */
 :root {
-  --scrollbar-thumb: #cbd5e1;
-  --scrollbar-thumb-hover: #94a3b8;
+  --scrollbar-thumb: var(--color-theme-border);
+  --scrollbar-thumb-hover: var(--color-theme-muted);
 }
 
 /* The dark theme sets `.dark` on <html>; keep the deeper slate there. */
 :root.dark {
-  --scrollbar-thumb: #475569;
-  --scrollbar-thumb-hover: #64748b;
+  --scrollbar-thumb: var(--color-theme-border);
+  --scrollbar-thumb-hover: var(--color-theme-muted);
 }
 
 @layer base {
@@ -381,51 +381,115 @@ html.theme-anim *::after {
 /* Per-type color schemes — consistent across the app.
    Dark pill base with a colored border + accent per toast type. */
 .buzrr-toast-container .buzrr-toast {
-  color: #f5f3ff;
-  background: var(--color-dark);
+  color: var(--color-theme-text);
+  background: var(--color-theme-surface);
   border: 1px solid transparent;
 }
 
 .buzrr-toast-container .buzrr-toast.Toastify__toast--success {
-  border-color: #22c55e;
+  border-color: var(--color-theme-success);
 }
 .buzrr-toast-container
   .buzrr-toast.Toastify__toast--success
   .Toastify__toast-icon
   svg {
-  fill: #22c55e;
+  fill: var(--color-theme-success);
 }
 
 .buzrr-toast-container .buzrr-toast.Toastify__toast--error {
-  border-color: #e84b4b;
+  border-color: var(--color-theme-danger);
 }
 .buzrr-toast-container
   .buzrr-toast.Toastify__toast--error
   .Toastify__toast-icon
   svg {
-  fill: #e84b4b;
+  fill: var(--color-theme-danger);
 }
 
 .buzrr-toast-container .buzrr-toast.Toastify__toast--warning {
-  border-color: #f59e0b;
+  border-color: var(--color-theme-warning);
 }
 .buzrr-toast-container
   .buzrr-toast.Toastify__toast--warning
   .Toastify__toast-icon
   svg {
-  fill: #f59e0b;
+  fill: var(--color-theme-warning);
 }
 
 .buzrr-toast-container .buzrr-toast.Toastify__toast--info {
-  border-color: var(--color-dprimary);
+  border-color: var(--color-theme-primary);
 }
 .buzrr-toast-container
   .buzrr-toast.Toastify__toast--info
   .Toastify__toast-icon
   svg {
-  fill: var(--color-dprimary);
+  fill: var(--color-theme-primary);
 }
 
 .buzrr-toast-container .buzrr-toast.Toastify__toast--default {
-  border-color: #7d49f8;
+  border-color: var(--color-theme-primary);
+}
+
+/* Semantic theme tokens; global branding overrides their values at runtime. */
+@theme {
+  --color-theme-onAccent: #ffffff;
+  --color-theme-onPrimary: #ffffff;
+  --color-theme-success: #2f9e6a;
+  --color-theme-warning: #e0a020;
+  --color-theme-barMuted: #8a8896;
+  --color-theme-answer1: #7c4ddb;
+  --color-theme-answer2: #e5544e;
+  --color-theme-answer3: #2f9e6a;
+  --color-theme-answer4: #e0a020;
+  --color-theme-answer5: #3b82f6;
+  --color-theme-answer6: #db2777;
+  --color-theme-gold: #f4c542;
+  --color-theme-silver: #cfd3dc;
+  --color-theme-bronze: #e0a173;
+  --color-theme-onMedal: #3a2a00;
+  --color-theme-flame: #f0612a;
+  --color-theme-primary: #7d49f8;
+  --color-theme-accent: #9a6cf5;
+  --color-theme-accentDeep: #7c4ddb;
+  --color-theme-background: #f5f3ff;
+  --color-theme-surface: #ffffff;
+  --color-theme-card: #ede9fe;
+  --color-theme-cardHover: #ddd5ff;
+  --color-theme-text: #161b28;
+  --color-theme-muted: #334155;
+  --color-theme-border: #cbd5e1;
+  --color-theme-danger: #c92929;
+  --color-theme-secondary: #c4ee4f;
+  --color-theme-onSecondary: #2c3a08;
+}
+:root.dark {
+  --color-theme-onAccent: #ffffff;
+  --color-theme-onPrimary: #161b28;
+  --color-theme-success: #2f9e6a;
+  --color-theme-warning: #e0a020;
+  --color-theme-barMuted: #71717a;
+  --color-theme-answer1: #7c4ddb;
+  --color-theme-answer2: #e5544e;
+  --color-theme-answer3: #2f9e6a;
+  --color-theme-answer4: #e0a020;
+  --color-theme-answer5: #3b82f6;
+  --color-theme-answer6: #db2777;
+  --color-theme-gold: #f4c542;
+  --color-theme-silver: #cfd3dc;
+  --color-theme-bronze: #e0a173;
+  --color-theme-onMedal: #3a2a00;
+  --color-theme-flame: #f0612a;
+  --color-theme-primary: #a78bfa;
+  --color-theme-accent: #7c3aed;
+  --color-theme-accentDeep: #6d28d9;
+  --color-theme-background: #0b0d12;
+  --color-theme-surface: #161b28;
+  --color-theme-card: #1e2433;
+  --color-theme-cardHover: #252c3d;
+  --color-theme-text: #ffffff;
+  --color-theme-muted: #94a3b8;
+  --color-theme-border: #475569;
+  --color-theme-danger: #e84b4b;
+  --color-theme-secondary: #b8e94a;
+  --color-theme-onSecondary: #15200a;
 }

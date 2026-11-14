@@ -72,7 +72,9 @@ function Sparkle({
       aria-hidden
       className={clsx(
         "absolute animate-ai-sparkle",
-        gold ? "text-amber-400" : "text-[#9a6cf5] dark:text-dprimary",
+        gold
+          ? "text-theme-warning"
+          : "text-theme-accent dark:text-theme-primary",
       )}
       style={
         {
@@ -94,7 +96,7 @@ function Wand() {
     <svg
       viewBox="0 0 100 100"
       aria-hidden
-      className="absolute inset-0 size-full animate-ai-wand origin-[22%_82%] drop-shadow-[0_10px_18px_rgba(124,77,219,0.45)]"
+      className="absolute inset-0 size-full animate-ai-wand origin-[22%_82%] drop-shadow-[0_10px_18px_color-mix(in_srgb,var(--color-theme-primary)_45%,transparent)]"
     >
       <defs>
         <linearGradient id="ai-wand-stick" x1="0" y1="1" x2="1" y2="0">
@@ -104,7 +106,11 @@ function Wand() {
         <radialGradient id="ai-wand-glow">
           <stop offset="0" stopColor="#fde68a" stopOpacity="0.95" />
           <stop offset="0.45" stopColor="#c4b5fd" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#9a6cf5" stopOpacity="0" />
+          <stop
+            offset="1"
+            stopColor="var(--color-theme-accent)"
+            stopOpacity="0"
+          />
         </radialGradient>
       </defs>
       {/* stick */}
@@ -123,7 +129,7 @@ function Wand() {
         y1="45.7"
         x2="60.2"
         y2="40"
-        stroke="#f5f3ff"
+        stroke="var(--color-theme-background)"
         strokeWidth="7.4"
       />
       {/* glowing star tip */}
@@ -137,7 +143,7 @@ function Wand() {
       <g transform="translate(59 17) scale(0.92)">
         <path
           d={STAR_PATH}
-          fill="#fbbf24"
+          fill="var(--color-theme-warning)"
           className="animate-ai-tip origin-center [transform-box:fill-box]"
         />
       </g>
@@ -173,7 +179,7 @@ export default function AiMagicLoader({
       aria-live="polite"
       className={clsx(
         "absolute inset-0 z-10 overflow-hidden flex flex-col items-center justify-center gap-6 px-6 text-center",
-        "bg-white/85 dark:bg-dark/85 backdrop-blur-[6px] animate-fade-in",
+        "bg-theme-surface/85 dark:bg-theme-surface/85 backdrop-blur-[6px] animate-fade-in",
         className,
       )}
     >
@@ -192,8 +198,8 @@ export default function AiMagicLoader({
           className={clsx(
             "pointer-events-none absolute animate-ai-twinkle",
             i % 3 === 0
-              ? "text-amber-400"
-              : "text-[#9a6cf5] dark:text-dprimary",
+              ? "text-theme-warning"
+              : "text-theme-accent dark:text-theme-primary",
           )}
           style={{
             left: `${a.x}%`,
@@ -220,7 +226,7 @@ export default function AiMagicLoader({
       <div className="relative flex flex-col items-center gap-2 max-w-sm">
         <p className="text-lg md:text-xl font-bold tracking-[-0.01em]">
           Conjuring{" "}
-          <span className="bg-linear-to-r from-[#9a6cf5] via-[#c084fc] to-[#7c4ddb] dark:from-dprimary dark:via-[#e9d5ff] dark:to-dprimary bg-clip-text text-transparent bg-[length:200%_100%] animate-ai-shimmer-text">
+          <span className="bg-linear-to-r from-theme-accent via-[#c084fc] to-theme-accentDeep dark:from-theme-primary dark:via-[#e9d5ff] dark:to-theme-primary bg-clip-text text-transparent bg-[length:200%_100%] animate-ai-shimmer-text">
             {title.trim() || "your quiz"}
           </span>
         </p>
@@ -232,8 +238,8 @@ export default function AiMagicLoader({
         </p>
       </div>
 
-      <div className="relative h-1.5 w-56 overflow-hidden rounded-full bg-lprimary/10 dark:bg-white/10">
-        <span className="absolute inset-y-0 w-1/3 rounded-full bg-linear-to-r from-transparent via-[#9a6cf5] to-transparent dark:via-dprimary animate-ai-progress" />
+      <div className="relative h-1.5 w-56 overflow-hidden rounded-full bg-theme-primary/10 dark:bg-theme-surface/10">
+        <span className="absolute inset-y-0 w-1/3 rounded-full bg-linear-to-r from-transparent via-theme-accent to-transparent dark:via-theme-primary animate-ai-progress" />
       </div>
     </div>
   );

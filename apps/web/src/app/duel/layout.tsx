@@ -10,6 +10,8 @@ export default function DuelLayout({
 }) {
   // Session gating lives in the pages — see lib/duel-session.ts.
   return (
-    <div className="min-h-dvh bg-light-bg dark:bg-dark-bg">{children}</div>
+    <div className="min-h-dvh bg-theme-background dark:bg-theme-background">
+      {children}
+    </div>
   );
 }

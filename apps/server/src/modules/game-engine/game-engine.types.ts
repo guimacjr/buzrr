@@ -23,6 +23,10 @@ export interface GameMeta {
   mode: GameMode;
   /** Absent on games created before pacing was explicit; see `pacingFor`. */
   pacing?: PacingMode;
+  revision?: number;
+  maxVisitedIndex?: number;
+  reopened?: boolean;
+  showFinalRanking?: boolean;
   phase: GamePhase;
   /** Duels only: friend-invite duels are unrated so ratings can't be farmed. */
   rated: boolean;

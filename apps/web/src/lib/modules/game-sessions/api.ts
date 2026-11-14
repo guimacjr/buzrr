@@ -1,3 +1,4 @@
+import type { JoinRoomBody } from "@buzrr/contract";
 import type { AxiosInstance } from "axios";
 import type {
   GameSession,
@@ -21,10 +22,7 @@ export async function createGameSession(
   return data;
 }
 
-export async function joinRoom(
-  client: AxiosInstance,
-  body: { gameCode: string },
-) {
+export async function joinRoom(client: AxiosInstance, body: JoinRoomBody) {
   const { data } = await client.post<{ roomId: string; playerId: string }>(
     "/game-sessions/join",
     body,

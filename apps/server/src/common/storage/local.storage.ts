@@ -1,7 +1,7 @@
-import { mkdir, unlink, writeFile } from "node:fs/promises";
+import { mkdir, unlink, writeFile, open } from "node:fs/promises";
 import { basename, join, resolve } from "node:path";
 import { nanoid } from "nanoid";
-import { sniffImage } from "./image-sniff";
+import { sniffMedia } from "./image-sniff";
 import {
   MediaStorage,
   type StoredMedia,
@@ -29,11 +29,40 @@ export class LocalStorage extends MediaStorage {
   }
 
   async upload(buffer: Buffer, _meta?: UploadMeta): Promise<StoredMedia> {
-    const { ext } = sniffImage(buffer);
+    const { ext, mediaType } = sniffMedia(buffer);
     const key = `${nanoid(21)}.${ext}`;
     await mkdir(this.dir, { recursive: true });
     await writeFile(join(this.dir, key), buffer, { flag: "wx" });
-    return { url: `${this.publicUrl}/${key}`, mediaType: "image" };
+    return { url: `${this.publicUrl}/${key}`, mediaType };
+  }
+
+  async read(url: string, maxBytes: number): Promise<Buffer> {
+    const base = `${this.publicUrl}/`;
+    const legacy = url.match(
+      /^http:\/\/(?:localhost|127\.0\.0\.1):3001\/uploads\/([\w-]+\.\w+)$/,
+    )?.[1];
+    const relative = url.startsWith(base)
+      ? url.slice(base.length)
+      : url.startsWith("/uploads/")
+        ? url.slice("/uploads/".length)
+        : legacy;
+    if (!relative || !/^[\w-]+\.\w+$/.test(relative))
+      return super.read(url, maxBytes);
+    const handle = await open(join(this.dir, relative), "r");
+    try {
+      if ((await handle.stat()).size > maxBytes)
+        throw new Error("Mídia excede 50 MB.");
+      const chunks: Buffer[] = [];
+      let size = 0;
+      for await (const chunk of handle.createReadStream()) {
+        size += chunk.length;
+        if (size > maxBytes) throw new Error("Mídia excede 50 MB.");
+        chunks.push(chunk);
+      }
+      return Buffer.concat(chunks);
+    } finally {
+      await handle.close();
+    }
   }
 
   async remove(url: string): Promise<void> {

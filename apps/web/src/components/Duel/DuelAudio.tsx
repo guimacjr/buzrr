@@ -126,7 +126,7 @@ export default function DuelAudio({
     <div className="fixed top-3 left-3 z-40">
       <IconButton
         aria-label={muted ? "Unmute duel audio" : "Mute duel audio"}
-        className="bg-white dark:bg-dark text-dark dark:text-white rounded-full p-2 shadow border border-card-light dark:border-off-dark"
+        className="bg-theme-surface dark:bg-theme-surface text-theme-text dark:text-theme-text rounded-full p-2 shadow border border-theme-card dark:border-theme-border"
         onClick={toggleMute}
         icon={muted ? <IoVolumeMute size={20} /> : <IoVolumeHigh size={20} />}
       />

@@ -31,11 +31,11 @@ export default function DuelInviteHostView({
 
   if (remaining <= 0) {
     return (
-      <div className="flex flex-col items-center gap-4 bg-white dark:bg-dark rounded-2xl p-6 w-full max-w-sm shadow border border-card-light dark:border-off-dark animate-fade-up">
-        <p className="text-xl font-black text-dark dark:text-white text-center">
+      <div className="flex flex-col items-center gap-4 bg-theme-surface dark:bg-theme-surface rounded-2xl p-6 w-full max-w-sm shadow border border-theme-card dark:border-theme-border animate-fade-up">
+        <p className="text-xl font-black text-theme-text dark:text-theme-text text-center">
           Challenge expired
         </p>
-        <p className="text-sm text-off-dark dark:text-off-white text-center">
+        <p className="text-sm text-theme-muted dark:text-theme-muted text-center">
           Nobody accepted in time. Create a fresh link to try again.
         </p>
         <Button fullWidth onClick={() => router.replace("/duel")}>
@@ -46,18 +46,18 @@ export default function DuelInviteHostView({
   }
 
   return (
-    <div className="flex flex-col items-center gap-5 bg-white dark:bg-dark rounded-2xl p-6 w-full max-w-sm shadow border border-card-light dark:border-off-dark animate-fade-up">
+    <div className="flex flex-col items-center gap-5 bg-theme-surface dark:bg-theme-surface rounded-2xl p-6 w-full max-w-sm shadow border border-theme-card dark:border-theme-border animate-fade-up">
       <div className="flex flex-col items-center gap-1">
-        <p className="text-xl font-black text-dark dark:text-white text-center">
+        <p className="text-xl font-black text-theme-text dark:text-theme-text text-center">
           {status === "matched"
             ? "Your friend joined — starting…"
             : "Waiting for your friend…"}
         </p>
-        <p className="text-xs text-off-dark dark:text-off-white text-center">
+        <p className="text-xs text-theme-muted dark:text-theme-muted text-center">
           Send them this link. The duel starts the moment they accept.
         </p>
         {invite.category && (
-          <p className="text-xs font-bold text-lprimary dark:text-dprimary text-center">
+          <p className="text-xs font-bold text-theme-primary dark:text-theme-primary text-center">
             Category: {invite.category.name}
           </p>
         )}
@@ -69,13 +69,13 @@ export default function DuelInviteHostView({
         toastMessage="Challenge link copied!"
       />
 
-      <p className="text-xs text-off-dark dark:text-off-white text-center">
+      <p className="text-xs text-theme-muted dark:text-theme-muted text-center">
         Link expires in {formatRemaining(remaining)} · Friendly duels don&apos;t
         affect your rating
       </p>
 
       {status === "error" && error && (
-        <p className="text-sm text-red-light dark:text-red-dark text-center">
+        <p className="text-sm text-theme-danger dark:text-theme-danger text-center">
           {error}
         </p>
       )}

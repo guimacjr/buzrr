@@ -4,7 +4,14 @@ import {
   OnApplicationBootstrap,
   OnApplicationShutdown,
 } from "@nestjs/common";
-import type { GameOverPayload, QuestionAnswer } from "@buzrr/contract";
+import {
+  registrationFieldsSchema,
+  registrationAnswersSchema,
+  type GameOverPayload,
+  type QuestionAnswer,
+} from "@buzrr/contract";
+import { playableQuestion } from "./core/revisit";
+import { buildSessionReport } from "./report";
 import type { DuelOutcome, Prisma } from "@buzrr/prisma";
 import { nanoid } from "nanoid";
 import { BotTier } from "../../common/utils/duel-bot";
@@ -151,14 +158,105 @@ export class GameEngineService
       qIndex,
     );
     if (!state) return;
-    const { effects } = step(state, event, Date.now());
-    await this.run(gameCode, effects);
+    // History effects need the destination's answers, not the item being left.
+    const target =
+      event.type === "host-back"
+        ? state.meta.phase === "final"
+          ? state.meta.qIndex
+          : state.meta.qIndex - 1
+        : event.type === "host-next" &&
+            (state.meta.phase === "reveal" ||
+              state.questions[state.meta.qIndex]?.type === "media_slide")
+          ? state.meta.qIndex + 1
+          : -1;
+    if (
+      target >= 0 &&
+      target <= (state.meta.maxVisitedIndex ?? state.meta.qIndex)
+    )
+      state.answers = await this.store.getAnswers(gameCode, target);
+    await this.applyTransition(gameCode, state, step(state, event, Date.now()));
+  }
+
+  private async applyTransition(
+    gameCode: string,
+    before: import("./core/state").GameState,
+    transition: import("./core/state").Transition,
+  ): Promise<boolean> {
+    const patch = transition.effects.find((e) => e.kind === "patch-meta");
+    if (!patch || patch.kind !== "patch-meta") {
+      const schedule = transition.effects.find(
+        (e) => e.kind === "park-deadline" || e.kind === "clear-deadline",
+      );
+      if (
+        schedule &&
+        !(await this.store.commitTransition(
+          gameCode,
+          before.meta,
+          {},
+          schedule.kind === "clear-deadline"
+            ? -1
+            : Date.now() + 6 * 60 * 60 * 1000,
+        ))
+      )
+        return false;
+      await this.run(
+        gameCode,
+        transition.effects.filter((e) => e !== schedule),
+        before.meta,
+      );
+      return false;
+    }
+    const schedule = transition.effects.find((e) => e.kind === "set-deadline");
+    const deadline =
+      schedule?.kind === "set-deadline"
+        ? schedule.at
+        : Date.now() + 6 * 60 * 60 * 1000;
+    if (
+      !(await this.store.commitTransition(
+        gameCode,
+        before.meta,
+        patch.patch,
+        deadline,
+      ))
+    )
+      return false;
+    await this.run(
+      gameCode,
+      transition.effects.filter(
+        (e) =>
+          !["patch-meta", "set-deadline", "park-deadline"].includes(e.kind),
+      ),
+      transition.state.meta,
+    );
+    return true;
   }
 
   /** Executes the core's effects, strictly in the order given. */
-  private async run(gameCode: string, effects: Effect[]): Promise<void> {
+  private async run(
+    gameCode: string,
+    effects: Effect[],
+    expected?: GameMeta,
+  ): Promise<void> {
     for (const effect of effects) {
       switch (effect.kind) {
+        case "sync-all": {
+          const state = await this.store.loadState(gameCode, [
+            "questions",
+            "roster",
+            "answers",
+            "scores",
+          ]);
+          if (!state || !this.io) break;
+          this.io
+            .to(`host:${gameCode}`)
+            .emit("state-sync", buildSnapshot(state, null, Date.now()));
+          for (const player of state.roster)
+            this.io
+              .to(`player:${player.id}`)
+              .emit("state-sync", buildSnapshot(state, player.id, Date.now()));
+          await this.sendLiveSummary(gameCode);
+          break;
+        }
         case "set-questions":
           await this.store.setQuestions(gameCode, effect.questions);
           break;
@@ -208,12 +306,13 @@ export class GameEngineService
           this.bots.cancel(gameCode);
           break;
         case "end-game":
-          await this.endGame(gameCode);
+          await this.endGame(gameCode, undefined, expected);
           break;
         case "dispatch":
           await this.dispatch(gameCode, {
             type: effect.event,
             qIndex: effect.qIndex,
+            revision: effect.revision,
           });
           break;
         case "log":
@@ -416,12 +515,17 @@ export class GameEngineService
       );
     }
 
-    const { effects } = step(
+    const transition = step(
       state,
-      { type: "start", questions, quizTitle: session.quiz.title },
+      {
+        type: "start",
+        questions,
+        quizTitle: session.quiz.title,
+        showFinalRanking: session.quiz.showFinalRanking,
+      },
       Date.now(),
     );
-    await this.run(gameCode, effects);
+    await this.applyTransition(gameCode, state, transition);
     this.logger.log(`Game ${gameCode} started (${questions.length} questions)`);
   }
 
@@ -434,20 +538,28 @@ export class GameEngineService
     await this.dispatch(gameCode, { type: "host-next" });
   }
 
+  async hostBack(gameCode: string, revision: number): Promise<boolean> {
+    const before = await this.store.getMeta(gameCode);
+    if (!before || (before.revision ?? 0) !== revision) return false;
+    await this.dispatch(gameCode, { type: "host-back", revision });
+    const after = await this.store.getMeta(gameCode);
+    return (after?.revision ?? 0) > revision;
+  }
+
   async endGame(
     gameCode: string,
     opts?: { forfeitLoserId?: string; abandoned?: boolean },
+    expected?: GameMeta,
   ): Promise<void> {
     const meta = await this.store.getMeta(gameCode);
     if (!meta || meta.phase === "ended") return;
+    // Atomic claim: only the caller that flips phase -> "ended" persists the
+    // result and cleans up, so concurrent callers can't double-write.
+    const claimed = await this.store.claimEnded(gameCode, expected);
+    if (!claimed) return;
     this.clearTimer(gameCode);
     this.bots.cancel(gameCode);
     await this.store.clearDeadline(gameCode);
-
-    // Atomic claim: only the caller that flips phase -> "ended" persists the
-    // result and cleans up, so concurrent callers can't double-write.
-    const claimed = await this.store.claimEnded(gameCode);
-    if (!claimed) return;
 
     const [scores, roster] = await Promise.all([
       this.store.leaderboard(gameCode),
@@ -462,7 +574,12 @@ export class GameEngineService
     );
 
     this.emitRoom(gameCode).emit("game-over", {
-      entries,
+      showFinalRanking:
+        meta.mode !== "classic" || meta.showFinalRanking !== false,
+      entries:
+        meta.mode === "classic" && meta.showFinalRanking === false
+          ? []
+          : entries,
       resultId,
       eloChanges,
       rated: meta.mode === "duel" && meta.rated !== false,
@@ -507,6 +624,7 @@ export class GameEngineService
     playerId: string,
     qIndex: number,
     answer: unknown,
+    revision = 0,
   ): Promise<SubmitAnswerAck> {
     // Taken before any Redis round trip so store latency isn't billed to the
     // player.
@@ -521,7 +639,7 @@ export class GameEngineService
     }
     const judgement = judgeAnswer(
       state,
-      { playerId, qIndex, answer },
+      { playerId, qIndex, answer, revision },
       receivedAt,
     );
     if (!judgement.accepted) {
@@ -535,18 +653,31 @@ export class GameEngineService
       qIndex,
       playerId,
       judgement.stored,
+      revision,
     );
-    const question = state.questions[qIndex];
+    const original = state.questions[qIndex];
+    const question = original
+      ? playableQuestion(original, state.meta.reopened)
+      : undefined;
     if (!answered) {
       // Questions that take several answers fold this one into the stored
       // one; everything else is first-write-wins.
-      if (question && acceptsMoreAnswers(question)) {
+      if (
+        question &&
+        (acceptsMoreAnswers(question) ||
+          (state.meta.reopened && !isScored(question.type)))
+      ) {
         return this.addToAnswer(
           gameCode,
           qIndex,
           playerId,
           question,
           judgement.stored.answer,
+          revision,
+          Boolean(
+            state.meta.reopened &&
+            (question.type === "poll" || question.type === "rating"),
+          ),
         );
       }
       return { accepted: false, reason: "Already answered" };
@@ -556,12 +687,12 @@ export class GameEngineService
     // question closed in between, the step still sees it open: the meter
     // update is harmless, and a close it asks for is dropped by
     // `close-question`, which re-reads before acting.
-    const { effects } = step(
+    const transition = step(
       state,
       { type: "answer-recorded", qIndex, answered },
       Date.now(),
     );
-    await this.run(gameCode, effects);
+    await this.run(gameCode, transition.effects);
     if (question && !isScored(question.type)) {
       this.scheduleLiveSummary(gameCode);
     }
@@ -581,12 +712,16 @@ export class GameEngineService
     playerId: string,
     question: LiveQuestion,
     next: QuestionAnswer,
+    revision = 0,
+    replace = false,
   ): Promise<SubmitAnswerAck> {
     for (let attempt = 0; attempt < 3; attempt++) {
       const raw = await this.store.getAnswerRaw(gameCode, qIndex, playerId);
       if (raw === null) break;
       const stored = parseAnswer(raw);
-      const merged = mergeAnswers(question, stored.answer, next);
+      const merged = replace
+        ? next
+        : mergeAnswers(question, stored.answer, next);
       if (!merged) {
         return {
           accepted: false,
@@ -599,6 +734,7 @@ export class GameEngineService
         playerId,
         raw,
         { ...stored, answer: merged },
+        revision,
       );
       if (replaced) {
         this.scheduleLiveSummary(gameCode);
@@ -654,6 +790,7 @@ export class GameEngineService
     const question = state.questions[meta.qIndex];
     if (!question || isScored(question.type)) return;
     this.io.to(`host:${gameCode}`).emit("live-summary", {
+      ...(meta.revision ? { revision: meta.revision } : {}),
       index: meta.qIndex,
       answered: Object.keys(answers).length,
       summary: summarizeAnswers(question, answerEntries(answers, roster)),
@@ -1028,8 +1165,11 @@ export class GameEngineService
       await this.store.clearDeadline(gameCode);
       return;
     }
-    const { effects } = step(state, { type: "deadline" }, Date.now());
-    await this.run(gameCode, effects);
+    await this.applyTransition(
+      gameCode,
+      state,
+      step(state, { type: "deadline" }, Date.now()),
+    );
   }
 
   private async recoverTimers(): Promise<void> {
@@ -1117,14 +1257,54 @@ export class GameEngineService
     const roster = await this.store.roster(gameCode);
     const rosterById = new Map(roster.map((p) => [p.id, p]));
     const correctCounts = new Map<string, number>();
+    const allAnswers = [];
     for (let i = 0; i < meta.qCount; i++) {
       const answers = await this.store.getAnswers(gameCode, i);
+      allAnswers.push(answers);
       for (const [playerId, a] of Object.entries(answers)) {
         if (a.isCorrect) {
           correctCounts.set(playerId, (correctCounts.get(playerId) ?? 0) + 1);
         }
       }
     }
+
+    const room =
+      meta.mode === "classic"
+        ? await this.prisma.db.gameSession.findUnique({
+            where: { id: meta.sessionId },
+            include: { registrations: true },
+          })
+        : null;
+    const reportState =
+      meta.mode === "classic"
+        ? await this.store.loadState(gameCode, ["questions"])
+        : null;
+    const participants = new Map(
+      (room?.registrations ?? []).map((p) => [
+        p.playerId,
+        {
+          id: p.playerId,
+          name: p.playerName,
+          registrationAnswers: registrationAnswersSchema.parse(p.answers),
+        },
+      ]),
+    );
+    for (const p of roster)
+      if (!participants.has(p.id))
+        participants.set(p.id, {
+          id: p.id,
+          name: p.name,
+          registrationAnswers: {},
+        });
+    const report = reportState
+      ? buildSessionReport(
+          registrationFieldsSchema.parse(room?.registrationFields ?? []),
+          [...participants.values()],
+          reportState.questions,
+          allAnswers,
+          Math.max(meta.maxVisitedIndex ?? meta.qIndex, meta.qIndex),
+        )
+      : undefined;
 
     // `!== false` rather than truthiness: duels already live in Redis before
     // `rated` existed stay rated across the deploy.
@@ -1170,7 +1350,8 @@ export class GameEngineService
       quizTitle: meta.quizTitle,
       hostId,
       categoryId,
-      playerCount: entries.length,
+      ...(report ? { report } : {}),
+      playerCount: report?.players.length ?? entries.length,
       questionCount: meta.qCount,
       startedAt: new Date(meta.startedAt),
       entries: {

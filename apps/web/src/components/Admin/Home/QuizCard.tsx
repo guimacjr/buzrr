@@ -1,5 +1,6 @@
 "use client";
 
+import PackageExport from "../Packages/PackageExport";
 import clsx from "clsx";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -28,7 +29,7 @@ export function quizMonogramStyle(id: string) {
 
 export function quizCardClass(view: "grid" | "list") {
   return clsx(
-    "relative rounded-[18px] border bg-light-bg dark:bg-card-dark border-lprimary/15 dark:border-white/5 text-dark dark:text-white",
+    "relative rounded-[18px] border bg-theme-background dark:bg-theme-card border-theme-primary/15 dark:border-theme-border/5 text-theme-text dark:text-theme-text",
     view === "grid"
       ? "flex flex-col gap-3.5 p-4 md:p-5 min-h-[168px]"
       : "flex items-center gap-4 p-4 pr-14",
@@ -36,12 +37,16 @@ export function quizCardClass(view: "grid" | "list") {
 }
 
 function QuizMenu({
+  quizId,
+  quizTitle,
   quizHref,
   view,
   onOpenChange,
   onEdit,
   onDelete,
 }: {
+  quizId: string;
+  quizTitle: string;
   quizHref: string;
   view: "grid" | "list";
   onOpenChange: (open: boolean) => void;
@@ -98,8 +103,8 @@ function QuizMenu({
         className={clsx(
           "size-[34px] rounded-[10px] border flex items-center justify-center cursor-pointer transition-colors",
           open
-            ? "bg-lprimary/10 dark:bg-white/5 text-dark dark:text-white border-lprimary/15 dark:border-white/5"
-            : "border-transparent text-off-dark dark:text-muted-dark hover:bg-lprimary/10 dark:hover:bg-white/5 hover:text-dark dark:hover:text-white",
+            ? "bg-theme-primary/10 dark:bg-theme-surface/5 text-theme-text dark:text-theme-text border-theme-primary/15 dark:border-theme-border/5"
+            : "border-transparent text-theme-muted dark:text-theme-muted hover:bg-theme-primary/10 dark:hover:bg-theme-surface/5 hover:text-theme-text dark:hover:text-theme-onPrimary",
         )}
       >
         <LuEllipsisVertical size={18} />
@@ -107,14 +112,14 @@ function QuizMenu({
       {open && (
         <div
           role="menu"
-          className="absolute top-10 right-0 min-w-[168px] p-1.5 rounded-[13px] flex flex-col gap-0.5 bg-white dark:bg-cardhover-dark border border-lprimary/15 dark:border-white/5 shadow-[0_18px_40px_-14px_rgba(60,30,140,0.28)] dark:shadow-[0_18px_40px_-12px_rgba(0,0,0,0.45)]"
+          className="absolute top-10 right-0 min-w-[168px] p-1.5 rounded-[13px] flex flex-col gap-0.5 bg-theme-surface dark:bg-theme-cardHover border border-theme-primary/15 dark:border-theme-border/5 shadow-[0_18px_40px_-14px_rgba(60,30,140,0.28)] dark:shadow-[0_18px_40px_-12px_rgba(0,0,0,0.45)]"
         >
           <Link
             role="menuitem"
             href={quizHref}
             className={clsx(
               itemClass,
-              "text-dark dark:text-white hover:bg-lprimary/10 dark:hover:bg-white/5 [&>svg]:text-off-dark dark:[&>svg]:text-[#9a9aa2]",
+              "text-theme-text dark:text-theme-text hover:bg-theme-primary/10 dark:hover:bg-theme-surface/5 [&>svg]:text-theme-muted dark:[&>svg]:text-theme-muted",
             )}
             onClick={() => setOpen(false)}
           >
@@ -126,7 +131,7 @@ function QuizMenu({
             role="menuitem"
             className={clsx(
               itemClass,
-              "text-dark dark:text-white hover:bg-lprimary/10 dark:hover:bg-white/5 [&>svg]:text-off-dark dark:[&>svg]:text-[#9a9aa2]",
+              "text-theme-text dark:text-theme-text hover:bg-theme-primary/10 dark:hover:bg-theme-surface/5 [&>svg]:text-theme-muted dark:[&>svg]:text-theme-muted",
             )}
             onClick={() => {
               setOpen(false);
@@ -136,13 +141,19 @@ function QuizMenu({
             <LuPencil />
             Edit
           </button>
-          <div className="h-px mx-2 my-0.5 bg-lprimary/15 dark:bg-white/10" />
+          <PackageExport
+            quizId={quizId}
+            title={quizTitle}
+            menuItem
+            className={itemClass}
+          />
+          <div className="h-px mx-2 my-0.5 bg-theme-primary/15 dark:bg-theme-surface/10" />
           <button
             type="button"
             role="menuitem"
             className={clsx(
               itemClass,
-              "text-red-light dark:text-red-dark hover:bg-[#e5544e]/12",
+              "text-theme-danger dark:text-theme-danger hover:bg-theme-danger/12",
             )}
             onClick={() => {
               setOpen(false);
@@ -177,9 +188,9 @@ export default function QuizCard({
   const meta = (
     <div
       className={clsx(
-        "flex flex-wrap items-center gap-x-4 gap-y-1 text-xs md:text-[12.5px] font-medium text-[#8a8896] dark:text-muted-dark [&>span]:flex [&>span]:items-center [&>span]:gap-1.5",
+        "flex flex-wrap items-center gap-x-4 gap-y-1 text-xs md:text-[12.5px] font-medium text-theme-muted dark:text-theme-muted [&>span]:flex [&>span]:items-center [&>span]:gap-1.5",
         view === "grid"
-          ? "mt-auto pt-3 border-t border-lprimary/15 dark:border-white/10"
+          ? "mt-auto pt-3 border-t border-theme-primary/15 dark:border-theme-border/10"
           : "hidden sm:flex shrink-0",
       )}
     >
@@ -198,7 +209,7 @@ export default function QuizCard({
     <div
       className={clsx(
         quizCardClass(view),
-        "transition-[transform,box-shadow,border-color] duration-150 hover:-translate-y-[3px] hover:border-lprimary dark:hover:border-dprimary hover:shadow-[0_16px_34px_-16px_rgba(0,0,0,0.5)]",
+        "transition-[transform,box-shadow,border-color] duration-150 hover:-translate-y-[3px] hover:border-theme-primary dark:hover:border-theme-primary hover:shadow-[0_16px_34px_-16px_rgba(0,0,0,0.5)]",
         menuOpen && "z-20",
       )}
     >
@@ -210,7 +221,7 @@ export default function QuizCard({
       <div className="flex items-center gap-3.5 min-w-0 pr-10">
         <div
           aria-hidden="true"
-          className="size-10 md:size-12 shrink-0 rounded-[13px] flex items-center justify-center text-lg md:text-[22px] font-bold text-white"
+          className="size-10 md:size-12 shrink-0 rounded-[13px] flex items-center justify-center text-lg md:text-[22px] font-bold text-theme-onPrimary"
           style={quizMonogramStyle(quiz.id)}
         >
           {quiz.title.trim()[0]?.toUpperCase() ?? "?"}
@@ -221,7 +232,7 @@ export default function QuizCard({
               {quiz.title}
             </h3>
             {quiz.description && (
-              <p className="text-xs md:text-[13.5px] text-off-dark dark:text-muted-dark truncate">
+              <p className="text-xs md:text-[13.5px] text-theme-muted dark:text-theme-muted truncate">
                 {quiz.description}
               </p>
             )}
@@ -233,13 +244,15 @@ export default function QuizCard({
         )}
       </div>
       {view === "grid" && (
-        <p className="text-xs md:text-[13.5px] text-off-dark dark:text-muted-dark line-clamp-2">
+        <p className="text-xs md:text-[13.5px] text-theme-muted dark:text-theme-muted line-clamp-2">
           {quiz.description || "No description"}
         </p>
       )}
       {view === "list" && <div className="flex-1" />}
       {meta}
       <QuizMenu
+        quizId={quiz.id}
+        quizTitle={quiz.title}
         quizHref={href}
         view={view}
         onOpenChange={setMenuOpen}

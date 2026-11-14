@@ -16,10 +16,10 @@ export default function ConnectionBanner() {
     return (
       <div
         role="status"
-        className="fixed top-0 left-0 right-0 z-50 py-2 px-4 text-center text-sm font-bold text-white bg-red-light dark:bg-red-dark"
+        className="fixed top-0 left-0 right-0 z-50 py-2 px-4 text-center text-sm font-bold text-theme-onPrimary bg-theme-danger dark:bg-theme-danger"
       >
-        <span className="inline-block h-3 w-3 mr-2 rounded-full border-2 border-white border-t-transparent animate-spin align-middle" />
-        Connection lost — reconnecting…
+        <span className="inline-block h-3 w-3 mr-2 rounded-full border-2 border-theme-border border-t-transparent animate-spin align-middle" />
+        Conexão perdida — reconectando…
       </div>
     );
   }
@@ -29,16 +29,17 @@ export default function ConnectionBanner() {
       role="alert"
       className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-black/70 px-6 text-center"
     >
-      <p className="text-xl font-black text-white">Disconnected</p>
-      <p className="text-sm text-white/80 max-w-xs">
-        We couldn&apos;t reach the game server. Check your internet connection.
+      <p className="text-xl font-black text-theme-onPrimary">Desconectado</p>
+      <p className="text-sm text-theme-onPrimary/80 max-w-xs">
+        Não foi possível conectar ao servidor da partida. Verifique sua conexão
+        com a internet.
       </p>
       <button
         type="button"
         onClick={() => window.location.reload()}
-        className="px-6 py-3 rounded-xl font-bold bg-lprimary dark:bg-dprimary text-white dark:text-dark"
+        className="px-6 py-3 rounded-xl font-bold bg-theme-primary dark:bg-theme-primary text-theme-onPrimary dark:text-theme-onPrimary"
       >
-        Tap to retry
+        Toque para tentar novamente
       </button>
     </div>
   );

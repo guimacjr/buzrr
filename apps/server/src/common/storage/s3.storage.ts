@@ -1,6 +1,7 @@
+import { readRemoteMedia } from "./read-media";
 import { createHash, createHmac } from "node:crypto";
 import { nanoid } from "nanoid";
-import { sniffImage } from "./image-sniff";
+import { sniffMedia } from "./image-sniff";
 import {
   MediaStorage,
   type StoredMedia,
@@ -156,7 +157,7 @@ export class S3Storage extends MediaStorage {
   }
 
   async upload(buffer: Buffer, _meta?: UploadMeta): Promise<StoredMedia> {
-    const { type, ext } = sniffImage(buffer);
+    const { type, ext, mediaType } = sniffMedia(buffer);
     const key = `${this.config.prefix}${nanoid(21)}.${ext}`;
     const res = await this.send("PUT", key, buffer, {
       "content-type": type,
@@ -167,7 +168,21 @@ export class S3Storage extends MediaStorage {
         `S3 upload failed: ${res.status} ${(await res.text()).slice(0, 200)}`,
       );
     }
-    return { url: `${this.publicUrl}/${key}`, mediaType: "image" };
+    return { url: `${this.publicUrl}/${key}`, mediaType };
+  }
+
+  async read(url: string, maxBytes: number): Promise<Buffer> {
+    const base = `${this.publicUrl}/`;
+    const key = url.startsWith(base) ? url.slice(base.length) : "";
+    if (
+      !key ||
+      !key.startsWith(this.config.prefix) ||
+      !/^[a-zA-Z0-9_-]+\.[a-zA-Z0-9]+$/.test(
+        key.slice(this.config.prefix.length),
+      )
+    )
+      return super.read(url, maxBytes);
+    return readRemoteMedia(url, maxBytes);
   }
 
   async remove(url: string): Promise<void> {

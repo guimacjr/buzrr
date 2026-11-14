@@ -21,7 +21,7 @@ const BackNavButton = ({
 
   return (
     <IconButton
-      aria-label="Go back"
+      aria-label="Voltar"
       className="cursor-pointer"
       onClick={() => {
         if (onBack) {
@@ -42,7 +42,7 @@ const BackNavButton = ({
           width={30}
           height={30}
           alt=""
-          className="dark:text-white"
+          className="dark:text-theme-text"
         />
       }
     />

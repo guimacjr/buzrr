@@ -3,8 +3,8 @@ import clsx from "clsx";
 import { IBM_Plex_Sans } from "next/font/google";
 import ReduxProvider from "@/state/ReduxProvider";
 import QueryProvider from "@/providers/QueryProvider";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Analytics } from "@vercel/analytics/next";
+import BrandingProvider from "@/components/Branding/BrandingProvider";
 import Footer from "@/components/Footer";
 import {
   DEFAULT_TITLE,
@@ -85,17 +85,15 @@ export default async function RootLayout({
       <body
         className={clsx(
           sans.className,
-          "bg-light-bg dark:bg-dark-bg h-fit overflow-x-hidden",
+          "bg-theme-background dark:bg-theme-background text-theme-text h-fit overflow-x-hidden",
         )}
       >
         <ReduxProvider>
           <QueryProvider>
-            {children}
-            <ReactQueryDevtools
-              initialIsOpen={false}
-              buttonPosition="top-right"
-            />
-            <Footer />
+            <BrandingProvider>
+              {children}
+              <Footer />
+            </BrandingProvider>
           </QueryProvider>
         </ReduxProvider>
         <Analytics />

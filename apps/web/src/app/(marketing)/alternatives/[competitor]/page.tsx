@@ -159,13 +159,13 @@ export default async function AlternativePage({ params }: { params: Params }) {
           title="QuizUp vs Buzrr 1v1 battles"
           intro="QuizUp details are from its Wikipedia article; Buzrr details are from our code."
         >
-          <div className="overflow-x-auto rounded-2xl border border-card-light dark:border-off-dark bg-white dark:bg-dark">
-            <table className="w-full min-w-[560px] text-sm text-left text-dark dark:text-off-white">
+          <div className="overflow-x-auto rounded-2xl border border-theme-card dark:border-theme-border bg-theme-surface dark:bg-theme-surface">
+            <table className="w-full min-w-[560px] text-sm text-left text-theme-text dark:text-theme-muted">
               <caption className="sr-only">
                 QuizUp compared with Buzrr duels
               </caption>
               <thead>
-                <tr className="border-b border-card-light dark:border-off-dark text-dark dark:text-white">
+                <tr className="border-b border-theme-card dark:border-theme-border text-theme-text dark:text-theme-text">
                   <th scope="col" className="p-4 font-bold w-1/5">
                     &nbsp;
                   </th>
@@ -174,7 +174,7 @@ export default async function AlternativePage({ params }: { params: Params }) {
                   </th>
                   <th
                     scope="col"
-                    className="p-4 font-bold text-lprimary dark:text-dprimary"
+                    className="p-4 font-bold text-theme-primary dark:text-theme-primary"
                   >
                     Buzrr duels
                   </th>
@@ -184,11 +184,11 @@ export default async function AlternativePage({ params }: { params: Params }) {
                 {QUIZUP_ROWS.map((row) => (
                   <tr
                     key={row.label}
-                    className="border-b last:border-b-0 border-card-light dark:border-off-dark align-top"
+                    className="border-b last:border-b-0 border-theme-card dark:border-theme-border align-top"
                   >
                     <th
                       scope="row"
-                      className="p-4 font-semibold text-dark dark:text-white"
+                      className="p-4 font-semibold text-theme-text dark:text-theme-text"
                     >
                       {row.label}
                     </th>
@@ -203,7 +203,7 @@ export default async function AlternativePage({ params }: { params: Params }) {
       ) : (
         c.compare && (
           <Section title={`Buzrr vs ${c.searchName}, feature by feature`}>
-            <p className="max-w-3xl text-dark/80 dark:text-off-white leading-relaxed">
+            <p className="max-w-3xl text-theme-text/80 dark:text-theme-muted leading-relaxed">
               Need the details before switching? The{" "}
               <InlineLink href={comparePath(c.slug)}>
                 Buzrr vs {c.searchName} feature and pricing comparison
@@ -233,13 +233,13 @@ export default async function AlternativePage({ params }: { params: Params }) {
       <Section title="Who Buzrr suits — and who it doesn't">
         <div className="grid gap-8 md:grid-cols-2">
           <div>
-            <h3 className="font-bold text-dark dark:text-white mb-3">
+            <h3 className="font-bold text-theme-text dark:text-theme-text mb-3">
               Buzrr is a good fit if…
             </h3>
             <BulletList items={alt.goodFit} tone="positive" />
           </div>
           <div>
-            <h3 className="font-bold text-dark dark:text-white mb-3">
+            <h3 className="font-bold text-theme-text dark:text-theme-text mb-3">
               {isQuizUp
                 ? "What Buzrr doesn't bring back"
                 : `Stay with ${c.displayName} if…`}
@@ -255,7 +255,7 @@ export default async function AlternativePage({ params }: { params: Params }) {
 
       <Section title={`${c.searchName} alternative FAQ`}>
         <FaqList faqs={alt.faq} />
-        <p className="mt-4 text-xs text-dark/60 dark:text-gray">
+        <p className="mt-4 text-xs text-theme-text/60 dark:text-theme-muted">
           {c.displayName} facts checked {FACTS_CHECKED}.
         </p>
       </Section>
@@ -293,7 +293,7 @@ export default async function AlternativePage({ params }: { params: Params }) {
         }
         secondary={{ label: "All alternatives", href: "/alternatives" }}
       />
-      <p className="mt-6 text-center text-sm text-dark/60 dark:text-gray">
+      <p className="mt-6 text-center text-sm text-theme-text/60 dark:text-theme-muted">
         {c.displayName} is a trademark of its owner. Buzrr is not affiliated
         with {c.displayName}. See also{" "}
         <Link href="/pricing" className="underline underline-offset-4">

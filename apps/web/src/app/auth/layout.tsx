@@ -9,7 +9,7 @@ export const metadata = NOINDEX_METADATA;
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <div className="p-2 px-4 md:px-8 bg-light-bg dark:bg-dark-bg hidden md:block">
+      <div className="p-2 px-4 md:px-8 bg-theme-background dark:bg-theme-background hidden md:block">
         <Link href="/">
           <ClientImage
             props={{

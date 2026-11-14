@@ -13,11 +13,13 @@ import DuelHistoryList from "./DuelHistoryList";
 
 function StatTile({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="bg-white dark:bg-card-dark rounded-xl p-4">
-      <p className="text-2xl font-black text-lprimary dark:text-dprimary">
+    <div className="bg-theme-surface dark:bg-theme-card rounded-xl p-4">
+      <p className="text-2xl font-black text-theme-primary dark:text-theme-primary">
         {value}
       </p>
-      <p className="text-xs text-off-dark dark:text-off-white mt-1">{label}</p>
+      <p className="text-xs text-theme-muted dark:text-theme-muted mt-1">
+        {label}
+      </p>
     </div>
   );
 }
@@ -28,7 +30,7 @@ function StatGridSkeleton({ count }: { count: number }) {
       {Array.from({ length: count }).map((_, index) => (
         <Skeleton
           key={index}
-          className="h-20 w-full rounded-xl bg-white dark:bg-card-dark"
+          className="h-20 w-full rounded-xl bg-theme-surface dark:bg-theme-card"
         />
       ))}
     </div>
@@ -41,12 +43,12 @@ function IdentityCard() {
 
   if (!session) {
     return (
-      <Skeleton className="h-28 w-full rounded-xl bg-white dark:bg-card-dark" />
+      <Skeleton className="h-28 w-full rounded-xl bg-theme-surface dark:bg-theme-card" />
     );
   }
 
   return (
-    <div className="bg-white dark:bg-card-dark rounded-xl p-6 flex items-center gap-4">
+    <div className="bg-theme-surface dark:bg-theme-card rounded-xl p-6 flex items-center gap-4">
       <Image
         src={session.user.image || DEFAULT_AVATAR}
         className="rounded-full shrink-0"
@@ -56,24 +58,24 @@ function IdentityCard() {
       />
       <div className="min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <p className="text-xl font-black text-dark dark:text-white truncate">
+          <p className="text-xl font-black text-theme-text dark:text-theme-text truncate">
             {session.user.name}
           </p>
           <span
             className={clsx(
               "text-xs font-bold px-2 py-0.5 rounded-full capitalize",
               role === "user"
-                ? "border border-gray text-off-dark dark:text-off-white"
-                : "bg-lprimary dark:bg-dprimary text-white dark:text-dark",
+                ? "border border-theme-border text-theme-muted dark:text-theme-muted"
+                : "bg-theme-primary dark:bg-theme-primary text-theme-onPrimary dark:text-theme-onPrimary",
             )}
           >
             {role}
           </span>
         </div>
-        <p className="text-sm text-off-dark dark:text-off-white truncate">
+        <p className="text-sm text-theme-muted dark:text-theme-muted truncate">
           {session.user.email}
         </p>
-        <p className="text-xs text-off-dark dark:text-off-white mt-1">
+        <p className="text-xs text-theme-muted dark:text-theme-muted mt-1">
           Joined {new Date(session.user.createdAt).toLocaleDateString()}
         </p>
       </div>
@@ -89,7 +91,7 @@ function DuelStats() {
   }
   if (isError || !profile) {
     return (
-      <p className="text-dark dark:text-white">
+      <p className="text-theme-text dark:text-theme-text">
         Could not load your duel stats. Try again later.
       </p>
     );
@@ -111,7 +113,7 @@ function ActivityStats() {
   }
   if (isError || !stats) {
     return (
-      <p className="text-dark dark:text-white">
+      <p className="text-theme-text dark:text-theme-text">
         Could not load your activity stats. Try again later.
       </p>
     );
@@ -138,7 +140,7 @@ function RecentDuels() {
       <DuelHistoryList />
       <Link
         href="/admin/profile/duels"
-        className="text-sm text-lprimary dark:text-dprimary font-bold hover:underline w-fit"
+        className="text-sm text-theme-primary dark:text-theme-primary font-bold hover:underline w-fit"
       >
         View full duel history →
       </Link>
@@ -152,19 +154,19 @@ export default function ProfileDetails() {
     <div className="flex flex-col gap-6">
       <IdentityCard />
       <section>
-        <h2 className="text-lg font-black text-dark dark:text-white mb-3">
+        <h2 className="text-lg font-black text-theme-text dark:text-theme-text mb-3">
           Duel stats
         </h2>
         <DuelStats />
       </section>
       <section>
-        <h2 className="text-lg font-black text-dark dark:text-white mb-3">
+        <h2 className="text-lg font-black text-theme-text dark:text-theme-text mb-3">
           Activity
         </h2>
         <ActivityStats />
       </section>
       <section>
-        <h2 className="text-lg font-black text-dark dark:text-white mb-3">
+        <h2 className="text-lg font-black text-theme-text dark:text-theme-text mb-3">
           Recent duels
         </h2>
         <RecentDuels />

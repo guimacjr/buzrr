@@ -1,4 +1,8 @@
-import { duelQueueSchema, submitAnswerSchema } from "@buzrr/contract";
+import {
+  hostBackSchema,
+  duelQueueSchema,
+  submitAnswerSchema,
+} from "@buzrr/contract";
 import { Logger } from "@nestjs/common";
 import {
   OnGatewayConnection,
@@ -367,6 +371,22 @@ export class RealtimeGateway
       }
     });
 
+    socket.on("host-back", async (payload, ack) => {
+      const parsed = hostBackSchema.safeParse(payload);
+      if (!parsed.success) {
+        ack?.({ accepted: false });
+        return;
+      }
+      try {
+        ack?.({
+          accepted: await this.engine.hostBack(gameCode, parsed.data.revision),
+        });
+      } catch (error) {
+        this.logger.error("Error returning to previous question", error);
+        ack?.({ accepted: false });
+      }
+    });
+
     socket.on("host-next", async () => {
       try {
         await this.engine.hostNext(gameCode);
@@ -425,6 +445,7 @@ export class RealtimeGateway
           playerId,
           parsed.data.qIndex,
           parsed.data.answer,
+          parsed.data.revision,
         );
         ack?.(result);
       } catch (error) {

@@ -7,6 +7,7 @@ import type {
   GamePhase,
   LiveSummaryPayload,
   LeaderboardEntry,
+  LeaderboardPayload,
   PublicQuestion,
   QuestionEndPayload,
   QuestionStartPayload,
@@ -21,6 +22,7 @@ import type { ConnectionStatus } from "@/types/socket";
  */
 export interface GameLiveState {
   phase: GamePhase | "idle";
+  revision: number;
   mode: "classic" | "duel";
   qIndex: number;
   qCount: number;
@@ -56,6 +58,7 @@ export interface GameLiveState {
   standing: Standing | null;
   connection: ConnectionStatus;
   gameOver: boolean;
+  showFinalRanking: boolean;
   /** Duels only: rating change per playerId, delivered with game-over. */
   eloChanges: Record<string, { before: number; after: number }> | null;
   /** True only for rated duels; friend invites play unrated. */
@@ -91,6 +94,7 @@ function nextStanding(
 
 const initialState: GameLiveState = {
   phase: "idle",
+  revision: 0,
   mode: "classic",
   qIndex: 0,
   qCount: 0,
@@ -107,6 +111,7 @@ const initialState: GameLiveState = {
   standing: null,
   connection: "connecting",
   gameOver: false,
+  showFinalRanking: true,
   eloChanges: null,
   rated: false,
   category: null,
@@ -140,6 +145,7 @@ const gameSlice = createSlice({
   initialState,
   reducers: {
     applySync: (state, action: PayloadAction<StateSyncPayload>) => {
+      if (state.phase === "ended") return;
       const s = action.payload;
       // A snapshot is read from Redis and sent once the read finishes, so a
       // phase change in between reaches the client first — e.g. the host's
@@ -149,12 +155,20 @@ const gameSlice = createSlice({
       // always takes its first snapshot.
       if (
         state.phase !== "idle" &&
-        gameProgress(s.phase, s.qIndex) <
-          gameProgress(state.phase, state.qIndex)
+        ((s.revision ?? 0) < state.revision ||
+          ((s.revision ?? 0) === state.revision &&
+            gameProgress(s.phase, s.qIndex) <
+              gameProgress(state.phase, state.qIndex)))
       ) {
         return;
       }
+      if ((s.revision ?? 0) !== state.revision) {
+        state.liveSummary = null;
+        state.standing = null;
+      }
+      state.revision = s.revision ?? 0;
       state.phase = s.phase;
+      state.showFinalRanking = s.showFinalRanking ?? true;
       state.mode = s.mode;
       state.qIndex = s.qIndex;
       state.qCount = s.qCount;
@@ -194,9 +208,22 @@ const gameSlice = createSlice({
       state.deadline = Date.now() + action.payload.remainingMs;
       state.countdownMs = action.payload.remainingMs;
       state.gameOver = false;
+      state.showFinalRanking = true;
     },
     questionStart: (state, action: PayloadAction<QuestionStartPayload>) => {
+      if (state.phase === "ended") return;
       const q = action.payload;
+      if (
+        (q.revision ?? 0) < state.revision ||
+        ((q.revision ?? 0) === state.revision &&
+          gameProgress("question", q.index) <
+            gameProgress(
+              state.phase === "idle" ? "lobby" : state.phase,
+              state.qIndex,
+            ))
+      )
+        return;
+      state.revision = q.revision ?? 0;
       state.phase = "question";
       state.qIndex = q.index;
       state.qCount = q.qCount;
@@ -208,11 +235,22 @@ const gameSlice = createSlice({
       state.you = null;
     },
     questionEnd: (state, action: PayloadAction<QuestionEndPayload>) => {
+      if (
+        state.phase === "ended" ||
+        (action.payload.revision ?? 0) !== state.revision
+      )
+        return;
+      if (action.payload.index !== state.qIndex) return;
       state.phase = "reveal";
       state.reveal = action.payload;
       state.deadline = 0;
     },
     answerResult: (state, action: PayloadAction<AnswerResultPayload>) => {
+      if (
+        state.phase === "ended" ||
+        (action.payload.revision ?? 0) !== state.revision
+      )
+        return;
       state.you = action.payload;
       state.standing = nextStanding(
         state.standing,
@@ -221,11 +259,21 @@ const gameSlice = createSlice({
       );
     },
     answerCount: (state, action: PayloadAction<AnswerCountPayload>) => {
+      if (
+        state.phase === "ended" ||
+        (action.payload.revision ?? 0) !== state.revision
+      )
+        return;
       if (action.payload.index === state.qIndex) {
         state.answeredCount = action.payload.answered;
       }
     },
     liveSummary: (state, action: PayloadAction<LiveSummaryPayload>) => {
+      if (
+        state.phase === "ended" ||
+        (action.payload.revision ?? 0) !== state.revision
+      )
+        return;
       const live = action.payload;
       if (
         state.phase === "question" &&
@@ -236,13 +284,12 @@ const gameSlice = createSlice({
         state.liveSummary = live;
       }
     },
-    leaderboardReceived: (
-      state,
-      action: PayloadAction<{
-        entries: LeaderboardEntry[];
-        isFinal: boolean;
-      }>,
-    ) => {
+    leaderboardReceived: (state, action: PayloadAction<LeaderboardPayload>) => {
+      if (
+        state.phase === "ended" ||
+        (action.payload.revision ?? 0) !== state.revision
+      )
+        return;
       state.leaderboard = action.payload.entries;
       state.isFinalLeaderboard = action.payload.isFinal;
       if (action.payload.isFinal) {
@@ -252,6 +299,7 @@ const gameSlice = createSlice({
     gameOver: (
       state,
       action: PayloadAction<{
+        showFinalRanking?: boolean;
         entries: LeaderboardEntry[];
         eloChanges?: Record<string, { before: number; after: number }>;
         rated?: boolean;
@@ -263,6 +311,7 @@ const gameSlice = createSlice({
       state.leaderboard = action.payload.entries;
       state.isFinalLeaderboard = true;
       state.gameOver = true;
+      state.showFinalRanking = action.payload.showFinalRanking ?? true;
       state.eloChanges = action.payload.eloChanges ?? null;
       state.rated = action.payload.rated ?? false;
       state.category = action.payload.category ?? null;

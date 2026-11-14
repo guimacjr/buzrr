@@ -26,20 +26,23 @@ export function JsonLd({ nodes }: { nodes: Record<string, unknown>[] }) {
 export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
   return (
     <nav aria-label="Breadcrumb" className="text-sm">
-      <ol className="flex flex-wrap items-center gap-1 text-dark/60 dark:text-gray">
+      <ol className="flex flex-wrap items-center gap-1 text-theme-text/60 dark:text-theme-muted">
         {crumbs.map((crumb, i) => {
           const last = i === crumbs.length - 1;
           return (
             <li key={crumb.path} className="flex items-center gap-1">
               {last ? (
-                <span aria-current="page" className="text-dark dark:text-white">
+                <span
+                  aria-current="page"
+                  className="text-theme-text dark:text-theme-text"
+                >
                   {crumb.name}
                 </span>
               ) : (
                 <>
                   <Link
                     href={crumb.path}
-                    className="hover:text-lprimary dark:hover:text-dprimary transition-colors"
+                    className="hover:text-theme-primary dark:hover:text-theme-primary transition-colors"
                   >
                     {crumb.name}
                   </Link>
@@ -87,13 +90,13 @@ export function PageHero({
   return (
     <header className="pt-8 pb-10 sm:pt-10 sm:pb-12">
       <Breadcrumbs crumbs={crumbs} />
-      <p className="mt-8 inline-flex rounded-full border border-lprimary/30 dark:border-dprimary/30 bg-lprimary/10 dark:bg-dprimary/10 px-3 py-1 text-xs font-bold text-lprimary dark:text-dprimary">
+      <p className="mt-8 inline-flex rounded-full border border-theme-primary/30 dark:border-theme-primary/30 bg-theme-primary/10 dark:bg-theme-primary/10 px-3 py-1 text-xs font-bold text-theme-primary dark:text-theme-primary">
         {eyebrow}
       </p>
-      <h1 className="mt-4 text-3xl sm:text-5xl font-black text-dark dark:text-white leading-tight max-w-3xl">
+      <h1 className="mt-4 text-3xl sm:text-5xl font-black text-theme-text dark:text-theme-text leading-tight max-w-3xl">
         {title}
       </h1>
-      <p className="mt-5 text-base sm:text-lg text-dark/70 dark:text-gray max-w-2xl">
+      <p className="mt-5 text-base sm:text-lg text-theme-text/70 dark:text-theme-muted max-w-2xl">
         {lead}
       </p>
       {(primary || secondary) && (
@@ -112,7 +115,7 @@ function isExternal(href: string) {
 
 export function PrimaryButton({ label, href }: CtaLink) {
   const className =
-    "inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold bg-lprimary dark:bg-dprimary text-white dark:text-dark hover:opacity-90 transition-opacity";
+    "inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold bg-theme-primary dark:bg-theme-primary text-theme-onPrimary dark:text-theme-onPrimary hover:opacity-90 transition-opacity";
   return isExternal(href) ? (
     <a href={href} target="_blank" rel="noreferrer" className={className}>
       {label}
@@ -128,7 +131,7 @@ export function PrimaryButton({ label, href }: CtaLink) {
 
 export function SecondaryButton({ label, href }: CtaLink) {
   const className =
-    "inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold border-2 border-lprimary dark:border-dprimary text-lprimary dark:text-dprimary hover:bg-lprimary/10 dark:hover:bg-dprimary/10 transition-colors";
+    "inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold border-2 border-theme-primary dark:border-theme-primary text-theme-primary dark:text-theme-primary hover:bg-theme-primary/10 dark:hover:bg-theme-primary/10 transition-colors";
   return isExternal(href) ? (
     <a href={href} target="_blank" rel="noreferrer" className={className}>
       {label}
@@ -154,13 +157,15 @@ export function Section({
   return (
     <section
       id={id}
-      className="py-10 border-t border-card-light dark:border-card-dark"
+      className="py-10 border-t border-theme-card dark:border-theme-card"
     >
-      <h2 className="text-2xl sm:text-3xl font-black text-dark dark:text-white">
+      <h2 className="text-2xl sm:text-3xl font-black text-theme-text dark:text-theme-text">
         {title}
       </h2>
       {intro && (
-        <p className="mt-3 text-dark/70 dark:text-gray max-w-3xl">{intro}</p>
+        <p className="mt-3 text-theme-text/70 dark:text-theme-muted max-w-3xl">
+          {intro}
+        </p>
       )}
       <div className="mt-6">{children}</div>
     </section>
@@ -169,7 +174,7 @@ export function Section({
 
 export function Prose({ paragraphs }: { paragraphs: string[] }) {
   return (
-    <div className="space-y-4 max-w-3xl text-dark/80 dark:text-off-white leading-relaxed">
+    <div className="space-y-4 max-w-3xl text-theme-text/80 dark:text-theme-muted leading-relaxed">
       {paragraphs.map((p) => (
         <p key={p}>{p}</p>
       ))}
@@ -187,10 +192,12 @@ export function PointGrid({
       {points.map((point) => (
         <div
           key={point.title}
-          className="rounded-xl border border-card-light dark:border-off-dark bg-white dark:bg-dark p-5"
+          className="rounded-xl border border-theme-card dark:border-theme-border bg-theme-surface dark:bg-theme-surface p-5"
         >
-          <h3 className="font-bold text-dark dark:text-white">{point.title}</h3>
-          <p className="mt-2 text-sm text-dark/70 dark:text-gray leading-relaxed">
+          <h3 className="font-bold text-theme-text dark:text-theme-text">
+            {point.title}
+          </h3>
+          <p className="mt-2 text-sm text-theme-text/70 dark:text-theme-muted leading-relaxed">
             {point.text}
           </p>
         </div>
@@ -208,16 +215,16 @@ export function BulletList({
 }) {
   const marker =
     tone === "positive"
-      ? "bg-lprimary dark:bg-dprimary"
+      ? "bg-theme-primary dark:bg-theme-primary"
       : tone === "caution"
-        ? "bg-red-light dark:bg-red-dark"
-        : "bg-dark/40 dark:bg-gray";
+        ? "bg-theme-danger dark:bg-theme-danger"
+        : "bg-theme-surface/40 dark:bg-theme-border";
   return (
     <ul className="space-y-2.5 max-w-3xl">
       {items.map((item) => (
         <li
           key={item}
-          className="flex gap-3 text-dark/80 dark:text-off-white leading-relaxed"
+          className="flex gap-3 text-theme-text/80 dark:text-theme-muted leading-relaxed"
         >
           <span
             aria-hidden
@@ -239,12 +246,12 @@ export function Steps({
     <ol className="space-y-4 max-w-3xl">
       {steps.map((step, i) => (
         <li key={step.text} className="flex gap-4">
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-lprimary/10 dark:bg-dprimary/10 text-sm font-black text-lprimary dark:text-dprimary">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-theme-primary/10 dark:bg-theme-primary/10 text-sm font-black text-theme-primary dark:text-theme-primary">
             {i + 1}
           </span>
-          <p className="min-w-0 pt-1 text-dark/80 dark:text-off-white leading-relaxed wrap-anywhere">
+          <p className="min-w-0 pt-1 text-theme-text/80 dark:text-theme-muted leading-relaxed wrap-anywhere">
             {step.title && (
-              <strong className="text-dark dark:text-white">
+              <strong className="text-theme-text dark:text-theme-text">
                 {step.title}.{" "}
               </strong>
             )}
@@ -265,11 +272,11 @@ export function Answer({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-lprimary/30 dark:border-dprimary/30 bg-lprimary/5 dark:bg-dprimary/5 p-6">
-      <h2 className="text-lg sm:text-xl font-black text-dark dark:text-white">
+    <div className="rounded-2xl border border-theme-primary/30 dark:border-theme-primary/30 bg-theme-primary/5 dark:bg-theme-primary/5 p-6">
+      <h2 className="text-lg sm:text-xl font-black text-theme-text dark:text-theme-text">
         {question}
       </h2>
-      <div className="mt-3 text-dark/80 dark:text-off-white leading-relaxed">
+      <div className="mt-3 text-theme-text/80 dark:text-theme-muted leading-relaxed">
         {children}
       </div>
     </div>
@@ -283,12 +290,12 @@ export function FaqList({ faqs }: { faqs: Faq[] }) {
       {faqs.map((faq) => (
         <div
           key={faq.question}
-          className="rounded-2xl border border-card-light dark:border-off-dark bg-white dark:bg-dark p-6"
+          className="rounded-2xl border border-theme-card dark:border-theme-border bg-theme-surface dark:bg-theme-surface p-6"
         >
-          <dt className="text-lg font-bold text-dark dark:text-white">
+          <dt className="text-lg font-bold text-theme-text dark:text-theme-text">
             {faq.question}
           </dt>
-          <dd className="mt-2 text-dark/80 dark:text-off-white leading-relaxed">
+          <dd className="mt-2 text-theme-text/80 dark:text-theme-muted leading-relaxed">
             {faq.answer}
           </dd>
         </div>
@@ -310,13 +317,13 @@ export function LinkCards({ items }: { items: LinkCardItem[] }) {
         <li key={item.href}>
           <Link
             href={item.href}
-            className="group flex h-full flex-col rounded-xl border border-card-light dark:border-off-dark bg-white dark:bg-dark p-5 hover:border-lprimary/50 dark:hover:border-dprimary/50 transition-colors"
+            className="group flex h-full flex-col rounded-xl border border-theme-card dark:border-theme-border bg-theme-surface dark:bg-theme-surface p-5 hover:border-theme-primary/50 dark:hover:border-theme-primary/50 transition-colors"
           >
-            <span className="flex items-center justify-between gap-2 font-bold text-dark dark:text-white group-hover:text-lprimary dark:group-hover:text-dprimary transition-colors">
+            <span className="flex items-center justify-between gap-2 font-bold text-theme-text dark:text-theme-text group-hover:text-theme-primary dark:group-hover:text-theme-primary transition-colors">
               {item.title}
               <LuArrowRight size={16} aria-hidden className="shrink-0" />
             </span>
-            <span className="mt-2 text-sm text-dark/70 dark:text-gray leading-relaxed">
+            <span className="mt-2 text-sm text-theme-text/70 dark:text-theme-muted leading-relaxed">
               {item.text}
             </span>
           </Link>
@@ -338,11 +345,11 @@ export function CtaPanel({
   secondary?: CtaLink;
 }) {
   return (
-    <section className="mt-10 rounded-2xl border border-card-light dark:border-off-dark bg-white dark:bg-dark p-6 sm:p-10 text-center">
-      <h2 className="text-2xl sm:text-3xl font-black text-dark dark:text-white">
+    <section className="mt-10 rounded-2xl border border-theme-card dark:border-theme-border bg-theme-surface dark:bg-theme-surface p-6 sm:p-10 text-center">
+      <h2 className="text-2xl sm:text-3xl font-black text-theme-text dark:text-theme-text">
         {title}
       </h2>
-      <p className="mt-3 max-w-xl mx-auto text-dark/70 dark:text-gray">
+      <p className="mt-3 max-w-xl mx-auto text-theme-text/70 dark:text-theme-muted">
         {text}
       </p>
       <div className="mt-6 flex flex-col sm:flex-row justify-center gap-3">

@@ -39,6 +39,9 @@ const GamePage = (params: {
   const [showLeaveModal, setShowLeaveModal] = useState(false);
 
   const phase = useAppSelector((state) => state.game.phase);
+  const showFinalRanking = useAppSelector(
+    (state) => state.game.showFinalRanking,
+  );
   const question = useAppSelector((state) => state.game.question);
   const you = useAppSelector((state) => state.game.you);
 
@@ -51,8 +54,8 @@ const GamePage = (params: {
     onRemoved: ({ banned }) => {
       toast.error(
         banned
-          ? "The host banned you from this room."
-          : "The host removed you from this game.",
+          ? "O administrador bloqueou sua entrada nesta sala."
+          : "O administrador removeu você desta partida.",
       );
       router.replace(`/player/joinRoom/${params.player.id}`);
     },
@@ -85,6 +88,10 @@ const GamePage = (params: {
     router.replace(`/player/joinRoom/${params.player.id}`);
   };
 
+  if ((phase === "final" || phase === "ended") && !showFinalRanking) {
+    return <p className="p-10 text-center text-theme-text">Quiz encerrado</p>;
+  }
+
   return (
     <>
       <ConnectionBanner />
@@ -95,8 +102,8 @@ const GamePage = (params: {
         open={showLeaveModal}
         setOpen={setShowLeaveModal}
         onClick={confirmLeave}
-        desc="If you leave now you'll be removed from this game. Your name is saved — you can rejoin with the room code."
-        confirmLabel="Leave Game"
+        desc="Se sair agora, você será removido desta partida. Seu nome ficará salvo e você poderá entrar novamente com o código da sala."
+        confirmLabel="Sair da partida"
       />
       {phase === "idle" || phase === "lobby" ? (
         <WaitGameStart

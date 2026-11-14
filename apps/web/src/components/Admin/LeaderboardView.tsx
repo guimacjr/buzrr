@@ -27,7 +27,7 @@ export default function LeaderboardView({
     <button
       type="button"
       onClick={onBack}
-      className="self-start text-sm text-lprimary dark:text-dprimary font-bold hover:underline hover:cursor-pointer"
+      className="self-start text-sm text-theme-primary dark:text-theme-primary font-bold hover:underline hover:cursor-pointer"
     >
       ← {backLabel}
     </button>
@@ -42,7 +42,7 @@ export default function LeaderboardView({
           {Array.from({ length: 4 }).map((_, index) => (
             <Skeleton
               key={index}
-              className="h-16 w-full rounded-xl bg-white dark:bg-card-dark"
+              className="h-16 w-full rounded-xl bg-theme-surface dark:bg-theme-card"
             />
           ))}
         </div>
@@ -54,7 +54,7 @@ export default function LeaderboardView({
     return (
       <div className="flex flex-col w-full gap-4">
         {backButton}
-        <p className="text-center text-dark dark:text-white py-8">
+        <p className="text-center text-theme-text dark:text-theme-text py-8">
           Could not load leaderboard.
         </p>
       </div>
@@ -64,10 +64,10 @@ export default function LeaderboardView({
   return (
     <div className="flex flex-col items-center w-full gap-4">
       {backButton}
-      <p className="text-2xl text-center font-black text-dark dark:text-white capitalize">
+      <p className="text-2xl text-center font-black text-theme-text dark:text-theme-text capitalize">
         {result.quizTitle} — Leaderboard
       </p>
-      <p className="text-sm text-dark dark:text-white">
+      <p className="text-sm text-theme-text dark:text-theme-text">
         Played {new Date(result.endedAt).toLocaleString()} · Room{" "}
         {result.gameCode}
       </p>
@@ -77,11 +77,12 @@ export default function LeaderboardView({
           result.entries.map((entry) => (
             <div
               key={entry.id}
-              className="flex justify-between items-center px-4 py-2 w-full rounded-xl shadow bg-white dark:bg-card-dark text-dark dark:text-white"
+              className="flex justify-between items-center px-4 py-2 w-full rounded-xl shadow bg-theme-surface dark:bg-theme-card text-theme-text dark:text-theme-text"
             >
               {rankBadge(entry.rank)}
               <div className="flex flex-row items-center gap-x-2 min-w-0">
                 <Image
+                  unoptimized
                   src={entry.profilePic || DEFAULT_AVATAR}
                   className="w-12 h-12 rounded-full shrink-0"
                   width={50}
@@ -94,7 +95,7 @@ export default function LeaderboardView({
             </div>
           ))
         ) : (
-          <div className="border border-gray border-dashed rounded-lg p-6 text-center text-dark dark:text-white">
+          <div className="border border-theme-border border-dashed rounded-lg p-6 text-center text-theme-text dark:text-theme-text">
             No players in this game.
           </div>
         )}

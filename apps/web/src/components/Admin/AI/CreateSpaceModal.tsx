@@ -50,17 +50,17 @@ export default function CreateSpaceModal({
     <Modal open={open} onClose={onClose} aria-labelledby="create-space-title">
       <Box
         sx={style}
-        className="bg-light-bg dark:bg-card-dark rounded-xl w-4/5 md:w-1/2 max-w-[600px]"
+        className="bg-theme-background dark:bg-theme-card rounded-xl w-4/5 md:w-1/2 max-w-[600px]"
       >
         <ModalCloseButton onClose={onClose} />
         <div className="p-6">
           <p
             id="create-space-title"
-            className="text-xl font-bold mb-2 text-dark dark:text-white"
+            className="text-xl font-bold mb-2 text-theme-text dark:text-theme-text"
           >
             New knowledge space
           </p>
-          <p className="text-[#4E4E56] dark:text-off-white mb-4">
+          <p className="text-theme-muted dark:text-theme-muted mb-4">
             A space holds one subject&apos;s documents. Upload your material,
             then ask for questions from any part of it.
           </p>
@@ -73,7 +73,7 @@ export default function CreateSpaceModal({
                   type="text"
                   name="name"
                   placeholder="Example: “Thermodynamics — CHEM 101”"
-                  className="text-dark dark:text-white dark:bg-dark my-2 rounded-xl mt-1 border"
+                  className="text-theme-text dark:text-theme-text dark:bg-theme-surface my-2 rounded-xl mt-1 border"
                   required
                   autoComplete="off"
                   label="Name this space"
@@ -92,7 +92,7 @@ export default function CreateSpaceModal({
                   type="text"
                   name="description"
                   placeholder="Example: lecture notes and the course textbook"
-                  className="text-dark dark:text-white dark:bg-dark mt-1 border rounded-xl"
+                  className="text-theme-text dark:text-theme-text dark:bg-theme-surface mt-1 border rounded-xl"
                   autoComplete="off"
                   textarea
                   label="What's in it? (optional)"

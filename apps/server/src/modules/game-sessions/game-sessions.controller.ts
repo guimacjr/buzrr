@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   UseGuards,
+  Header,
 } from "@nestjs/common";
 import {
   CurrentAccountUser,
@@ -20,7 +21,8 @@ import type {
 import { Public } from "../../common/decorators/public.decorator";
 import { RateLimitGuard } from "../../common/guards/rate-limit.guard";
 import { CreateRoomDto } from "./dto/create-room.dto";
-import { JoinRoomDto } from "./dto/join-room.dto";
+import { joinRoomSchema, type JoinRoomBody } from "@buzrr/contract";
+import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
 import { GameSessionsService } from "./game-sessions.service";
 
 @Controller("game-sessions")
@@ -29,8 +31,29 @@ export class GameSessionsController {
 
   @UseGuards(RateLimitGuard)
   @Post("join")
-  join(@CurrentPlayerUser() player: PlayerAuthUser, @Body() dto: JoinRoomDto) {
+  join(
+    @CurrentPlayerUser() player: PlayerAuthUser,
+    @Body(new ZodValidationPipe(joinRoomSchema)) dto: JoinRoomBody,
+  ) {
     return this.gameSessions.join(player.playerId, dto);
+  }
+
+  @Public()
+  @UseGuards(RateLimitGuard)
+  @Get("registration/:code")
+  registration(@Param("code") code: string) {
+    return this.gameSessions.registrationFields(code);
+  }
+
+  @Get("results/:resultId/report")
+  @Header("Content-Type", "text/csv; charset=utf-8")
+  @Header("Content-Disposition", 'attachment; filename="quiz-report.csv"')
+  @Header("Cache-Control", "no-store")
+  report(
+    @CurrentAccountUser() user: AuthUser,
+    @Param("resultId") resultId: string,
+  ) {
+    return this.gameSessions.downloadReport(user, resultId);
   }
 
   @Public()

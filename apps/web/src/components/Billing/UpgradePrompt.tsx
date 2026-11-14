@@ -45,29 +45,29 @@ export default function UpgradePrompt({
     >
       <Box
         sx={style}
-        className="bg-light-bg dark:bg-card-dark rounded-xl w-4/5 sm:w-3/5 md:w-2/5 max-w-[520px]"
+        className="bg-theme-background dark:bg-theme-card rounded-xl w-4/5 sm:w-3/5 md:w-2/5 max-w-[520px]"
       >
         <ModalCloseButton onClose={onClose} />
         <div className="p-6 flex flex-col">
           <p
             id="upgrade-prompt-title"
-            className="text-xl font-bold mb-2 text-dark dark:text-white"
+            className="text-xl font-bold mb-2 text-theme-text dark:text-theme-text"
           >
             {title}
           </p>
           <p
             id="upgrade-prompt-desc"
-            className="text-sm text-[#4E4E56] dark:text-off-white"
+            className="text-sm text-theme-muted dark:text-theme-muted"
           >
             {limit?.message}
           </p>
           {weeklyRefill ? (
-            <p className="mt-3 text-sm text-dark dark:text-white">
+            <p className="mt-3 text-sm text-theme-text dark:text-theme-text">
               Your generations refill on{" "}
               <strong>{formatReset(weeklyRefill)}</strong>.
             </p>
           ) : (
-            <ul className="mt-4 space-y-1 text-sm text-dark dark:text-white list-disc pl-5">
+            <ul className="mt-4 space-y-1 text-sm text-theme-text dark:text-theme-text list-disc pl-5">
               <li>Unlimited quizzes</li>
               <li>10 AI quiz generations every week</li>
               <li>Rooms of up to 250 players</li>
@@ -78,7 +78,7 @@ export default function UpgradePrompt({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 rounded-xl px-5 py-3 font-bold bg-lprimary dark:bg-dprimary text-white dark:text-dark cursor-pointer"
+                className="flex-1 rounded-xl px-5 py-3 font-bold bg-theme-primary dark:bg-theme-primary text-theme-onPrimary dark:text-theme-onPrimary cursor-pointer"
               >
                 Got it
               </button>
@@ -86,13 +86,13 @@ export default function UpgradePrompt({
               <>
                 <Link
                   href="/billing/checkout"
-                  className="flex-1 text-center rounded-xl px-5 py-3 font-bold bg-lprimary dark:bg-dprimary text-white dark:text-dark hover:opacity-90"
+                  className="flex-1 text-center rounded-xl px-5 py-3 font-bold bg-theme-primary dark:bg-theme-primary text-theme-onPrimary dark:text-theme-onPrimary hover:opacity-90"
                 >
                   Upgrade to Pro
                 </Link>
                 <Link
                   href="/pricing"
-                  className="flex-1 text-center rounded-xl px-5 py-3 font-bold border-2 border-lprimary dark:border-dprimary text-lprimary dark:text-dprimary"
+                  className="flex-1 text-center rounded-xl px-5 py-3 font-bold border-2 border-theme-primary dark:border-theme-primary text-theme-primary dark:text-theme-primary"
                 >
                   See plans
                 </Link>
@@ -141,22 +141,22 @@ export function AiQuotaBar({ className }: { className?: string }) {
   return (
     <div
       className={clsx(
-        "flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] bg-lprimary/8 dark:bg-white/5",
+        "flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] bg-theme-primary/8 dark:bg-theme-surface/5",
         empty
-          ? "text-red-light dark:text-red-dark"
-          : "text-off-dark dark:text-muted-dark",
+          ? "text-theme-danger dark:text-theme-danger"
+          : "text-theme-muted dark:text-theme-muted",
         className,
       )}
     >
       <span>
-        <b className={empty ? "" : "text-dark dark:text-white"}>
+        <b className={empty ? "" : "text-theme-text dark:text-theme-text"}>
           {aiTokensRemaining} of {amount}
         </b>{" "}
         AI generations left{period}
       </span>
-      <span className="flex-1 min-w-12 h-1.5 rounded-md overflow-hidden bg-lprimary/15 dark:bg-white/10">
+      <span className="flex-1 min-w-12 h-1.5 rounded-md overflow-hidden bg-theme-primary/15 dark:bg-theme-surface/10">
         <i
-          className="block h-full bg-linear-to-br from-[#9a6cf5] to-[#7c4ddb] dark:from-accent dark:to-accent-deep"
+          className="block h-full bg-linear-to-br from-theme-accent to-theme-accentDeep dark:from-theme-accent dark:to-theme-accentDeep"
           style={{ width: `${pct}%` }}
         />
       </span>
@@ -180,8 +180,8 @@ export function AiTokenBalance({ className }: { className?: string }) {
       className={clsx(
         "text-xs",
         aiTokensRemaining === 0
-          ? "text-red-light dark:text-red-dark font-bold"
-          : "text-off-dark dark:text-off-white",
+          ? "text-theme-danger dark:text-theme-danger font-bold"
+          : "text-theme-muted dark:text-theme-muted",
         className,
       )}
     >

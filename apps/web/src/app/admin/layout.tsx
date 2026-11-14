@@ -3,7 +3,6 @@ export const dynamic = "force-dynamic";
 import SessionProvider from "@/components/SessionProvider";
 import { redirect } from "next/navigation";
 import ClientImage from "@/components/ClientImage";
-import SupportNudge from "@/components/SupportNudge";
 import ToastViewport from "@/components/ToastViewport";
 import type { Metadata } from "next";
 import { NOINDEX_METADATA } from "@/lib/seo/metadata";
@@ -33,7 +32,7 @@ export default async function RootLayout({
       {/* pb-12: room for the fixed site footer (48px) so it never covers the
           bottom of a page. Full-height screens subtract the same 3rem. */}
       <div className="flex flex-col w-screen pb-12">
-        <div className="p-2 bg-light-bg dark:bg-dark-bg hidden md:block">
+        <div className="p-2 bg-theme-background dark:bg-theme-background hidden md:block">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Link href="/" className="inline-block">
               <ClientImage
@@ -50,7 +49,6 @@ export default async function RootLayout({
         </div>
         {children}
         <ToastViewport />
-        <SupportNudge />
       </div>
     </SessionProvider>
   );

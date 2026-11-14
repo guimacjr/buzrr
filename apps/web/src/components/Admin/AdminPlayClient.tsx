@@ -19,11 +19,15 @@ export default function AdminPlayClient({
     if (isAxiosError(error)) {
       if (error.response?.status === 404) notFound();
       if (error.response?.status === 403) {
-        return <p className="p-6 text-dark dark:text-white">Unauthorized</p>;
+        return (
+          <p className="p-6 text-theme-text dark:text-theme-text">
+            Unauthorized
+          </p>
+        );
       }
     }
     return (
-      <p className="p-6 text-dark dark:text-white">
+      <p className="p-6 text-theme-text dark:text-theme-text">
         Could not load this game. Try again later.
       </p>
     );
@@ -32,14 +36,14 @@ export default function AdminPlayClient({
   if (isPending) {
     return (
       <div className="w-full p-6">
-        <Skeleton className="mx-auto h-[85vh] w-full rounded-2xl bg-white dark:bg-card-dark" />
+        <Skeleton className="mx-auto h-[85vh] w-full rounded-2xl bg-theme-surface dark:bg-theme-card" />
       </div>
     );
   }
 
   if (!data) {
     return (
-      <p className="p-6 text-dark dark:text-white">
+      <p className="p-6 text-theme-text dark:text-theme-text">
         Could not load this game. Try again later.
       </p>
     );

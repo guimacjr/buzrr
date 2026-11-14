@@ -1,22 +1,21 @@
 "use client";
 
 import clsx from "clsx";
-import { useState } from "react";
 import { mutedText } from "@/components/Game/GameUI";
-import { ChoiceList, SubmitButton, toggleChoice } from "./Inputs";
+import { ChoiceList, toggleChoice } from "./Inputs";
 import { OptionLabel } from "./MultipleChoice";
 import type { QuestionRenderer } from "./types";
 import { PollBars } from "./Visuals";
 
 export const pollRenderer: QuestionRenderer<"poll"> = {
   AnswerInput({ question, selected, disabled, onSubmit }) {
-    const [draft, setDraft] = useState<string[]>([]);
-    const chosen = selected?.optionIds ?? draft;
+    const chosen = selected?.optionIds ?? [];
     return (
       <>
         {question.multiSelect && (
           <p className={clsx("mt-3 text-sm font-medium", mutedText)}>
-            Pick as many as you like.
+            Selecione quantas opções quiser. Cada alteração é enviada
+            automaticamente.
           </p>
         )}
         <ChoiceList
@@ -25,17 +24,11 @@ export const pollRenderer: QuestionRenderer<"poll"> = {
           chosen={chosen}
           disabled={disabled}
           onToggle={(id) =>
-            setDraft((d) => toggleChoice(d, id, question.multiSelect))
+            onSubmit({
+              optionIds: toggleChoice(chosen, id, question.multiSelect),
+            })
           }
         />
-        {!selected && (
-          <SubmitButton
-            disabled={disabled || draft.length === 0}
-            onClick={() => onSubmit({ optionIds: draft })}
-          >
-            Submit vote
-          </SubmitButton>
-        )}
       </>
     );
   },

@@ -25,10 +25,10 @@ export default function AdminHomeHeader() {
         />
       </Link>
       <span>
-        <p className="text-xs md:text-[17px] font-medium text-off-dark dark:text-muted-dark">
+        <p className="text-xs md:text-[17px] font-medium text-theme-muted dark:text-theme-muted">
           Hey {firstName ?? "There"} 👋!
         </p>
-        <h1 className="text-md md:text-4xl font-bold tracking-[-0.02em] leading-tight md:mt-1 text-dark dark:text-white">
+        <h1 className="text-md md:text-4xl font-bold tracking-[-0.02em] leading-tight md:mt-1 text-theme-text dark:text-theme-text">
           Welcome Back To Your Quiz Hub!
         </h1>
       </span>

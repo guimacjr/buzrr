@@ -36,8 +36,8 @@ export default function ReportQuestionButton({
       onClick={handleReport}
       className={
         reported
-          ? "text-off-dark dark:text-off-white"
-          : "text-red-light dark:text-red-dark hover:bg-red-light/10 dark:hover:bg-red-dark/10"
+          ? "text-theme-muted dark:text-theme-muted"
+          : "text-theme-danger dark:text-theme-danger hover:bg-theme-danger/10 dark:hover:bg-theme-danger/10"
       }
     />
   );

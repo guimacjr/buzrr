@@ -23,7 +23,7 @@ const FAQS = [
         Details are in our{" "}
         <Link
           href="/refund-policy"
-          className="text-lprimary dark:text-dprimary underline underline-offset-2"
+          className="text-theme-primary dark:text-theme-primary underline underline-offset-2"
         >
           Refund &amp; Cancellation Policy
         </Link>
@@ -52,17 +52,19 @@ const FAQS = [
 export default function PricingFaq() {
   return (
     <section className="mt-20">
-      <h2 className="text-2xl font-black text-center text-dark dark:text-white">
+      <h2 className="text-2xl font-black text-center text-theme-text dark:text-theme-text">
         Questions, answered
       </h2>
       <div className="mt-8 grid gap-4 md:grid-cols-2">
         {FAQS.map((faq) => (
           <div
             key={faq.q}
-            className="rounded-2xl bg-white dark:bg-card-dark p-6"
+            className="rounded-2xl bg-theme-surface dark:bg-theme-card p-6"
           >
-            <h3 className="font-bold text-dark dark:text-white">{faq.q}</h3>
-            <p className="mt-2 text-sm text-off-dark dark:text-off-white">
+            <h3 className="font-bold text-theme-text dark:text-theme-text">
+              {faq.q}
+            </h3>
+            <p className="mt-2 text-sm text-theme-muted dark:text-theme-muted">
               {faq.a}
             </p>
           </div>

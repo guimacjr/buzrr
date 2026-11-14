@@ -132,10 +132,10 @@ export default function CreateAIQuiz({ className }: { className?: string }) {
               onSubmit={onSubmit}
               aria-busy={mutation.isPending}
               inert={mutation.isPending}
-              className="w-full max-h-[92dvh] overflow-y-auto flex flex-col rounded-[inherit] border bg-white dark:bg-dark border-lprimary/15 dark:border-white/5 text-dark dark:text-white"
+              className="w-full max-h-[92dvh] overflow-y-auto flex flex-col rounded-[inherit] border bg-theme-surface dark:bg-theme-surface border-theme-primary/15 dark:border-theme-border/5 text-theme-text dark:text-theme-text"
             >
               <div className="flex items-start gap-4 px-5 pt-[22px] md:px-7 md:pt-[26px]">
-                <span className="size-12 shrink-0 rounded-[14px] bg-linear-to-br from-[#9a6cf5] to-[#7c4ddb] dark:from-accent dark:to-accent-deep text-white flex items-center justify-center shadow-[0_10px_24px_-10px_#7c4ddb]">
+                <span className="size-12 shrink-0 rounded-[14px] bg-linear-to-br from-theme-accent to-theme-accentDeep dark:from-theme-accent dark:to-theme-accentDeep text-theme-onAccent flex items-center justify-center shadow-[0_10px_24px_-10px_var(--color-theme-accentDeep)]">
                   <LuSparkles size={24} />
                 </span>
                 <div className="min-w-0">
@@ -160,7 +160,7 @@ export default function CreateAIQuiz({ className }: { className?: string }) {
                   aria-label="Close"
                   onClick={close}
                   className={clsx(
-                    "ml-auto size-9 shrink-0 rounded-[10px] flex items-center justify-center hover:bg-lprimary/8 dark:hover:bg-white/5 hover:text-dark dark:hover:text-white transition-colors cursor-pointer",
+                    "ml-auto size-9 shrink-0 rounded-[10px] flex items-center justify-center hover:bg-theme-primary/8 dark:hover:bg-theme-surface/5 hover:text-theme-text dark:hover:text-theme-onPrimary transition-colors cursor-pointer",
                     mutedText,
                   )}
                 >
@@ -219,7 +219,7 @@ export default function CreateAIQuiz({ className }: { className?: string }) {
                       >
                         <div className={fieldLabelClass}>
                           Questions
-                          <span className="text-[22px] font-extrabold tracking-[-0.02em] leading-none text-lprimary dark:text-dprimary">
+                          <span className="text-[22px] font-extrabold tracking-[-0.02em] leading-none text-theme-primary dark:text-theme-primary">
                             {n}
                           </span>
                         </div>
@@ -246,7 +246,7 @@ export default function CreateAIQuiz({ className }: { className?: string }) {
                       >
                         <div className={fieldLabelClass}>
                           Time per question
-                          <span className="flex gap-1 rounded-[10px] p-[3px] bg-lprimary/8 dark:bg-white/5">
+                          <span className="flex gap-1 rounded-[10px] p-[3px] bg-theme-primary/8 dark:bg-theme-surface/5">
                             {(["Slider", "Custom"] as const).map((mode) => {
                               const on = (mode === "Custom") === customTime;
                               return (
@@ -265,7 +265,7 @@ export default function CreateAIQuiz({ className }: { className?: string }) {
                                   className={clsx(
                                     "rounded-lg px-2.5 py-[5px] text-xs font-semibold cursor-pointer transition-colors",
                                     on
-                                      ? "bg-white dark:bg-dark text-dark dark:text-white shadow-[0_1px_3px_rgba(0,0,0,0.12)]"
+                                      ? "bg-theme-surface dark:bg-theme-surface text-theme-text dark:text-theme-text shadow-[0_1px_3px_rgba(0,0,0,0.12)]"
                                       : mutedText,
                                   )}
                                 >
@@ -306,14 +306,14 @@ export default function CreateAIQuiz({ className }: { className?: string }) {
                               </span>
                             </div>
                             {formState.errors.time?.message && (
-                              <span className="text-xs text-red-light dark:text-red-dark">
+                              <span className="text-xs text-theme-danger dark:text-theme-danger">
                                 {formState.errors.time.message}
                               </span>
                             )}
                           </>
                         ) : (
                           <>
-                            <span className="-mt-1 text-[22px] font-extrabold tracking-[-0.02em] leading-none text-lprimary dark:text-dprimary">
+                            <span className="-mt-1 text-[22px] font-extrabold tracking-[-0.02em] leading-none text-theme-primary dark:text-theme-primary">
                               {t}
                               <small
                                 className={clsx(
@@ -340,7 +340,7 @@ export default function CreateAIQuiz({ className }: { className?: string }) {
                 </div>
               </div>
 
-              <div className="mt-[22px] flex flex-col md:flex-row items-stretch md:items-center gap-3.5 border-t border-lprimary/15 dark:border-white/10 px-5 pt-[18px] pb-6 md:px-7 md:pt-[22px] md:pb-[26px]">
+              <div className="mt-[22px] flex flex-col md:flex-row items-stretch md:items-center gap-3.5 border-t border-theme-primary/15 dark:border-theme-border/10 px-5 pt-[18px] pb-6 md:px-7 md:pt-[22px] md:pb-[26px]">
                 <p className={clsx("flex-1 text-[13px]", mutedText)}>
                   {n} {n === 1 ? "question" : "questions"} · {t || "—"}s each ·
                   about {Math.max(1, Math.round((n * t) / 60))} min to play

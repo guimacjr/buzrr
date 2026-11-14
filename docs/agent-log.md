@@ -54,5 +54,42 @@ Format:
 - 2026-10-14 — Question types from the "Buzrr Question Types" design: true/false, poll, word cloud, rating, open text, multi-correct multiple choice; handler `scored`/`duelEligible`, host-only throttled `live-summary` event, duel eligibility drives moderation status and the duel pool; type-aware editor, Add Question type menu and per-type cards. Updated ADR-011, realtime.md, backend.md, CONTEXT, CONTRIBUTING.
 - 2026-10-14 — Multiple submissions for word cloud / open text: optional handler `acceptsMoreAnswers`/`mergeAnswers`, compare-and-set `replaceAnswer`, no early close for such questions, `submit-answer` ack returns the stored answer. Updated realtime.md, ADR-011.
 - 2026-10-15 — 1v1 Duel redesign (Claude Design "Buzrr 1v1 Duel"): duel categories with per-category ratings and category matchmaking, standalone questions (nullable `quizId`, `createdById`, admin `POST /api/questions`), many-to-many question categories, daily duel streak with calendar (ADR-015, migration `20261015000001`). Updated data.md, duels.md, backend.md, frontend.md, invariants #20, ADR-007, CONTEXT.
+- 2026-10-18 — Added a global revisioned avatar catalog, role-guarded uploads/settings and shared player selection. Docs touched: data.md, backend.md, frontend.md, auth.md, CONTEXT.md.
+- 2026-10-18 — Added per-quiz registration definitions, room registration snapshots and immutable host CSV reports at game finalization. Docs touched: data.md, backend.md, frontend.md, CONTEXT.md, ARCHITECTURE.md.
+- 2026-10-18 — Removed editor/API file-size caps for quiz media uploads; format validation remains. Docs touched: architecture/backend.md.
 - 2026-10-18 — True / false stores its answer as `Question.config.answer` with no `Option` rows; answer `{ value }`, summary `trueCount`/`falseCount`/`answer`; legacy option pairs still accepted; data migration `20261018000001`. Fixes ✓/✗ drawn on the wrong option. Updated ADR-011, data.md, backend.md, CONTEXT.
 - 2026-10-18 — Dense ranking (ties share a rank, zero-score players ranked) in `buildLeaderboard`/`buildAnswerResult` and the host podium; the question-phase snapshot carries the rank as of the last reveal; the player screen shows a standing strip on phones and a rank chip while answering. Updated realtime.md, invariants #18.
+
+- 2026-10-18 — Added manually advanced admin media slides (MP4/WebM and images), per-question ranking visibility with preserved scores/final standings, and presentation regression tests. Updated ADR-011, architecture, realtime, frontend, backend, data and CONTEXT; no database migration.
+- 2026-10-18 — Added global light/dark color palettes and platform logo management, semantic frontend colors, and validated admin-only branding writes.
+- 2026-10-19 — Added bulk avatar selection, sequential uploads, per-file results and retry of failed uploads in Settings.
+
+- 2026-10-22 — Added Docker Hub Compose override and intranet environment for guimacieljr/buzrr; documented build, push and deployment.
+
+- 2026-10-22 — Added interactive Docker Hub publishing with host/version validation, version tags and latest aliases; updates intranet URLs after success.
+
+- 2026-10-27: Configure dev origins from the auth URL and document same-host Cloudflare Tunnel routing for buzrr.maciel.tv.
+
+- 2026-11-12 — Enabled up to six options in the multiple-choice and poll editor; aligned poll validation with the shared limit.
+
+- 2026-11-12 — Added per-slide full-screen media presentation with keyboard advancement and an Escape/double-tap exit.
+
+- 2026-11-12 — Added quiz-wide final-ranking visibility, persisted at game start, with direct finalization and preserved reports.
+
+- 2026-11-12 — Set poll/multiple-choice question and option authoring limits to 400 characters, shared across editor and REST validation.
+
+- 2026-11-12 — Resolve the shared contract from source in Next and web tests to avoid stale compiled schema exports.
+
+- 2026-11-12 — Declare contract source as ES modules for Turbopack while preserving CommonJS server output.
+
+- 2026-11-12 — Added server-authoritative classic history navigation, revisioned events/snapshots, unscored response editing and atomic transition guards (ADR-017).
+
+- 2026-11-12 — Separate contract ESM-source/CommonJS exports and make Next aliases explicit; verified CreatePlayerForm chunks no longer import dist.
+
+- 2026-11-12 — Switch local Next development to Webpack and discard stale development output after recurring Turbopack module-factory failures.
+
+- 2026-11-13: Added global random-color avatar mode, preserving image settings and validating color selections for new participants.
+
+- 2026-11-13: Polls submit on click; multi-select votes replace selections atomically and refresh live totals without duplicate counts.
+
+- 2026-11-14 — Added versioned quiz/appearance ZIP packages, validated preview/import, storage transfer and admin/host UI (ADR-018).

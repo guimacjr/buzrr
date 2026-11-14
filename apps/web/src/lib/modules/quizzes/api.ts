@@ -1,5 +1,5 @@
 import type { AxiosInstance } from "axios";
-import type { QuestionType } from "@buzrr/contract";
+import type { QuizPresentation, QuestionType } from "@buzrr/contract";
 import type { GameSession, Quiz } from "@/types/db";
 import type { GameResult } from "@/lib/modules/game-sessions/api";
 import { getAuthApiClient } from "@/lib/api/client";
@@ -82,6 +82,13 @@ export async function importQuiz(
 }
 
 export const quizzesApi = {
+  presentation: async (quizId: string, body: QuizPresentation) => {
+    const { data } = await getAuthApiClient().patch<QuizPresentation>(
+      `/quizzes/${quizId}/presentation`,
+      body,
+    );
+    return data;
+  },
   list: () => listQuizzes(getAuthApiClient()),
   getById: (quizId: string) => getQuizById(getAuthApiClient(), quizId),
   create: (body: Parameters<typeof createQuiz>[1]) =>

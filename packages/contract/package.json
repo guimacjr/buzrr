@@ -13,12 +13,21 @@
     "check-types": "tsc -p tsconfig.json --noEmit"
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "dependencies": {
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "typescript": "5.8.2"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./src/index.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
   }
 }

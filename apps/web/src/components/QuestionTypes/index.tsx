@@ -7,6 +7,7 @@ import type {
   QuestionType,
   RevealSummary,
 } from "@buzrr/contract";
+import { mediaSlideRenderer } from "./MediaSlide";
 import { multipleChoiceRenderer } from "./MultipleChoice";
 import { openTextRenderer } from "./OpenText";
 import { pollRenderer } from "./Poll";
@@ -20,6 +21,7 @@ import type { QuestionRenderer } from "./types";
  * a type added to `@buzrr/contract` without a renderer fails to compile.
  */
 const RENDERERS: { [K in QuestionType]: QuestionRenderer<K> } = {
+  media_slide: mediaSlideRenderer,
   multiple_choice: multipleChoiceRenderer,
   true_false: trueFalseRenderer,
   poll: pollRenderer,
@@ -40,7 +42,11 @@ export { isScoredType } from "@buzrr/contract";
 
 /** Whether players may keep answering after their first submission. */
 export function acceptsMoreAnswers(question: PublicQuestion): boolean {
-  return "multipleSubmissions" in question && question.multipleSubmissions;
+  return (
+    Boolean(question.reopened) ||
+    (question.type === "poll" && question.multiSelect) ||
+    ("multipleSubmissions" in question && question.multipleSubmissions)
+  );
 }
 export {
   QUESTION_TYPE_META,

@@ -39,7 +39,7 @@ function SubscriptionStatus({ data }: { data: Entitlements }) {
   const sub = data.subscription;
   if (!sub) {
     return (
-      <p className="text-sm text-off-dark dark:text-off-white">
+      <p className="text-sm text-theme-muted dark:text-theme-muted">
         You&apos;re on the Free plan.
       </p>
     );
@@ -49,7 +49,7 @@ function SubscriptionStatus({ data }: { data: Entitlements }) {
 
   if (sub.status === "on_hold" || sub.status === "past_due") {
     return (
-      <div className="rounded-xl border border-red-light dark:border-red-dark bg-red-light/10 dark:bg-red-dark/10 p-4 text-sm text-dark dark:text-white">
+      <div className="rounded-xl border border-theme-danger dark:border-theme-danger bg-theme-danger/10 dark:bg-theme-danger/10 p-4 text-sm text-theme-text dark:text-theme-text">
         <p className="font-bold">Your last payment didn&apos;t go through.</p>
         <p className="mt-1">
           Your account is using Free limits until it does. Update your payment
@@ -60,7 +60,7 @@ function SubscriptionStatus({ data }: { data: Entitlements }) {
   }
   if (data.plan === "pro" && sub.cancelAtPeriodEnd) {
     return (
-      <p className="text-sm text-dark dark:text-white">
+      <p className="text-sm text-theme-text dark:text-theme-text">
         Cancelled — you keep Pro until <strong>{periodEnd}</strong>, then move
         to Free.
       </p>
@@ -68,28 +68,28 @@ function SubscriptionStatus({ data }: { data: Entitlements }) {
   }
   if (sub.status === "active") {
     return (
-      <p className="text-sm text-dark dark:text-white">
+      <p className="text-sm text-theme-text dark:text-theme-text">
         {amount} / month · renews on <strong>{periodEnd}</strong>
       </p>
     );
   }
   if (sub.status === "paused") {
     return (
-      <p className="text-sm text-dark dark:text-white">
+      <p className="text-sm text-theme-text dark:text-theme-text">
         Your subscription is paused. Resume it from the billing portal.
       </p>
     );
   }
   if (sub.status === "pending") {
     return (
-      <p className="text-sm text-dark dark:text-white">
+      <p className="text-sm text-theme-text dark:text-theme-text">
         Your subscription is being set up — this page updates once it&apos;s
         active.
       </p>
     );
   }
   return (
-    <p className="text-sm text-off-dark dark:text-off-white">
+    <p className="text-sm text-theme-muted dark:text-theme-muted">
       Your Pro subscription has ended. You&apos;re on the Free plan.
     </p>
   );
@@ -109,8 +109,10 @@ function UsageRow({
   return (
     <div>
       <div className="flex items-baseline justify-between gap-4">
-        <p className="text-sm font-bold text-dark dark:text-white">{label}</p>
-        <p className="text-sm text-dark dark:text-white">{value}</p>
+        <p className="text-sm font-bold text-theme-text dark:text-theme-text">
+          {label}
+        </p>
+        <p className="text-sm text-theme-text dark:text-theme-text">{value}</p>
       </div>
       {progress && (
         <Progress
@@ -121,7 +123,9 @@ function UsageRow({
         />
       )}
       {hint && (
-        <p className="mt-1 text-xs text-off-dark dark:text-off-white">{hint}</p>
+        <p className="mt-1 text-xs text-theme-muted dark:text-theme-muted">
+          {hint}
+        </p>
       )}
     </div>
   );
@@ -144,18 +148,18 @@ export default function BillingClient() {
         <span className="md:hidden">
           <NavbarToggle />
         </span>
-        <h1 className="text-2xl font-black text-dark dark:text-white">
+        <h1 className="text-2xl font-black text-theme-text dark:text-theme-text">
           Plan & Billing
         </h1>
       </div>
 
       {isPending ? (
         <div className="flex flex-col gap-6">
-          <Skeleton className="h-40 w-full rounded-xl bg-white dark:bg-card-dark" />
-          <Skeleton className="h-56 w-full rounded-xl bg-white dark:bg-card-dark" />
+          <Skeleton className="h-40 w-full rounded-xl bg-theme-surface dark:bg-theme-card" />
+          <Skeleton className="h-56 w-full rounded-xl bg-theme-surface dark:bg-theme-card" />
         </div>
       ) : isError || !data ? (
-        <p className="text-dark dark:text-white">
+        <p className="text-theme-text dark:text-theme-text">
           {getApiErrorMessage(error) || "Could not load your plan."}
         </p>
       ) : (
@@ -176,7 +180,7 @@ export default function BillingClient() {
               {data.billingEnabled ? (
                 <SubscriptionStatus data={data} />
               ) : (
-                <p className="text-sm text-off-dark dark:text-off-white">
+                <p className="text-sm text-theme-muted dark:text-theme-muted">
                   Billing isn&apos;t enabled on this Buzrr instance — every
                   account has Pro limits.
                 </p>
@@ -192,7 +196,7 @@ export default function BillingClient() {
                     ) && (
                       <Link
                         href="/billing/checkout"
-                        className="inline-flex items-center justify-center rounded-xl px-5 py-3 font-bold bg-lprimary dark:bg-dprimary text-white dark:text-dark hover:opacity-90"
+                        className="inline-flex items-center justify-center rounded-xl px-5 py-3 font-bold bg-theme-primary dark:bg-theme-primary text-theme-onPrimary dark:text-theme-onPrimary hover:opacity-90"
                       >
                         Upgrade to Pro
                       </Link>
@@ -213,7 +217,7 @@ export default function BillingClient() {
                   {data.plan === "free" && (
                     <Link
                       href="/pricing"
-                      className="inline-flex items-center justify-center px-5 py-3 text-sm font-bold text-lprimary dark:text-dprimary underline underline-offset-2"
+                      className="inline-flex items-center justify-center px-5 py-3 text-sm font-bold text-theme-primary dark:text-theme-primary underline underline-offset-2"
                     >
                       Compare plans
                     </Link>

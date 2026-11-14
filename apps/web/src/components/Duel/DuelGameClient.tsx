@@ -75,7 +75,7 @@ export default function DuelGameClient({ gameCode }: { gameCode: string }) {
   if (tokenError) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70dvh] gap-4 px-4 text-center">
-        <p className="text-dark dark:text-white">
+        <p className="text-theme-text dark:text-theme-text">
           Couldn&apos;t start the duel. Please sign in and try again.
         </p>
         <Link href="/duel">
@@ -148,13 +148,14 @@ function DuelScoreBar({ myId }: { myId?: string }) {
       {ordered.map((p, index) => (
         <div key={p.id} className="flex items-center gap-4">
           {index > 0 && (
-            <span className="font-black text-off-dark dark:text-off-white">
+            <span className="font-black text-theme-muted dark:text-theme-muted">
               VS
             </span>
           )}
-          <div className="flex items-center gap-2 bg-white dark:bg-dark rounded-full py-1 pl-1 pr-4 shadow">
+          <div className="flex items-center gap-2 bg-theme-surface dark:bg-theme-surface rounded-full py-1 pl-1 pr-4 shadow">
             <span className="relative">
               <Image
+                unoptimized
                 src={p.profilePic || DEFAULT_AVATAR}
                 width={36}
                 height={36}
@@ -162,18 +163,18 @@ function DuelScoreBar({ myId }: { myId?: string }) {
                 className="rounded-full h-9 w-9"
               />
               <span
-                className={`absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border border-white ${
-                  p.connected ? "bg-green-500" : "bg-gray"
+                className={`absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border border-theme-border ${
+                  p.connected ? "bg-theme-success" : "bg-theme-border"
                 }`}
               />
             </span>
             <div>
-              <p className="text-xs font-bold text-dark dark:text-white leading-tight">
+              <p className="text-xs font-bold text-theme-text dark:text-theme-text leading-tight">
                 {p.id === myId ? "You" : p.name}
               </p>
               <p
                 key={p.score}
-                className="text-sm font-black text-lprimary dark:text-dprimary leading-tight animate-pop"
+                className="text-sm font-black text-theme-primary dark:text-theme-primary leading-tight animate-pop"
               >
                 {p.score}
               </p>
@@ -205,21 +206,21 @@ function DuelStartingScreen({
 
   return (
     <div className="flex min-h-[70dvh] flex-col items-center justify-center gap-3.5 px-4">
-      <p className="text-center text-[28px] font-extrabold tracking-tight text-dark dark:text-white sm:text-[38px] animate-fade-up">
+      <p className="text-center text-[28px] font-extrabold tracking-tight text-theme-text dark:text-theme-text sm:text-[38px] animate-fade-up">
         {opponent ? `You vs ${opponent.name}` : "Get ready!"}
       </p>
-      <span className="rounded-full bg-card-light dark:bg-card-dark px-3 py-1.5 text-[13.5px] font-bold text-lprimary dark:text-dprimary">
+      <span className="rounded-full bg-theme-card dark:bg-theme-card px-3 py-1.5 text-[13.5px] font-bold text-theme-primary dark:text-theme-primary">
         {categoryName}
         {questionCount ? ` · ${questionCount} questions` : ""}
       </span>
       <p
         key={remaining}
-        className="text-8xl font-extrabold leading-none text-lprimary dark:text-dprimary sm:text-[120px] animate-pop-in"
+        className="text-8xl font-extrabold leading-none text-theme-primary dark:text-theme-primary sm:text-[120px] animate-pop-in"
       >
         {remaining > 0 ? remaining : "GO!"}
       </p>
       {streak && (
-        <span className="inline-flex items-center gap-1 rounded-full bg-flame/12 py-1 pl-[7px] pr-2.5 text-[13px] font-extrabold text-flame">
+        <span className="inline-flex items-center gap-1 rounded-full bg-theme-flame/12 py-1 pl-[7px] pr-2.5 text-[13px] font-extrabold text-theme-flame">
           <FlameIcon size={14} />
           {streak.playedToday
             ? `${streak.current}-day streak · today already counted`
@@ -232,8 +233,8 @@ function DuelStartingScreen({
   );
 }
 
-const positive = "text-green-600 dark:text-green-400";
-const negative = "text-red-light dark:text-red-dark";
+const positive = "text-theme-success dark:text-theme-success";
+const negative = "text-theme-danger dark:text-theme-danger";
 
 function DuelResultScreen({ myId }: { myId?: string }) {
   const leaderboard = useAppSelector((state) => state.game.leaderboard);
@@ -266,11 +267,11 @@ function DuelResultScreen({ myId }: { myId?: string }) {
     <div className="flex min-h-[80dvh] flex-col items-center justify-center gap-5 px-5 py-8 sm:gap-[22px]">
       {won && <ConfettiBurst />}
       {won && (
-        <div className="flex h-[76px] w-[76px] items-center justify-center rounded-full bg-[#d99a12]/18 text-[#d99a12] animate-pop-in">
+        <div className="flex h-[76px] w-[76px] items-center justify-center rounded-full bg-theme-warning/18 text-theme-warning animate-pop-in">
           <TrophyIcon size={38} />
         </div>
       )}
-      <p className="text-center text-[38px] font-extrabold tracking-tight text-dark dark:text-white sm:text-[52px] animate-pop-in">
+      <p className="text-center text-[38px] font-extrabold tracking-tight text-theme-text dark:text-theme-text sm:text-[52px] animate-pop-in">
         {outcome}
       </p>
 
@@ -281,29 +282,30 @@ function DuelResultScreen({ myId }: { myId?: string }) {
             className="flex flex-col items-center gap-1.5"
           >
             <Image
+              unoptimized
               src={entry!.profilePic || DEFAULT_AVATAR}
               width={104}
               height={104}
               alt={entry!.name}
               className="h-[84px] w-[84px] rounded-full sm:h-[104px] sm:w-[104px]"
             />
-            <p className="text-[17px] font-bold text-dark dark:text-white">
+            <p className="text-[17px] font-bold text-theme-text dark:text-theme-text">
               {entry!.playerId === myId ? "You" : entry!.name}
             </p>
-            <p className="text-2xl font-extrabold text-lprimary dark:text-dprimary sm:text-[30px]">
+            <p className="text-2xl font-extrabold text-theme-primary dark:text-theme-primary sm:text-[30px]">
               {entry!.score}
             </p>
           </div>
         ))}
       </div>
 
-      <div className="grid w-full max-w-[520px] grid-cols-2 rounded-[22px] border border-lprimary/15 dark:border-white/5 bg-white dark:bg-dark shadow-[0_10px_30px_-18px_rgba(70,40,160,0.35)] animate-fade-up [animation-delay:300ms]">
+      <div className="grid w-full max-w-[520px] grid-cols-2 rounded-[22px] border border-theme-primary/15 dark:border-theme-border/5 bg-theme-surface dark:bg-theme-surface shadow-[0_10px_30px_-18px_rgba(70,40,160,0.35)] animate-fade-up [animation-delay:300ms]">
         <SummaryCell label={category ? `${categoryName} rating` : "Rating"}>
           {rated && myElo ? (
             <>
-              <span className="flex items-center gap-2 text-[21px] font-extrabold text-dark dark:text-white sm:text-[26px]">
+              <span className="flex items-center gap-2 text-[21px] font-extrabold text-theme-text dark:text-theme-text sm:text-[26px]">
                 {myElo.before}
-                <span className="font-medium text-[#8a8896]">→</span>
+                <span className="font-medium text-theme-muted">→</span>
                 <span className={delta >= 0 ? positive : negative}>
                   {myElo.after}
                 </span>
@@ -326,11 +328,11 @@ function DuelResultScreen({ myId }: { myId?: string }) {
         <SummaryCell label="Daily streak" divided>
           {myStreak ? (
             <>
-              <span className="flex items-center gap-1.5 text-[21px] font-extrabold text-flame sm:text-[26px]">
+              <span className="flex items-center gap-1.5 text-[21px] font-extrabold text-theme-flame sm:text-[26px]">
                 <FlameIcon size={24} />
                 {myStreak.current} day{myStreak.current === 1 ? "" : "s"}
               </span>
-              <span className="text-[13px] text-off-dark dark:text-muted-dark">
+              <span className="text-[13px] text-theme-muted dark:text-theme-muted">
                 {myStreak.advanced
                   ? "Today's duel counted"
                   : "Already counted today"}{" "}
@@ -374,10 +376,12 @@ function SummaryCell({
   return (
     <div
       className={`flex flex-col items-center gap-1 px-2.5 py-3.5 text-center sm:px-[22px] sm:py-[18px] ${
-        divided ? "border-l border-lprimary/15 dark:border-white/5" : ""
+        divided
+          ? "border-l border-theme-primary/15 dark:border-theme-border/5"
+          : ""
       }`}
     >
-      <span className="text-[13.5px] text-off-dark dark:text-muted-dark">
+      <span className="text-[13.5px] text-theme-muted dark:text-theme-muted">
         {label}
       </span>
       {children}
@@ -388,10 +392,10 @@ function SummaryCell({
 function SummaryEmpty({ note }: { note: string }) {
   return (
     <>
-      <span className="text-[21px] font-extrabold text-dark dark:text-white sm:text-[26px]">
+      <span className="text-[21px] font-extrabold text-theme-text dark:text-theme-text sm:text-[26px]">
         –
       </span>
-      <span className="text-[13px] text-off-dark dark:text-muted-dark">
+      <span className="text-[13px] text-theme-muted dark:text-theme-muted">
         {note}
       </span>
     </>

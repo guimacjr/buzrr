@@ -92,7 +92,7 @@ export default function CheckoutClient({
   if (isPending) {
     return (
       <div className="max-w-lg mx-auto">
-        <Skeleton className="h-96 w-full rounded-2xl bg-white dark:bg-card-dark" />
+        <Skeleton className="h-96 w-full rounded-2xl bg-theme-surface dark:bg-theme-card" />
       </div>
     );
   }
@@ -104,20 +104,20 @@ export default function CheckoutClient({
 
   return (
     <div className="max-w-lg mx-auto animate-fade-up">
-      <h1 className="text-3xl font-black text-dark dark:text-white text-center">
+      <h1 className="text-3xl font-black text-theme-text dark:text-theme-text text-center">
         Upgrade to Buzrr Pro
       </h1>
-      <p className="mt-2 text-center text-off-dark dark:text-off-white">
+      <p className="mt-2 text-center text-theme-muted dark:text-theme-muted">
         Review your plan, then pay securely with Dodo Payments.
       </p>
 
-      <section className="mt-8 rounded-2xl bg-white dark:bg-card-dark p-6 md:p-8 border-2 border-lprimary dark:border-dprimary">
+      <section className="mt-8 rounded-2xl bg-theme-surface dark:bg-theme-card p-6 md:p-8 border-2 border-theme-primary dark:border-theme-primary">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="text-lg font-black text-dark dark:text-white">
+            <h2 className="text-lg font-black text-theme-text dark:text-theme-text">
               Buzrr Pro
             </h2>
-            <p className="text-xs text-off-dark dark:text-off-white">
+            <p className="text-xs text-theme-muted dark:text-theme-muted">
               Monthly subscription
             </p>
           </div>
@@ -134,34 +134,36 @@ export default function CheckoutClient({
           {FEATURES.map((feature) => (
             <li
               key={feature}
-              className="flex items-center gap-2 text-sm text-dark dark:text-white"
+              className="flex items-center gap-2 text-sm text-theme-text dark:text-theme-text"
             >
               <LuCheck
                 size={16}
-                className="shrink-0 text-lprimary dark:text-dprimary"
+                className="shrink-0 text-theme-primary dark:text-theme-primary"
               />
               {feature}
             </li>
           ))}
         </ul>
 
-        <dl className="mt-6 border-t border-card-light dark:border-dark pt-4 space-y-2 text-sm">
+        <dl className="mt-6 border-t border-theme-card dark:border-theme-border pt-4 space-y-2 text-sm">
           <div className="flex justify-between gap-4">
-            <dt className="text-off-dark dark:text-off-white">Account</dt>
-            <dd className="font-bold text-dark dark:text-white truncate">
+            <dt className="text-theme-muted dark:text-theme-muted">Account</dt>
+            <dd className="font-bold text-theme-text dark:text-theme-text truncate">
               {email}
             </dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-off-dark dark:text-off-white">Billed</dt>
-            <dd className="font-bold text-dark dark:text-white">
+            <dt className="text-theme-muted dark:text-theme-muted">Billed</dt>
+            <dd className="font-bold text-theme-text dark:text-theme-text">
               Monthly · cancel anytime
             </dd>
           </div>
           {discount && (
             <div className="flex justify-between gap-4">
-              <dt className="text-off-dark dark:text-off-white">Discount</dt>
-              <dd className="flex items-center gap-2 font-bold text-dark dark:text-white text-right">
+              <dt className="text-theme-muted dark:text-theme-muted">
+                Discount
+              </dt>
+              <dd className="flex items-center gap-2 font-bold text-theme-text dark:text-theme-text text-right">
                 <span>
                   {discount.code ? `${discount.code} — ` : ""}
                   {discountLabel(discount)}
@@ -171,7 +173,7 @@ export default function CheckoutClient({
                     type="button"
                     aria-label="Remove discount code"
                     onClick={() => setAppliedCode(null)}
-                    className="text-off-dark dark:text-off-white hover:text-red-light cursor-pointer"
+                    className="text-theme-muted dark:text-theme-muted hover:text-theme-danger cursor-pointer"
                   >
                     <LuX size={14} />
                   </button>
@@ -191,7 +193,7 @@ export default function CheckoutClient({
                 placeholder="Discount code"
                 maxLength={64}
                 aria-label="Discount code"
-                className="flex-1 rounded-xl border border-gray bg-white dark:bg-dark text-dark dark:text-white px-4 py-2 text-sm outline-none focus:border-lprimary dark:focus:border-dprimary"
+                className="flex-1 rounded-xl border border-theme-border bg-theme-surface dark:bg-theme-surface text-theme-text dark:text-theme-text px-4 py-2 text-sm outline-none focus:border-theme-primary dark:focus:border-theme-primary"
               />
               <Button
                 type="submit"
@@ -208,21 +210,21 @@ export default function CheckoutClient({
             <button
               type="button"
               onClick={() => setCodeOpen(true)}
-              className="mt-4 text-sm font-bold text-lprimary dark:text-dprimary underline underline-offset-2 cursor-pointer"
+              className="mt-4 text-sm font-bold text-theme-primary dark:text-theme-primary underline underline-offset-2 cursor-pointer"
             >
               Have a discount code?
             </button>
           ))}
 
         {billingOff ? (
-          <p className="mt-6 rounded-xl bg-card-light dark:bg-dark p-4 text-sm text-dark dark:text-white">
+          <p className="mt-6 rounded-xl bg-theme-card dark:bg-theme-surface p-4 text-sm text-theme-text dark:text-theme-text">
             Billing isn&apos;t enabled on this Buzrr instance — every account
             already has Pro limits.
           </p>
         ) : alreadyPro ? (
           <Link
             href="/admin/billing"
-            className="mt-6 flex w-full items-center justify-center rounded-xl px-5 py-3 font-bold border-2 border-lprimary dark:border-dprimary text-lprimary dark:text-dprimary"
+            className="mt-6 flex w-full items-center justify-center rounded-xl px-5 py-3 font-bold border-2 border-theme-primary dark:border-theme-primary text-theme-primary dark:text-theme-primary"
           >
             You&apos;re on Pro — manage your plan
           </Link>
@@ -239,12 +241,12 @@ export default function CheckoutClient({
           </Button>
         )}
 
-        <p className="mt-4 text-xs text-center text-off-dark dark:text-off-white">
+        <p className="mt-4 text-xs text-center text-theme-muted dark:text-theme-muted">
           {pricing?.taxInclusive
             ? "Price includes applicable taxes."
             : "Any taxes are added at checkout."}
         </p>
-        <p className="mt-2 text-xs text-center text-off-dark dark:text-off-white">
+        <p className="mt-2 text-xs text-center text-theme-muted dark:text-theme-muted">
           By continuing you agree to our{" "}
           <Link href="/terms" className="underline underline-offset-2">
             Terms
@@ -261,7 +263,7 @@ export default function CheckoutClient({
       <p className="mt-6 text-center text-sm">
         <Link
           href="/pricing"
-          className="text-lprimary dark:text-dprimary underline underline-offset-2"
+          className="text-theme-primary dark:text-theme-primary underline underline-offset-2"
         >
           Back to pricing
         </Link>

@@ -15,17 +15,30 @@ import { z } from "zod";
 // The behaviour behind these shapes lives in one handler per type on the
 // server (`apps/server/src/modules/question-types/`) and one renderer per type
 // on the web (`apps/web/src/components/QuestionTypes/`). Adding a type means
-// adding a block below, a handler, and a renderer — the engine never changes.
+// adding a block below, a handler, and a renderer. Presentation-only types
+// additionally need core pacing rules because they have no answer window.
 // See CONTRIBUTING.md § Adding a question type.
 // ---------------------------------------------------------------------------
 
 /** Authoring bounds shared by every option-based type. */
 export const MIN_OPTIONS = 2;
 export const MAX_OPTIONS = 6;
+export const CHOICE_TEXT_MAX_LENGTH = 400;
+/** Authored text bounds for polls and multiple-choice questions. */
+export const choiceQuestionTextSchema = z.object({
+  title: z.string().trim().max(CHOICE_TEXT_MAX_LENGTH),
+  options: z.array(
+    z.object({ title: z.string().trim().max(CHOICE_TEXT_MAX_LENGTH) }),
+  ),
+});
 export const MIN_TIME_OUT = 5;
 export const DEFAULT_TIME_OUT = 15;
 
+export const presentationSettings = { showRanking: z.boolean().optional() };
+
 const publicBase = z.object({
+  reopened: z.boolean().optional(),
+  ...presentationSettings,
   id: z.string(),
   title: z.string(),
   media: z.string().nullable(),
@@ -123,6 +136,7 @@ const optionTally = {
 export const multipleChoice = {
   type: "multiple_choice",
   config: z.object({
+    ...presentationSettings,
     /**
      * Players pick a set. Unset (rows and imports from before the setting
      * existed) means "multiple when more than one option is correct".
@@ -152,7 +166,7 @@ export const multipleChoice = {
 
 export const trueFalse = {
   type: "true_false",
-  config: z.object({ answer: z.boolean() }),
+  config: z.object({ ...presentationSettings, answer: z.boolean() }),
   answer: truthAnswer,
   publicQuestion: publicBase.extend({ type: z.literal("true_false") }),
   summary: z.object({
@@ -168,15 +182,25 @@ export const trueFalse = {
 } as const;
 
 // -- poll ------------------------------------------------------------------------
-// 2–4 options, none correct, not scored.
+// 2–6 options, none correct, not scored.
 
 export const MIN_POLL_OPTIONS = 2;
-export const MAX_POLL_OPTIONS = 4;
+export const MAX_POLL_OPTIONS = MAX_OPTIONS;
 
 export const poll = {
   type: "poll",
-  config: z.object({ multiSelect: z.boolean().default(false) }),
-  answer: optionIdsAnswer,
+  config: z.object({
+    ...presentationSettings,
+    multiSelect: z.boolean().default(false),
+  }),
+  answer: z
+    .object({
+      optionIds: z
+        .array(z.string().min(1).max(64))
+        .max(MAX_POLL_OPTIONS)
+        .refine((ids) => new Set(ids).size === ids.length, "Duplicate option"),
+    })
+    .strict(),
   publicQuestion: publicBase.extend({
     type: z.literal("poll"),
     options: z.array(publicOptionSchema),
@@ -193,6 +217,7 @@ export const WORD_CLOUD_LIMIT = 60;
 export const wordCloud = {
   type: "word_cloud",
   config: z.object({
+    ...presentationSettings,
     maxAnswers: z.number().int().min(1).max(MAX_WORDS).default(3),
     maxLength: z.union([z.literal(20), z.literal(40)]).default(20),
     /**
@@ -232,6 +257,7 @@ export function ratingMax(scale: RatingScale): number {
 export const rating = {
   type: "rating",
   config: z.object({
+    ...presentationSettings,
     scale: ratingScaleSchema.default("5"),
     lowLabel: z.string().trim().max(RATING_LABEL_MAX).default("Not at all"),
     highLabel: z.string().trim().max(RATING_LABEL_MAX).default("Very"),
@@ -259,6 +285,7 @@ export const OPEN_TEXT_LIMIT = 100;
 export const openText = {
   type: "open_text",
   config: z.object({
+    ...presentationSettings,
     maxLength: z
       .union([z.literal(100), z.literal(200), z.literal(500)])
       .default(200),
@@ -290,7 +317,25 @@ export const openText = {
 
 // -- registry -------------------------------------------------------------------
 
+export const mediaSlide = {
+  type: "media_slide",
+  config: z.object({
+    ...presentationSettings,
+    fullScreen: z.boolean().optional(),
+  }),
+  answer: z.never(),
+  publicQuestion: publicBase.extend({
+    type: z.literal("media_slide"),
+    fullScreen: z.boolean().optional(),
+  }),
+  summary: z.object({
+    type: z.literal("media_slide"),
+    responses: z.literal(0),
+  }),
+} as const;
+
 export const QUESTION_TYPES = [
+  mediaSlide.type,
   multipleChoice.type,
   trueFalse.type,
   poll.type,
@@ -312,9 +357,10 @@ export function isScoredType(type: QuestionType): boolean {
 }
 
 /** Rows written before Question.type existed — and any unset type — mean this. */
-export const DEFAULT_QUESTION_TYPE: QuestionType = "multiple_choice";
+export const DEFAULT_QUESTION_TYPE = "multiple_choice" satisfies QuestionType;
 
 export const publicQuestionSchema = z.discriminatedUnion("type", [
+  mediaSlide.publicQuestion,
   multipleChoice.publicQuestion,
   trueFalse.publicQuestion,
   poll.publicQuestion,
@@ -323,6 +369,7 @@ export const publicQuestionSchema = z.discriminatedUnion("type", [
   openText.publicQuestion,
 ]);
 export const revealSummarySchema = z.discriminatedUnion("type", [
+  mediaSlide.summary,
   multipleChoice.summary,
   trueFalse.summary,
   poll.summary,
@@ -337,6 +384,7 @@ export const revealSummarySchema = z.discriminatedUnion("type", [
 export const questionAnswerSchema = z.union([
   optionIdAnswer,
   optionIdsAnswer,
+  poll.answer,
   truthAnswer,
   wordsAnswer,
   ratingAnswer,
@@ -360,6 +408,7 @@ type Shapes<
 
 /** Per-type shapes, for code that narrows on `type`. */
 export interface QuestionTypeMap {
+  media_slide: Shapes<typeof mediaSlide>;
   multiple_choice: Shapes<typeof multipleChoice>;
   true_false: Shapes<typeof trueFalse>;
   poll: Shapes<typeof poll>;

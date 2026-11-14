@@ -44,7 +44,7 @@ async function bootstrap() {
   });
   app.setGlobalPrefix("api", { exclude: ["health"] });
   // STORAGE_DRIVER=local: the API serves the uploads it stored. Only sniffed
-  // raster images ever land in the directory (local.storage.ts), and nosniff
+  // raster images and MP4/WebM videos land in the directory, and nosniff
   // keeps a browser from second-guessing their type.
   const env = (key: string) => process.env[key];
   if (resolveStorageDriver(env) === "local") {

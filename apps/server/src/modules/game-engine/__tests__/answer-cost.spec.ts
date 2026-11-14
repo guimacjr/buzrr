@@ -132,7 +132,13 @@ describe.skipIf(!url)("answer cost (real Redis)", () => {
     );
 
     expect(cost.topLevel).toEqual(["hgetall", "get", "hgetall", "eval"]);
-    expect(cost.inScripts).toEqual(["hsetnx"]);
+    expect(cost.inScripts).toEqual([
+      "hget",
+      "hget",
+      "hget",
+      "hexists",
+      "hsetnx",
+    ]);
   });
 
   it("an answer that does not close the question", async () => {
@@ -158,11 +164,11 @@ describe.skipIf(!url)("answer cost (real Redis)", () => {
     );
 
     // The answer's own four, then the reveal: a full state load (meta, then
-    // questions/roster/answers/scores), the phase write, the parked deadline.
+    // questions/roster/answers/scores), one atomic phase-and-deadline commit.
     expect(cost.billable).toEqual([
       ...["hgetall", "get", "hgetall", "eval"],
       ...["hgetall", "get", "hgetall", "hgetall", "zrevrange"],
-      ...["hset", "expire", "expire", "zadd"],
+      ...["eval"],
     ]);
     // Personal results go out in roster (hash) order, before the reveal.
     expect(io.publishes[0]).toBe(`${code}:answer-count`);

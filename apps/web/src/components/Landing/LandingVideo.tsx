@@ -12,7 +12,7 @@ export default function LandingVideo() {
 
   return (
     <section className="mt-14">
-      <h2 className="text-center text-2xl sm:text-3xl font-black text-dark dark:text-white">
+      <h2 className="text-center text-2xl sm:text-3xl font-black text-theme-text dark:text-theme-text">
         See Buzrr in action
       </h2>
       <div className="mt-8">

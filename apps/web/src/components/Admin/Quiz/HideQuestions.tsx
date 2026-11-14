@@ -27,7 +27,7 @@ const HideQuestions = () => {
   const isHidden = visibility === HideQuestionsEnum.hide;
 
   return (
-    <div className="flex items-center gap-3 shrink-0 whitespace-nowrap px-3.5 md:px-[18px] py-3 md:py-[13px] rounded-[14px] text-sm md:text-[14.5px] font-semibold bg-light-bg dark:bg-card-dark border border-lprimary/15 dark:border-white/5">
+    <div className="flex items-center gap-3 shrink-0 whitespace-nowrap px-3.5 md:px-[18px] py-3 md:py-[13px] rounded-[14px] text-sm md:text-[14.5px] font-semibold bg-theme-background dark:bg-theme-card border border-theme-primary/15 dark:border-theme-border/5">
       <span>Hide Questions</span>
       <Switch
         checked={isHidden}

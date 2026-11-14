@@ -49,20 +49,20 @@ export default function SupportNudge() {
     >
       <Box
         sx={modalStyle}
-        className="bg-light-bg dark:bg-dark-bg rounded-2xl w-[90vw] max-w-[430px] p-6"
+        className="bg-theme-background dark:bg-theme-background rounded-2xl w-[90vw] max-w-[430px] p-6"
       >
         <h2
           id={titleId}
-          className="text-lg font-black text-dark dark:text-white text-center"
+          className="text-lg font-black text-theme-text dark:text-theme-text text-center"
         >
           ❤️ Enjoying Buzrr?
         </h2>
         <div id={descId} className="mt-3 text-center">
-          <p className="text-sm text-dark/80 dark:text-gray">
+          <p className="text-sm text-theme-text/80 dark:text-theme-muted">
             If Buzrr has made your quizzes, classrooms, or events a little more
             fun, consider supporting its development.
           </p>
-          <p className="mt-2 text-sm text-dark/80 dark:text-gray">
+          <p className="mt-2 text-sm text-theme-text/80 dark:text-theme-muted">
             Even buying a chai helps keep late-night commits coming ☕
           </p>
         </div>
@@ -70,19 +70,19 @@ export default function SupportNudge() {
           <Link
             href={supportLinks.supportPage}
             onClick={dismiss}
-            className="w-full text-center px-5 py-2.5 rounded-xl font-bold bg-lprimary dark:bg-dprimary text-white dark:text-dark hover:opacity-90 transition-opacity"
+            className="w-full text-center px-5 py-2.5 rounded-xl font-bold bg-theme-primary dark:bg-theme-primary text-theme-onPrimary dark:text-theme-onPrimary hover:opacity-90 transition-opacity"
           >
             Sponsor Buzrr
           </Link>
           <button
             type="button"
             onClick={dismiss}
-            className="w-full px-5 py-2.5 rounded-xl font-bold text-dark dark:text-white hover:bg-card-light dark:hover:bg-card-dark transition-colors hover:cursor-pointer"
+            className="w-full px-5 py-2.5 rounded-xl font-bold text-theme-text dark:text-theme-text hover:bg-theme-card dark:hover:bg-theme-card transition-colors hover:cursor-pointer"
           >
             Maybe later
           </button>
         </div>
-        <p className="mt-4 text-center text-xs text-dark/50 dark:text-off-white">
+        <p className="mt-4 text-center text-xs text-theme-text/50 dark:text-theme-muted">
           Open source • Community supported • Always optional
         </p>
       </Box>

@@ -11,13 +11,13 @@ export default function DuelHistoryClient() {
         <span className="md:hidden">
           <NavbarToggle />
         </span>
-        <h1 className="text-2xl font-black text-dark dark:text-white">
+        <h1 className="text-2xl font-black text-theme-text dark:text-theme-text">
           Duel History
         </h1>
       </div>
       <Link
         href="/admin/profile"
-        className="inline-block mb-4 text-sm text-lprimary dark:text-dprimary font-bold hover:underline"
+        className="inline-block mb-4 text-sm text-theme-primary dark:text-theme-primary font-bold hover:underline"
       >
         ← Back to profile
       </Link>

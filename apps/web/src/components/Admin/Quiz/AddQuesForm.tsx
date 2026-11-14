@@ -12,12 +12,17 @@ import { LuCheck, LuImagePlus, LuPlus, LuTrash2, LuX } from "react-icons/lu";
 import Image from "next/image";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
+  CHOICE_TEXT_MAX_LENGTH,
   DEFAULT_QUESTION_TYPE,
+  MAX_OPTIONS,
+  MIN_OPTIONS,
   MAX_POLL_OPTIONS,
   MIN_POLL_OPTIONS,
   RATING_LABEL_MAX,
   isQuestionType,
+  presentationSettings,
   multipleChoice,
+  mediaSlide,
   openText,
   poll,
   rating,
@@ -71,8 +76,8 @@ interface Question {
 type FormValues = z.infer<typeof addQuestionSchema>;
 type AuthoredOption = FormValues["options"][number];
 
-const TITLE_MAX = 150;
-const MCQ_OPTIONS = 4;
+const DEFAULT_TITLE_MAX = 150;
+const DEFAULT_MCQ_OPTIONS = 4;
 /**
  * The time slider per type. Typing an answer takes longer than tapping one,
  * so word cloud and open text get a longer range and default.
@@ -143,7 +148,9 @@ function optionsFor(type: QuestionType, from: AuthoredOption[]) {
   if (type === "multiple_choice") {
     // Single choice is the default: one correct option, A until picked.
     return singleCorrect(
-      blankOptions(MCQ_OPTIONS).map((o, i) => ({
+      blankOptions(
+        Math.min(MAX_OPTIONS, Math.max(DEFAULT_MCQ_OPTIONS, titles.length)),
+      ).map((o, i) => ({
         title: titles[i] ?? "",
         isCorrect: kept[i]?.isCorrect ?? false,
       })),
@@ -151,6 +158,8 @@ function optionsFor(type: QuestionType, from: AuthoredOption[]) {
   }
   if (type === "poll") {
     const n = Math.min(
+      MAX_OPTIONS,
+      MIN_OPTIONS,
       MAX_POLL_OPTIONS,
       Math.max(MIN_POLL_OPTIONS, titles.length),
     );
@@ -195,6 +204,11 @@ function valuesFor(
         }));
   return {
     type,
+    fullScreen:
+      configOf(mediaSlide.config, config, type === "media_slide").fullScreen ??
+      false,
+    showRanking:
+      z.object(presentationSettings).parse(config ?? {}).showRanking ?? true,
     title: question?.title ?? "",
     time: question?.timeOut ?? timeRangeFor(type).fallback,
     options: question
@@ -220,6 +234,8 @@ function valuesFor(
 /** What gets stored as `Question.config` for the chosen type. */
 function configFor(v: FormValues): Record<string, unknown> {
   switch (v.type) {
+    case "media_slide":
+      return { fullScreen: v.fullScreen };
     case "multiple_choice":
       return { multiSelect: v.mcqMulti };
     case "true_false":
@@ -253,9 +269,11 @@ function configFor(v: FormValues): Record<string, unknown> {
 function summaryOf(v: FormValues): ReactNode {
   const secs = `${Number(v.time) || DEFAULT_QUESTION_TIMEOUT}s to answer`;
   const strong = (t: string) => (
-    <b className="text-dark dark:text-white">{t}</b>
+    <b className="text-theme-text dark:text-theme-text">{t}</b>
   );
   switch (v.type) {
+    case "media_slide":
+      return <>Media slide · manual advance · not scored</>;
     case "multiple_choice": {
       const keys = v.options.flatMap((o, i) =>
         o.isCorrect ? [OPTION_KEYS[i]!] : [],
@@ -440,6 +458,10 @@ const AddQuesForm = (props: {
   const mediaSrc = previewUrl || fileLink;
   const values = watch();
   const type = values.type;
+  const titleMax =
+    type === "poll" || type === "multiple_choice"
+      ? CHOICE_TEXT_MAX_LENGTH
+      : DEFAULT_TITLE_MAX;
   const meta = QUESTION_TYPE_META[type];
   const multipleSubmissionsRow = (
     <SettingRow
@@ -508,9 +530,16 @@ const AddQuesForm = (props: {
 
   const onSubmit = handleSubmit((data) => {
     const fd = new FormData();
-    fd.append("title", data.title.trim());
+    if (data.type === "media_slide" && !file && !fileLink) {
+      toast.error("Upload an image or video for this slide");
+      return;
+    }
+    fd.append("title", data.title.trim() || "Media slide");
     fd.append("type", data.type);
-    fd.append("config", JSON.stringify(configFor(data)));
+    fd.append(
+      "config",
+      JSON.stringify({ ...configFor(data), showRanking: data.showRanking }),
+    );
     fd.append(
       "options",
       JSON.stringify(
@@ -580,8 +609,8 @@ const AddQuesForm = (props: {
                   className={clsx(
                     "flex shrink-0 items-center gap-[7px] rounded-xl border-[1.5px] px-3 py-2 text-[13.5px] font-semibold whitespace-nowrap cursor-pointer transition-colors",
                     on
-                      ? "bg-lprimary dark:bg-dprimary border-lprimary dark:border-dprimary text-white"
-                      : clsx(subtleCardClass, "hover:border-dprimary"),
+                      ? "bg-theme-primary dark:bg-theme-primary border-theme-primary dark:border-theme-primary text-theme-onPrimary"
+                      : clsx(subtleCardClass, "hover:border-theme-primary"),
                   )}
                 >
                   <QuestionTypeIcon type={t} size={15} />
@@ -603,18 +632,24 @@ const AddQuesForm = (props: {
               render={({ field, fieldState }) => (
                 <label className="flex flex-col gap-2">
                   <span className={fieldLabelClass}>
-                    Question
+                    {type === "media_slide"
+                      ? "Slide title (optional)"
+                      : "Question"}
                     <span className={counterClass}>
-                      {field.value.length}/{TITLE_MAX}
+                      {field.value.length}/{titleMax}
                     </span>
                   </span>
                   <textarea
                     {...field}
                     rows={2}
-                    maxLength={TITLE_MAX}
-                    required
+                    maxLength={titleMax}
+                    required={type !== "media_slide"}
                     autoComplete="off"
-                    placeholder="What do you want to ask?"
+                    placeholder={
+                      type === "media_slide"
+                        ? "Slide title (optional)"
+                        : "What do you want to ask?"
+                    }
                     aria-invalid={!!fieldState.error}
                     className={clsx(inputClass, "resize-none")}
                   />
@@ -625,8 +660,10 @@ const AddQuesForm = (props: {
           <div className="min-w-0 md:[grid-area:image]">
             <div className="flex flex-col gap-2">
               <span className={fieldLabelClass}>
-                Image
-                <span className={counterClass}>Optional</span>
+                {type === "media_slide" ? "Image or video" : "Image"}
+                <span className={counterClass}>
+                  {type === "media_slide" ? "Required" : "Optional"}
+                </span>
               </span>
               {mediaSrc ? (
                 <div
@@ -635,26 +672,36 @@ const AddQuesForm = (props: {
                     subtleCardClass,
                   )}
                 >
-                  <Image
-                    src={mediaSrc}
-                    alt="Question media"
-                    width={160}
-                    height={96}
-                    className="h-12 w-20 rounded-lg object-cover"
-                  />
+                  {file?.type.startsWith("video/") ||
+                  (!file && question?.mediaType === "video") ? (
+                    <video
+                      src={mediaSrc}
+                      controls
+                      className="h-24 w-40 rounded-lg"
+                    />
+                  ) : (
+                    <Image
+                      src={mediaSrc}
+                      alt="Question media"
+                      unoptimized
+                      width={160}
+                      height={96}
+                      className="h-12 w-20 rounded-lg object-cover"
+                    />
+                  )}
                   <span
                     className={clsx(
                       "flex-1 min-w-0 truncate text-sm",
                       mutedText,
                     )}
                   >
-                    {file?.name ?? "Current image"}
+                    {file?.name ?? "Current media"}
                   </span>
                   <button
                     type="button"
-                    aria-label="Remove image"
+                    aria-label="Remove media"
                     onClick={deleteFile}
-                    className="size-9 shrink-0 rounded-[10px] flex items-center justify-center text-off-dark dark:text-muted-dark hover:bg-[#e5544e]/14 hover:text-[#e5544e] transition-colors cursor-pointer"
+                    className="size-9 shrink-0 rounded-[10px] flex items-center justify-center text-theme-muted dark:text-theme-muted hover:bg-theme-danger/14 hover:text-theme-danger transition-colors cursor-pointer"
                   >
                     <LuTrash2 size={17} />
                   </button>
@@ -662,23 +709,31 @@ const AddQuesForm = (props: {
               ) : (
                 <label
                   className={clsx(
-                    "flex items-center gap-3.5 rounded-2xl border-[1.5px] border-dashed px-4 py-3 cursor-pointer transition-colors border-lprimary/25 dark:border-white/15 hover:border-dprimary bg-light-bg dark:bg-card-dark",
+                    "flex items-center gap-3.5 rounded-2xl border-[1.5px] border-dashed px-4 py-3 cursor-pointer transition-colors border-theme-primary/25 dark:border-theme-border/15 hover:border-theme-primary bg-theme-background dark:bg-theme-card",
                   )}
                 >
-                  <span className="size-10 shrink-0 rounded-xl flex items-center justify-center bg-lprimary/10 dark:bg-white/5 text-lprimary dark:text-dprimary">
+                  <span className="size-10 shrink-0 rounded-xl flex items-center justify-center bg-theme-primary/10 dark:bg-theme-surface/5 text-theme-primary dark:text-theme-primary">
                     <LuImagePlus size={20} />
                   </span>
                   <span className="flex flex-col">
                     <span className="text-sm font-semibold">
-                      Upload an image
+                      {type === "media_slide"
+                        ? "Upload an image or video"
+                        : "Upload an image"}
                     </span>
                     <span className={clsx("text-[12.5px]", mutedText)}>
-                      PNG, JPG or GIF under 10MB
+                      {type === "media_slide"
+                        ? "Images · MP4 or WebM videos"
+                        : "PNG, JPEG, GIF, WebP or AVIF"}
                     </span>
                   </span>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept={
+                      type === "media_slide"
+                        ? "image/*,video/mp4,video/webm"
+                        : "image/*"
+                    }
                     name="file"
                     className="sr-only"
                     ref={fileInputRef}
@@ -689,6 +744,48 @@ const AddQuesForm = (props: {
             </div>
           </div>
           <div className="min-w-0 flex flex-col gap-4 md:[grid-area:body]">
+            {type !== "media_slide" && (
+              <SettingRow
+                label="Show ranking after this question"
+                hint="Turn off to show only response statistics; final ranking is unchanged"
+              >
+                <Controller
+                  name="showRanking"
+                  control={control}
+                  render={({ field }) => (
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      aria-label="Show ranking after this question"
+                    />
+                  )}
+                />
+              </SettingRow>
+            )}
+            {type === "media_slide" && (
+              <>
+                <p>
+                  Only the admin sees this media. Players wait for the next
+                  question.
+                </p>
+                <SettingRow
+                  label="Tela cheia"
+                  hint="Exibe só a mídia. Clique na imagem ou use → para avançar; Esc ou toque duplo para mostrar os controles."
+                >
+                  <Controller
+                    name="fullScreen"
+                    control={control}
+                    render={({ field }) => (
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        aria-label="Tela cheia"
+                      />
+                    )}
+                  />
+                </SettingRow>
+              </>
+            )}
             {OPTION_TYPES.includes(type) && (
               <Controller
                 name="options"
@@ -739,14 +836,16 @@ const AddQuesForm = (props: {
                               className={clsx(
                                 "flex items-center gap-3 rounded-2xl border-[1.5px] p-4 md:p-5 text-base md:text-lg font-bold cursor-pointer transition-colors",
                                 o.isCorrect
-                                  ? "border-green-500 bg-green-500/8"
-                                  : "border-lprimary/15 dark:border-white/10 bg-light-bg dark:bg-card-dark hover:border-dprimary",
+                                  ? "border-theme-success bg-theme-success/8"
+                                  : "border-theme-primary/15 dark:border-theme-border/10 bg-theme-background dark:bg-theme-card hover:border-theme-primary",
                               )}
                             >
                               <span
                                 className={clsx(
-                                  "size-10 shrink-0 rounded-xl flex items-center justify-center text-white",
-                                  i === 0 ? "bg-[#2f9e6a]" : "bg-[#e5544e]",
+                                  "size-10 shrink-0 rounded-xl flex items-center justify-center text-theme-onPrimary",
+                                  i === 0
+                                    ? "bg-theme-success"
+                                    : "bg-theme-danger",
                                 )}
                               >
                                 {i === 0 ? (
@@ -765,6 +864,8 @@ const AddQuesForm = (props: {
 
                   const isPoll = type === "poll";
                   const multi = values.mcqMulti;
+                  const minOptions = isPoll ? MIN_POLL_OPTIONS : MIN_OPTIONS;
+                  const maxOptions = isPoll ? MAX_POLL_OPTIONS : MAX_OPTIONS;
                   return (
                     <div className="flex flex-col gap-2">
                       <span className={fieldLabelClass}>
@@ -792,10 +893,10 @@ const AddQuesForm = (props: {
                               className={clsx(
                                 "flex items-center gap-2.5 rounded-[14px] border-[1.5px] p-1.5 pr-3 transition-colors",
                                 isCorrect
-                                  ? "border-green-500 bg-green-500/8"
+                                  ? "border-theme-success bg-theme-success/8"
                                   : titleError(i)
-                                    ? "border-red-light dark:border-red-dark bg-light-bg dark:bg-card-dark"
-                                    : "border-lprimary/15 dark:border-white/10 bg-light-bg dark:bg-card-dark focus-within:border-dprimary",
+                                    ? "border-theme-danger dark:border-theme-danger bg-theme-background dark:bg-theme-card"
+                                    : "border-theme-primary/15 dark:border-theme-border/10 bg-theme-background dark:bg-theme-card focus-within:border-theme-primary",
                               )}
                             >
                               {isPoll ? (
@@ -830,26 +931,26 @@ const AddQuesForm = (props: {
                                     )}
                                   />
                                   {isCorrect && (
-                                    <span className="absolute -right-1.5 -bottom-1.5 size-[18px] rounded-full bg-green-500 text-white flex items-center justify-center border-2 border-white dark:border-dark">
+                                    <span className="absolute -right-1.5 -bottom-1.5 size-[18px] rounded-full bg-theme-success text-theme-onPrimary flex items-center justify-center border-2 border-theme-border dark:border-theme-border">
                                       <LuCheck size={10} strokeWidth={3.5} />
                                     </span>
                                   )}
                                 </button>
                               )}
-                              <input
-                                type="text"
+                              <textarea
+                                rows={3}
                                 value={o.title}
                                 onChange={(e) =>
                                   update(i, { title: e.target.value })
                                 }
-                                required
-                                maxLength={500}
+                                required={type !== "media_slide"}
+                                maxLength={CHOICE_TEXT_MAX_LENGTH}
                                 autoComplete="off"
                                 placeholder={`Option ${OPTION_KEYS[i]}`}
                                 aria-label={`Option ${OPTION_KEYS[i]}`}
-                                className="flex-1 min-w-0 bg-transparent outline-none py-1.5 text-[15px] font-medium placeholder:text-[#8a8896] dark:placeholder:text-muted-dark"
+                                className="flex-1 min-w-0 resize-y bg-transparent outline-none py-1.5 text-[15px] font-medium placeholder:text-theme-muted dark:placeholder:text-theme-muted"
                               />
-                              {isPoll && opts.length > MIN_POLL_OPTIONS && (
+                              {opts.length > minOptions && (
                                 <button
                                   type="button"
                                   aria-label={`Remove option ${OPTION_KEYS[i]}`}
@@ -858,7 +959,7 @@ const AddQuesForm = (props: {
                                       opts.filter((_, j) => j !== i),
                                     )
                                   }
-                                  className="shrink-0 text-[#8a8896] dark:text-muted-dark hover:text-[#e5544e] cursor-pointer"
+                                  className="shrink-0 text-theme-muted dark:text-theme-muted hover:text-theme-danger cursor-pointer"
                                 >
                                   <LuX size={16} />
                                 </button>
@@ -866,7 +967,7 @@ const AddQuesForm = (props: {
                             </div>
                           );
                         })}
-                        {isPoll && opts.length < MAX_POLL_OPTIONS && (
+                        {opts.length < maxOptions && (
                           <button
                             type="button"
                             onClick={() =>
@@ -875,7 +976,7 @@ const AddQuesForm = (props: {
                                 { title: "", isCorrect: false },
                               ])
                             }
-                            className="flex items-center justify-center gap-2 rounded-[14px] border-[1.5px] border-dashed border-lprimary/25 dark:border-white/15 p-2.5 text-sm font-bold text-lprimary dark:text-dprimary cursor-pointer hover:border-dprimary"
+                            className="flex items-center justify-center gap-2 rounded-[14px] border-[1.5px] border-dashed border-theme-primary/25 dark:border-theme-border/15 p-2.5 text-sm font-bold text-theme-primary dark:text-theme-primary cursor-pointer hover:border-theme-primary"
                           >
                             <LuPlus size={16} />
                             Add option
@@ -883,7 +984,7 @@ const AddQuesForm = (props: {
                         )}
                       </div>
                       {optionsError && (
-                        <span className="text-xs text-red-light dark:text-red-dark">
+                        <span className="text-xs text-theme-danger dark:text-theme-danger">
                           {optionsError}
                         </span>
                       )}
@@ -1001,7 +1102,12 @@ const AddQuesForm = (props: {
               <div className={clsx(settingsBoxClass, "!py-3")}>{toggle}</div>
             )}
           </div>
-          <div className="min-w-0 md:self-start md:[grid-area:time]">
+          <div
+            className={clsx(
+              "min-w-0 md:self-start md:[grid-area:time]",
+              type === "media_slide" && "hidden",
+            )}
+          >
             <Controller
               name="time"
               control={control}
@@ -1064,7 +1170,7 @@ const AddQuesForm = (props: {
                       </div>
                     ) : (
                       <div className="flex items-center gap-3.5">
-                        <span className="shrink-0 w-[58px] text-[22px] font-extrabold tracking-[-0.02em] leading-none text-lprimary dark:text-dprimary">
+                        <span className="shrink-0 w-[58px] text-[22px] font-extrabold tracking-[-0.02em] leading-none text-theme-primary dark:text-theme-primary">
                           {t}
                           <small
                             className={clsx(
@@ -1088,7 +1194,7 @@ const AddQuesForm = (props: {
                       </div>
                     )}
                     {fieldState.error?.message && (
-                      <span className="text-xs text-red-light dark:text-red-dark">
+                      <span className="text-xs text-theme-danger dark:text-theme-danger">
                         {fieldState.error.message}
                       </span>
                     )}
@@ -1100,7 +1206,7 @@ const AddQuesForm = (props: {
         </div>
       </div>
 
-      <div className="mt-5 flex flex-col md:flex-row items-stretch md:items-center gap-3.5 border-t border-lprimary/15 dark:border-white/10 px-5 pt-[18px] pb-6 md:px-7 md:py-4">
+      <div className="mt-5 flex flex-col md:flex-row items-stretch md:items-center gap-3.5 border-t border-theme-primary/15 dark:border-theme-border/10 px-5 pt-[18px] pb-6 md:px-7 md:py-4">
         <p className={clsx("flex-1 text-[13px]", mutedText)}>
           {summaryOf(values)}
         </p>

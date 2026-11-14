@@ -17,20 +17,20 @@ import { rankBadgeClass } from "./QuesResult";
 
 const PODIUM = {
   1: {
-    color: "#f4c542",
-    text: "text-[#9a6b00] dark:text-[#f4c542]",
+    color: "var(--color-theme-gold)",
+    text: "text-theme-gold dark:text-theme-gold",
     step: "h-[140px] md:h-[220px]",
     avatar: "size-[76px] md:size-[104px]",
   },
   2: {
-    color: "#b9bfcc",
-    text: "text-[#5d6370] dark:text-[#b9bfcc]",
+    color: "var(--color-theme-silver)",
+    text: "text-theme-silver dark:text-theme-silver",
     step: "h-[104px] md:h-[160px]",
     avatar: "size-[60px] md:size-20",
   },
   3: {
-    color: "#e0a173",
-    text: "text-[#9a5524] dark:text-[#e0a173]",
+    color: "var(--color-theme-bronze)",
+    text: "text-theme-bronze dark:text-theme-bronze",
     step: "h-20 md:h-[120px]",
     avatar: "size-[60px] md:size-20",
   },
@@ -68,6 +68,7 @@ function PodiumSpot({
             style={{ background: p.color }}
           >
             <Image
+              unoptimized
               src={entry.profilePic || DEFAULT_AVATAR}
               width={104}
               height={104}
@@ -91,11 +92,11 @@ function PodiumSpot({
       </span>
       {shared && (
         <span className="sr-only">
-          Tied: {entries.map((e) => e.name).join(", ")}
+          Empate: {entries.map((e) => e.name).join(", ")}
         </span>
       )}
       <span className={clsx("text-xs md:text-sm font-semibold", mutedText)}>
-        {entries[0]!.score.toLocaleString()} pts
+        {entries[0]!.score.toLocaleString("pt-BR")} pts
       </span>
       <div
         className={clsx(
@@ -145,13 +146,14 @@ export default function LeaderBoard({
         )}
       >
         <div>
-          <span className={labelClass}>Final results</span>
+          <span className={labelClass}>Resultado final</span>
           <h2 className="mt-2 text-[26px] md:text-[34px] font-extrabold tracking-[-0.02em] leading-[1.1]">
-            Thank you for joining!
+            Obrigado por participar!
           </h2>
           <p className={clsx("mt-2 text-[15px]", mutedText)}>
-            {quizTitle} · {qCount} question{qCount === 1 ? "" : "s"} ·{" "}
-            {leaderboard.length} player{leaderboard.length === 1 ? "" : "s"}
+            {quizTitle} · {qCount} pergunta{qCount === 1 ? "" : "s"} ·{" "}
+            {leaderboard.length} participante
+            {leaderboard.length === 1 ? "" : "s"}
           </p>
         </div>
         <div className="flex-1 grid grid-cols-[1fr_1.15fr_1fr] gap-3 items-end min-h-0">
@@ -159,12 +161,12 @@ export default function LeaderBoard({
           <PodiumSpot entries={onPlace(1)} place={1} />
           <PodiumSpot entries={onPlace(3)} place={3} />
         </div>
-        <div className="flex flex-col-reverse md:flex-row gap-3 md:justify-end pt-[18px] border-t border-lprimary/15 dark:border-white/10 [&>button]:w-full md:[&>button]:w-auto">
+        <div className="flex flex-col-reverse md:flex-row gap-3 md:justify-end pt-[18px] border-t border-theme-primary/15 dark:border-theme-border/10 [&>button]:w-full md:[&>button]:w-auto">
           <EndQuizButton
             roomId={roomId}
             redirectTo="/admin"
             alreadyEnded={alreadyEnded}
-            primaryLabel="Back to quizzes"
+            primaryLabel="Voltar aos quizzes"
           />
         </div>
       </section>
@@ -176,16 +178,19 @@ export default function LeaderBoard({
         )}
       >
         <div className="flex items-center justify-between px-5 md:px-[26px] pt-5 md:pt-6 pb-3.5">
-          <h3 className="text-xl md:text-[22px] font-bold">Full rankings</h3>
+          <h3 className="text-xl md:text-[22px] font-bold">
+            Classificação completa
+          </h3>
           <span className={clsx("text-[13.5px]", mutedText)}>
-            {leaderboard.length} player{leaderboard.length === 1 ? "" : "s"}
+            {leaderboard.length} participante
+            {leaderboard.length === 1 ? "" : "s"}
           </span>
         </div>
         <div className="md:flex-1 md:min-h-0 md:overflow-y-auto px-3 md:px-[18px] pb-4 flex flex-col gap-1.5">
           {rest.map((lead) => (
             <div
               key={lead.playerId}
-              className="flex items-center gap-3 md:gap-[13px] rounded-[14px] border border-transparent px-2.5 py-[9px] transition-colors hover:bg-light-bg dark:hover:bg-card-dark hover:border-lprimary/15 dark:hover:border-white/5"
+              className="flex items-center gap-3 md:gap-[13px] rounded-[14px] border border-transparent px-2.5 py-[9px] transition-colors hover:bg-theme-background dark:hover:bg-theme-card hover:border-theme-primary/15 dark:hover:border-theme-border/5"
             >
               <span
                 className={clsx(
@@ -196,6 +201,7 @@ export default function LeaderBoard({
                 {lead.rank}
               </span>
               <Image
+                unoptimized
                 src={lead.profilePic || DEFAULT_AVATAR}
                 className="size-9 shrink-0 rounded-full object-cover"
                 width={36}
@@ -206,13 +212,13 @@ export default function LeaderBoard({
                 {lead.name}
               </span>
               <span className="min-w-16 text-right text-base font-bold tabular-nums">
-                {lead.score.toLocaleString()}
+                {lead.score.toLocaleString("pt-BR")}
               </span>
             </div>
           ))}
           {rest.length === 0 && (
             <p className={clsx("text-center text-sm py-10", mutedText)}>
-              No players finished this quiz.
+              Nenhum participante concluiu este quiz.
             </p>
           )}
         </div>

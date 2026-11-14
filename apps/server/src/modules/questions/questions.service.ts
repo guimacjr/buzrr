@@ -1,3 +1,4 @@
+import { sniffMedia } from "../../common/storage/image-sniff";
 import { randomUUID } from "node:crypto";
 import {
   BadRequestException,
@@ -7,6 +8,7 @@ import {
   ServiceUnavailableException,
 } from "@nestjs/common";
 import {
+  choiceQuestionTextSchema,
   DEFAULT_QUESTION_TYPE,
   DEFAULT_TIME_OUT,
   authoredOptionSchema,
@@ -219,6 +221,13 @@ export class QuestionsService {
     // Categories are admin-only (Duel Portal); an edit keeps whatever
     // categories an admin set, and a `categoryIds` field here is ignored.
     const { options, config } = definition;
+    if (type === "poll" || type === "multiple_choice") {
+      const parsed = choiceQuestionTextSchema.safeParse({ title, options });
+      if (!parsed.success)
+        throw new BadRequestException(
+          "Questions and options must have at most 400 characters",
+        );
+    }
 
     // Ownership first: the old media we may delete below is the edited
     // question's own, read from the database.
@@ -244,6 +253,18 @@ export class QuestionsService {
     let mediaType = "";
 
     if (file && file.size > 0) {
+      let detected;
+      try {
+        detected = sniffMedia(file.buffer);
+      } catch (error) {
+        if (error instanceof UnsupportedMediaError)
+          throw new BadRequestException(error.message);
+        throw error;
+      }
+      if (detected.mediaType === "video" && type !== "media_slide")
+        throw new BadRequestException(
+          "Videos are supported only on media slides",
+        );
       let uploaded;
       try {
         uploaded = await this.storage.upload(file.buffer, {
@@ -266,6 +287,17 @@ export class QuestionsService {
       mediaType = file_type ?? "";
     }
 
+    if (
+      type === "media_slide" &&
+      (!fileLink || !["image", "video"].includes(mediaType))
+    ) {
+      throw new BadRequestException("A media slide requires an image or video");
+    }
+    if (mediaType === "video" && type !== "media_slide") {
+      throw new BadRequestException(
+        "Videos are supported only on media slides",
+      );
+    }
     const timeOut = parseInt(time ?? "", 10) || DEFAULT_TIME_OUT;
     // Any create/edit re-enters the moderation queue if the quiz is public --
     // approved content doesn't stay approved across an edit, since the

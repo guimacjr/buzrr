@@ -56,12 +56,12 @@ export default function CheckoutSuccessClient() {
       <div className="max-w-lg mx-auto text-center animate-pop-in">
         <LuCircleCheck
           size={56}
-          className="mx-auto text-lprimary dark:text-dprimary"
+          className="mx-auto text-theme-primary dark:text-theme-primary"
         />
-        <h1 className="mt-4 text-3xl font-black text-dark dark:text-white">
+        <h1 className="mt-4 text-3xl font-black text-theme-text dark:text-theme-text">
           Welcome to Buzrr Pro
         </h1>
-        <p className="mt-2 text-off-dark dark:text-off-white">
+        <p className="mt-2 text-theme-muted dark:text-theme-muted">
           Your rooms now hold up to {data.limits.maxPlayers} players, your quiz
           library is unlimited and you have {data.usage.aiTokensRemaining} AI
           generations ready this week.
@@ -69,13 +69,13 @@ export default function CheckoutSuccessClient() {
         <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/admin"
-            className="rounded-xl px-5 py-3 font-bold bg-lprimary dark:bg-dprimary text-white dark:text-dark hover:opacity-90"
+            className="rounded-xl px-5 py-3 font-bold bg-theme-primary dark:bg-theme-primary text-theme-onPrimary dark:text-theme-onPrimary hover:opacity-90"
           >
             Go to your quizzes
           </Link>
           <Link
             href="/admin/billing"
-            className="rounded-xl px-5 py-3 font-bold border-2 border-lprimary dark:border-dprimary text-lprimary dark:text-dprimary"
+            className="rounded-xl px-5 py-3 font-bold border-2 border-theme-primary dark:border-theme-primary text-theme-primary dark:text-theme-primary"
           >
             View plan & billing
           </Link>
@@ -87,16 +87,16 @@ export default function CheckoutSuccessClient() {
   if (billingOff) {
     return (
       <div className="max-w-lg mx-auto text-center">
-        <h1 className="text-3xl font-black text-dark dark:text-white">
+        <h1 className="text-3xl font-black text-theme-text dark:text-theme-text">
           Billing isn&apos;t enabled
         </h1>
-        <p className="mt-2 text-off-dark dark:text-off-white">
+        <p className="mt-2 text-theme-muted dark:text-theme-muted">
           This Buzrr instance doesn&apos;t take payments — every account already
           has Pro limits.
         </p>
         <Link
           href="/admin"
-          className="mt-8 inline-block rounded-xl px-5 py-3 font-bold bg-lprimary dark:bg-dprimary text-white dark:text-dark hover:opacity-90"
+          className="mt-8 inline-block rounded-xl px-5 py-3 font-bold bg-theme-primary dark:bg-theme-primary text-theme-onPrimary dark:text-theme-onPrimary hover:opacity-90"
         >
           Go to your quizzes
         </Link>
@@ -110,22 +110,22 @@ export default function CheckoutSuccessClient() {
         <>
           <LuLoader
             size={48}
-            className="mx-auto animate-spin text-lprimary dark:text-dprimary"
+            className="mx-auto animate-spin text-theme-primary dark:text-theme-primary"
           />
-          <h1 className="mt-4 text-3xl font-black text-dark dark:text-white">
+          <h1 className="mt-4 text-3xl font-black text-theme-text dark:text-theme-text">
             Confirming your payment…
           </h1>
-          <p className="mt-2 text-off-dark dark:text-off-white">
+          <p className="mt-2 text-theme-muted dark:text-theme-muted">
             This usually takes a few seconds. Keep this page open — it updates
             by itself once your subscription is active.
           </p>
         </>
       ) : (
         <>
-          <h1 className="text-3xl font-black text-dark dark:text-white">
+          <h1 className="text-3xl font-black text-theme-text dark:text-theme-text">
             Still confirming your subscription
           </h1>
-          <p className="mt-2 text-off-dark dark:text-off-white">
+          <p className="mt-2 text-theme-muted dark:text-theme-muted">
             If you completed payment, activation can take a minute or two. You
             won&apos;t be charged twice — check again, or come back later from
             your billing page. If you cancelled checkout, nothing was charged.
@@ -151,7 +151,7 @@ export default function CheckoutSuccessClient() {
             </Button>
             <Link
               href="/pricing"
-              className="rounded-xl px-5 py-3 font-bold border-2 border-lprimary dark:border-dprimary text-lprimary dark:text-dprimary"
+              className="rounded-xl px-5 py-3 font-bold border-2 border-theme-primary dark:border-theme-primary text-theme-primary dark:text-theme-primary"
             >
               Back to pricing
             </Link>

@@ -14,10 +14,10 @@ const sizeClasses: Record<ButtonSize, string> = {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-lprimary dark:bg-dprimary text-white dark:text-dark disabled:bg-gray dark:disabled:bg-gray",
+    "bg-theme-primary dark:bg-theme-primary text-theme-onPrimary dark:text-theme-onPrimary disabled:bg-theme-border dark:disabled:bg-theme-border",
   outline:
-    "border-2 border-lprimary dark:border-dprimary text-lprimary dark:text-dprimary bg-transparent",
-  ghost: "text-dark dark:text-white bg-transparent",
+    "border-2 border-theme-primary dark:border-theme-primary text-theme-primary dark:text-theme-primary bg-transparent",
+  ghost: "text-theme-text dark:text-theme-text bg-transparent",
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -54,7 +54,7 @@ export function Button({
         sizeClasses[size],
         fullWidth && "w-full",
         !isDisabled && "hover:cursor-pointer",
-        className
+        className,
       )}
       disabled={isDisabled}
       {...props}

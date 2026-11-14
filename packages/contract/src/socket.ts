@@ -49,6 +49,7 @@ export const leaderboardEntrySchema = z.object({
 });
 
 export const questionStartSchema = z.object({
+  revision: z.number().int().nonnegative().optional(),
   index: z.number().int(),
   qCount: z.number().int(),
   question: publicQuestionSchema,
@@ -57,6 +58,7 @@ export const questionStartSchema = z.object({
 });
 
 export const questionEndSchema = z.object({
+  revision: z.number().int().nonnegative().optional(),
   index: z.number().int(),
   /** What the question's type reveals: counts, correct answers, … */
   summary: revealSummarySchema,
@@ -66,6 +68,7 @@ export const questionEndSchema = z.object({
 
 /** Answers received so far for the open question (classic host meter). */
 export const answerCountSchema = z.object({
+  revision: z.number().int().nonnegative().optional(),
   index: z.number().int(),
   answered: z.number().int(),
 });
@@ -77,6 +80,7 @@ export const answerCountSchema = z.object({
  * `answered` for the open `index`.
  */
 export const liveSummarySchema = z.object({
+  revision: z.number().int().nonnegative().optional(),
   index: z.number().int(),
   answered: z.number().int(),
   summary: revealSummarySchema,
@@ -84,6 +88,7 @@ export const liveSummarySchema = z.object({
 
 /** Personal outcome, emitted to the per-player room `player:{id}`. */
 export const answerResultSchema = z.object({
+  revision: z.number().int().nonnegative().optional(),
   answered: z.boolean(),
   /** The answer the server stored for this player, if any. */
   answer: questionAnswerSchema.nullable(),
@@ -98,6 +103,7 @@ export const answerResultSchema = z.object({
 });
 
 export const leaderboardSchema = z.object({
+  revision: z.number().int().nonnegative().optional(),
   entries: z.array(leaderboardEntrySchema),
   isFinal: z.boolean(),
 });
@@ -123,6 +129,7 @@ const streakChangesSchema = z.record(
 );
 
 export const gameOverSchema = z.object({
+  showFinalRanking: z.boolean().optional(),
   entries: z.array(leaderboardEntrySchema),
   resultId: z.string().optional(),
   /** Duels only: rating change per playerId. */
@@ -182,6 +189,8 @@ export const rosterPlayerSchema = z.object({
 });
 
 export const stateSyncSchema = z.object({
+  revision: z.number().int().nonnegative().optional(),
+  showFinalRanking: z.boolean().optional(),
   phase: gamePhaseSchema,
   mode: gameModeSchema,
   qIndex: z.number().int(),
@@ -202,6 +211,7 @@ export const stateSyncSchema = z.object({
 });
 
 export const submitAnswerSchema = z.object({
+  revision: z.number().int().nonnegative().optional(),
   qIndex: z.number().int().nonnegative(),
   answer: questionAnswerSchema,
 });
@@ -285,6 +295,10 @@ export interface ServerToClientEvents {
   "game-session-ended": () => void;
 }
 
+export const hostBackSchema = z.object({
+  revision: z.number().int().nonnegative(),
+});
+
 export interface ClientToServerEvents {
   // -- duel matchmaking --
   "duel:queue": (payload?: DuelQueuePayload) => void;
@@ -299,6 +313,10 @@ export interface ClientToServerEvents {
   ) => void;
   // -- gameplay --
   "host-next": () => void;
+  "host-back": (
+    payload: z.infer<typeof hostBackSchema>,
+    ack: (result: { accepted: boolean }) => void,
+  ) => void;
   "submit-answer": (
     payload: SubmitAnswerPayload,
     ack: (result: SubmitAnswerAck) => void,

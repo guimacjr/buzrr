@@ -50,13 +50,13 @@ export default function DuelProfileCard({
       <b
         className={
           compact
-            ? "block text-[22px] font-extrabold text-lprimary dark:text-dprimary"
-            : "block text-[28px] sm:text-4xl font-extrabold leading-none text-lprimary dark:text-dprimary"
+            ? "block text-[22px] font-extrabold text-theme-primary dark:text-theme-primary"
+            : "block text-[28px] sm:text-4xl font-extrabold leading-none text-theme-primary dark:text-theme-primary"
         }
       >
         {record.rating}
       </b>
-      <span className="text-[11.5px] sm:text-sm text-off-dark dark:text-muted-dark">
+      <span className="text-[11.5px] sm:text-sm text-theme-muted dark:text-theme-muted">
         {compact
           ? record.ratedDuels
             ? "rating"
@@ -72,7 +72,7 @@ export default function DuelProfileCard({
     return (
       <Link
         href="/duel/profile"
-        className="flex items-center gap-3 rounded-2xl border border-lprimary/15 dark:border-white/5 bg-white dark:bg-dark px-3.5 py-2.5"
+        className="flex items-center gap-3 rounded-2xl border border-theme-primary/15 dark:border-theme-border/5 bg-theme-surface dark:bg-theme-surface px-3.5 py-2.5"
       >
         <Image
           src={profile.image || DEFAULT_AVATAR}
@@ -82,10 +82,10 @@ export default function DuelProfileCard({
           className="h-9 w-9 rounded-full"
         />
         <div className="flex min-w-0 flex-col">
-          <b className="text-[15px] text-dark dark:text-white">
+          <b className="text-[15px] text-theme-text dark:text-theme-text">
             {profile.name ?? "Player"}
           </b>
-          <span className="truncate text-[12.5px] text-off-dark dark:text-muted-dark">
+          <span className="truncate text-[12.5px] text-theme-muted dark:text-theme-muted">
             {duels
               ? `${record.wins}W · ${record.losses}L in ${categoryName}`
               : `No ${categoryName} duels yet`}
@@ -100,7 +100,7 @@ export default function DuelProfileCard({
     <Link
       href="/duel/profile"
       aria-label="Open your profile"
-      className="block rounded-[22px] border border-lprimary/15 dark:border-white/5 bg-white dark:bg-dark px-[18px] py-4 sm:px-[26px] sm:py-[22px] shadow-[0_10px_30px_-18px_rgba(70,40,160,0.35)] transition-colors hover:border-lprimary/40 dark:hover:border-dprimary/40"
+      className="block rounded-[22px] border border-theme-primary/15 dark:border-theme-border/5 bg-theme-surface dark:bg-theme-surface px-[18px] py-4 sm:px-[26px] sm:py-[22px] shadow-[0_10px_30px_-18px_rgba(70,40,160,0.35)] transition-colors hover:border-theme-primary/40 dark:hover:border-theme-primary/40"
     >
       <div className="flex items-center gap-[18px]">
         <Image
@@ -111,10 +111,10 @@ export default function DuelProfileCard({
           className="h-[54px] w-[54px] rounded-full sm:h-[72px] sm:w-[72px]"
         />
         <div>
-          <div className="text-lg sm:text-[21px] font-bold text-dark dark:text-white">
+          <div className="text-lg sm:text-[21px] font-bold text-theme-text dark:text-theme-text">
             {profile.name ?? "Player"}
           </div>
-          <div className="text-sm sm:text-[14.5px] text-off-dark dark:text-muted-dark">
+          <div className="text-sm sm:text-[14.5px] text-theme-muted dark:text-theme-muted">
             {duels
               ? `${duels} ${categoryName} duel${duels === 1 ? "" : "s"}`
               : `No ${categoryName} duels yet`}
@@ -122,7 +122,7 @@ export default function DuelProfileCard({
         </div>
         {rating}
       </div>
-      <div className="mt-[18px] grid grid-cols-3 border-t border-lprimary/15 dark:border-white/5 pt-4">
+      <div className="mt-[18px] grid grid-cols-3 border-t border-theme-primary/15 dark:border-theme-border/5 pt-4">
         <Stat value={String(duels)} label="Duels" />
         <Stat
           value={`${record.wins}W · ${record.losses}L`}
@@ -152,14 +152,14 @@ function Stat({
     <div
       className={
         divided
-          ? "flex flex-col gap-0.5 border-l border-lprimary/15 dark:border-white/5 pl-3 sm:pl-[18px]"
+          ? "flex flex-col gap-0.5 border-l border-theme-primary/15 dark:border-theme-border/5 pl-3 sm:pl-[18px]"
           : "flex flex-col gap-0.5 px-1"
       }
     >
-      <b className="text-[17px] sm:text-xl font-extrabold text-dark dark:text-white">
+      <b className="text-[17px] sm:text-xl font-extrabold text-theme-text dark:text-theme-text">
         {value}
       </b>
-      <span className="text-xs sm:text-[13px] text-off-dark dark:text-muted-dark">
+      <span className="text-xs sm:text-[13px] text-theme-muted dark:text-theme-muted">
         {label}
       </span>
     </div>

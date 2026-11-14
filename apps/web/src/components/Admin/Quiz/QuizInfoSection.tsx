@@ -1,5 +1,6 @@
 "use client";
 
+import DownloadReportButton from "../DownloadReportButton";
 import Link from "next/link";
 import { LuChevronRight } from "react-icons/lu";
 import { toast } from "react-toastify";
@@ -31,29 +32,29 @@ export function QuizInfoContent(props: {
 
   return (
     <>
-      <div className="flex flex-col w-[90%] mx-auto text-dark dark:text-white">
+      <div className="flex flex-col w-[90%] mx-auto text-theme-text dark:text-theme-text">
         <nav
           aria-label="Breadcrumb"
-          className="flex items-center gap-2 text-[13.5px] font-medium text-off-dark dark:text-muted-dark"
+          className="flex items-center gap-2 text-[13.5px] font-medium text-theme-muted dark:text-theme-muted"
         >
           <Link
             href={"/admin"}
-            className="hover:underline hover:text-dark dark:hover:text-white"
+            className="hover:underline hover:text-theme-text dark:hover:text-theme-onPrimary"
           >
             Home
           </Link>
           <LuChevronRight size={14} />
-          <span className="font-semibold text-dark dark:text-white">
+          <span className="font-semibold text-theme-text dark:text-theme-text">
             Quizzes
           </span>
         </nav>
         <h2 className="text-[26px] md:text-[32px] font-bold tracking-[-0.02em] leading-[1.05] mt-3 mb-1 wrap-break-word">
           {props.quiz.title}
         </h2>
-        <p className="capitalize mb-4 text-[15px] text-off-dark dark:text-muted-dark">
+        <p className="capitalize mb-4 text-[15px] text-theme-muted dark:text-theme-muted">
           {props.quiz.description}
         </p>
-        <p className="w-fit my-1 inline-flex items-center gap-1.5 rounded-[10px] px-3.5 py-[7px] text-[13px] font-semibold bg-[#c4ee4f] text-[#2c3a08] dark:bg-[#b8e94a] dark:text-[#15200a]">
+        <p className="w-fit my-1 inline-flex items-center gap-1.5 rounded-[10px] px-3.5 py-[7px] text-[13px] font-semibold bg-theme-secondary text-theme-onSecondary dark:bg-theme-secondary dark:text-theme-onSecondary">
           Total number of questions :{" "}
           <b className="font-extrabold">{questionCount}</b>
         </p>
@@ -86,12 +87,12 @@ export function QuizInfoContent(props: {
           </div>
         )}
       </div>
-      <div className="flex-1 flex flex-col min-h-0 w-[90%] mx-auto text-dark dark:text-white">
+      <div className="flex-1 flex flex-col min-h-0 w-[90%] mx-auto text-theme-text dark:text-theme-text">
         <div className="flex items-center justify-between mt-6 mb-3">
-          <h4 className="text-sm font-bold tracking-[0.04em] uppercase text-[#8a8896] dark:text-muted-dark">
+          <h4 className="text-sm font-bold tracking-[0.04em] uppercase text-theme-muted dark:text-theme-muted">
             Previously used
           </h4>
-          <span className="rounded-full px-2.5 py-0.5 text-xs bg-lprimary/10 dark:bg-white/5 text-off-dark dark:text-muted-dark">
+          <span className="rounded-full px-2.5 py-0.5 text-xs bg-theme-primary/10 dark:bg-theme-surface/5 text-theme-muted dark:text-theme-muted">
             {pastGames.length}
           </span>
         </div>
@@ -99,27 +100,28 @@ export function QuizInfoContent(props: {
           {pastGames.length > 0 ? (
             pastGames.map((result) => {
               const leaderboardClass =
-                "flex-1 text-center rounded-[9px] p-[9px] text-[12.5px] font-semibold bg-[#ef7f4d] text-white transition-[filter] hover:brightness-106 cursor-pointer";
+                "flex-1 text-center rounded-[9px] p-[9px] text-[12.5px] font-semibold bg-theme-secondary text-theme-onPrimary transition-[filter] hover:brightness-106 cursor-pointer";
               return (
                 <div
                   key={result.id}
-                  className="rounded-[14px] p-3.5 border bg-light-bg dark:bg-card-dark border-lprimary/15 dark:border-white/5 transition-[border-color,transform] hover:border-lprimary dark:hover:border-dprimary hover:-translate-y-px"
+                  className="rounded-[14px] p-3.5 border bg-theme-background dark:bg-theme-card border-theme-primary/15 dark:border-theme-border/5 transition-[border-color,transform] hover:border-theme-primary dark:hover:border-theme-primary hover:-translate-y-px"
                 >
                   <div className="flex items-center justify-between gap-2.5">
-                    <span className="text-[12.5px] font-medium text-off-dark dark:text-muted-dark">
+                    <span className="text-[12.5px] font-medium text-theme-muted dark:text-theme-muted">
                       {formatSessionDate(result.endedAt)}
                     </span>
-                    <span className="text-[13px] font-extrabold tracking-[0.06em] rounded-[7px] px-2 py-0.5 text-lprimary dark:text-dprimary bg-lprimary/10 dark:bg-white/5">
+                    <span className="text-[13px] font-extrabold tracking-[0.06em] rounded-[7px] px-2 py-0.5 text-theme-primary dark:text-theme-primary bg-theme-primary/10 dark:bg-theme-surface/5">
                       {result.gameCode}
                     </span>
                   </div>
-                  <div className="text-xs mt-2 mb-[11px] text-off-dark dark:text-muted-dark">
+                  <div className="text-xs mt-2 mb-[11px] text-theme-muted dark:text-theme-muted">
                     {result.playerCount} player
                     {result.playerCount === 1 ? "" : "s"} ·{" "}
                     {result.questionCount} question
                     {result.questionCount === 1 ? "" : "s"}
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
+                    <DownloadReportButton resultId={result.id} />
                     {props.onShowLeaderboard ? (
                       <button
                         type="button"
@@ -141,7 +143,7 @@ export function QuizInfoContent(props: {
               );
             })
           ) : (
-            <div className="h-fit border border-lprimary/25 dark:border-white/15 border-dashed rounded-[14px] p-4 text-dark dark:text-white">
+            <div className="h-fit border border-theme-primary/25 dark:border-theme-border/15 border-dashed rounded-[14px] p-4 text-theme-text dark:text-theme-text">
               <div className="p-2 text-lg font-black text-center">
                 No Previously Used Quizzes
               </div>
@@ -163,7 +165,7 @@ export default function QuizInfoSection(props: {
   onShowLeaderboard?: (resultId: string) => void;
 }) {
   return (
-    <div className="md:w-2/5 lg:w-1/3 shrink-0 h-full bg-white dark:bg-dark rounded-xl p-4 hidden md:flex flex-col min-h-0">
+    <div className="md:w-2/5 lg:w-1/3 shrink-0 h-full bg-theme-surface dark:bg-theme-surface rounded-xl p-4 hidden md:flex flex-col min-h-0">
       <QuizInfoContent
         quiz={props.quiz}
         onShowLeaderboard={props.onShowLeaderboard}

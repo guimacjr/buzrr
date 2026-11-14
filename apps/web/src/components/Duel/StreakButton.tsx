@@ -67,8 +67,8 @@ export default function StreakButton({ streak }: { streak: DailyStreak }) {
         className={clsx(
           "flex h-9 cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] px-3 text-base font-extrabold sm:h-10 sm:px-3.5 sm:text-[17px] transition-colors",
           open
-            ? "border-flame bg-flame text-white"
-            : "border-flame/35 bg-flame/10 text-flame",
+            ? "border-theme-flame bg-theme-flame text-theme-onPrimary"
+            : "border-theme-flame/35 bg-theme-flame/10 text-theme-flame",
         )}
       >
         <FlameIcon size={18} />
@@ -116,16 +116,16 @@ function StreakCalendar({
     <div
       role="dialog"
       aria-label="Daily duel streak"
-      className="absolute right-[-6px] top-[calc(100%+12px)] z-50 flex w-[min(360px,calc(100vw-24px))] flex-col gap-3.5 rounded-[22px] border border-lprimary/15 dark:border-white/10 bg-white dark:bg-dark p-4 sm:right-0 sm:p-5 text-dark dark:text-white shadow-[0_30px_70px_-24px_rgba(20,10,60,0.45)]"
+      className="absolute right-[-6px] top-[calc(100%+12px)] z-50 flex w-[min(360px,calc(100vw-24px))] flex-col gap-3.5 rounded-[22px] border border-theme-primary/15 dark:border-theme-border/10 bg-theme-surface dark:bg-theme-surface p-4 sm:right-0 sm:p-5 text-theme-text dark:text-theme-text shadow-[0_30px_70px_-24px_rgba(20,10,60,0.45)]"
     >
       <div className="flex items-center gap-3">
-        <span className="flex items-center gap-1 text-[38px] font-extrabold leading-none text-flame">
+        <span className="flex items-center gap-1 text-[38px] font-extrabold leading-none text-theme-flame">
           <FlameIcon size={32} />
           {streak.current}
         </span>
         <div>
           <b className="block text-[17px]">day streak</b>
-          <small className="block text-[13px] text-off-dark dark:text-muted-dark">
+          <small className="block text-[13px] text-theme-muted dark:text-theme-muted">
             Play one duel a day to keep it going
           </small>
         </div>
@@ -133,7 +133,7 @@ function StreakCalendar({
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="ml-auto cursor-pointer self-start text-off-dark dark:text-muted-dark"
+          className="ml-auto cursor-pointer self-start text-theme-muted dark:text-theme-muted"
         >
           <CloseIcon size={18} />
         </button>
@@ -143,8 +143,8 @@ function StreakCalendar({
         className={clsx(
           "flex items-center gap-2 rounded-xl px-3 py-2 text-[13.5px] font-semibold",
           streak.playedToday
-            ? "bg-green-600/10 text-green-700 dark:text-green-400"
-            : "bg-flame/10 text-flame",
+            ? "bg-theme-success/10 text-theme-success dark:text-theme-success"
+            : "bg-theme-flame/10 text-theme-flame",
         )}
       >
         {streak.playedToday ? <CheckIcon size={15} /> : <FlameIcon size={15} />}
@@ -173,7 +173,7 @@ function StreakCalendar({
         {WEEKDAYS.map((d, i) => (
           <span
             key={`h${i}`}
-            className="pb-1 text-center text-xs font-bold text-[#8a8896] dark:text-muted-dark"
+            className="pb-1 text-center text-xs font-bold text-theme-muted dark:text-theme-muted"
           >
             {d}
           </span>
@@ -192,14 +192,14 @@ function StreakCalendar({
               className={clsx(
                 "flex h-[38px] items-center justify-center text-sm font-semibold",
                 on
-                  ? "rounded-full bg-flame/20 font-extrabold text-flame"
-                  : "text-off-dark dark:text-muted-dark",
+                  ? "rounded-full bg-theme-flame/20 font-extrabold text-theme-flame"
+                  : "text-theme-muted dark:text-theme-muted",
                 joinsLeft && "rounded-l-none",
                 joinsRight && "rounded-r-none",
                 isToday &&
                   (on
-                    ? "bg-flame! text-white!"
-                    : "rounded-full ring-2 ring-inset ring-flame/60"),
+                    ? "bg-theme-flame! text-theme-onPrimary!"
+                    : "rounded-full ring-2 ring-inset ring-theme-flame/60"),
                 future && "opacity-50",
               )}
               aria-label={on ? `Day ${day}: duel played` : `Day ${day}`}
@@ -210,7 +210,7 @@ function StreakCalendar({
         })}
       </div>
 
-      <div className="grid grid-cols-3 border-t border-lprimary/15 dark:border-white/10 pt-3 text-center">
+      <div className="grid grid-cols-3 border-t border-theme-primary/15 dark:border-theme-border/10 pt-3 text-center">
         <Footer value={streak.current} label="Current" />
         <Footer value={streak.best} label="Best" />
         <Footer value={played.size} label="Days this month" />
@@ -236,7 +236,7 @@ function MonthButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-[9px] border-[1.5px] border-lprimary/15 dark:border-white/10 disabled:cursor-default disabled:opacity-30"
+      className="flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-[9px] border-[1.5px] border-theme-primary/15 dark:border-theme-border/10 disabled:cursor-default disabled:opacity-30"
     >
       {children}
     </button>
@@ -247,7 +247,7 @@ function Footer({ value, label }: { value: number; label: string }) {
   return (
     <div>
       <b className="block text-xl font-extrabold">{value}</b>
-      <span className="text-xs text-off-dark dark:text-muted-dark">
+      <span className="text-xs text-theme-muted dark:text-theme-muted">
         {label}
       </span>
     </div>

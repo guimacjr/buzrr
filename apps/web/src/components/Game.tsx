@@ -1,5 +1,6 @@
 "use client";
 
+import { resolveThemeColor } from "@/lib/theme-color";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 /**
@@ -17,12 +18,12 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 
 // App purple palette (see globals.css --color-lprimary / --color-dprimary).
 const BUBBLE_COLORS = [
-  "#7d49f8", // lprimary
-  "#a78bfa", // dprimary
-  "#c4b5fd",
-  "#9d7bfd",
-  "#b8a4fc",
-];
+  "primary",
+  "accent",
+  "accentDeep",
+  "secondary",
+  "answer5",
+] as const;
 
 interface Bubble {
   x: number; // centre x in px
@@ -83,7 +84,9 @@ const Game = () => {
       speed: 30 + Math.random() * 45,
       drift: 8 + Math.random() * 22,
       phase: Math.random() * Math.PI * 2,
-      color: BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)],
+      color: resolveThemeColor(
+        BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)]!,
+      ),
     });
   }, []);
 
@@ -290,17 +293,17 @@ const Game = () => {
     <div
       ref={wrapRef}
       onPointerDown={handlePointer}
-      className="relative h-full w-full overflow-hidden rounded-xl bg-off-white dark:bg-off-dark select-none touch-none cursor-pointer"
+      className="relative h-full w-full overflow-hidden rounded-xl bg-theme-card dark:bg-theme-card select-none touch-none cursor-pointer"
     >
       <canvas ref={canvasRef} className="absolute inset-0" />
 
-      <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-2 rounded-full bg-white/70 dark:bg-dark/70 px-3 py-1 text-sm font-bold text-lprimary dark:text-dprimary backdrop-blur">
+      <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-2 rounded-full bg-theme-surface/70 dark:bg-theme-surface/70 px-3 py-1 text-sm font-bold text-theme-primary dark:text-theme-primary backdrop-blur">
         <span aria-hidden>🫧</span>
         {score}
       </div>
 
-      <p className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-medium text-dark/50 dark:text-white/40">
-        Pop the bubbles while you wait…
+      <p className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-medium text-theme-text/50 dark:text-theme-text/40">
+        Estoure as bolhas enquanto espera…
       </p>
     </div>
   );

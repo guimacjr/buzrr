@@ -62,13 +62,13 @@ export default function ShareRoom({
       )}
     >
       {!compact && (
-        <p className="text-sm tracking-[2px] text-gray-500 dark:text-gray-300">
+        <p className="text-sm tracking-[2px] text-theme-border dark:text-theme-border">
           {caption}
         </p>
       )}
 
       {/* White backdrop keeps the QR scannable in both light and dark themes. */}
-      <div className="rounded-xl bg-white p-2 shadow">
+      <div className="rounded-xl bg-theme-surface p-2 shadow">
         <QRCodeSVG value={url} size={qrSize} marginSize={0} level="M" />
       </div>
 

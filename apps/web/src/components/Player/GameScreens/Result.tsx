@@ -3,6 +3,7 @@ import React from "react";
 import QuestionAndResult from "./QuesAndResult";
 import { useAppSelector } from "@/state/hooks";
 import {
+  RevealBreakdown,
   correctAnswers,
   describeAnswer,
   isScoredType,
@@ -37,12 +38,22 @@ const Result = (params: {
   // true — rendering the timeout verdict in that gap flashes a wrong outcome
   // at a player who did answer. The server sends it just ahead of the reveal
   // broadcast, so this placeholder is normally never seen.
+  if (question?.showRanking === false && reveal)
+    return (
+      <section className="mx-auto flex max-w-2xl flex-col gap-5 p-6">
+        <h2 className="text-xl font-bold">Estatísticas das respostas</h2>
+        <p>{question.title}</p>
+        <RevealBreakdown question={question} summary={reveal.summary} />
+        <p>Aguardando a próxima pergunta</p>
+      </section>
+    );
+
   if (!you) {
     return (
       <div className="flex flex-col items-center justify-center h-[85dvh] gap-4">
-        <div className="h-14 w-14 rounded-full border-4 border-light-bg dark:border-off-dark border-t-lprimary dark:border-t-dprimary animate-spin" />
-        <p className="text-off-dark dark:text-off-white">
-          Checking your answer…
+        <div className="h-14 w-14 rounded-full border-4 border-theme-border dark:border-theme-border border-t-lprimary dark:border-t-dprimary animate-spin" />
+        <p className="text-theme-muted dark:text-theme-muted">
+          Verificando sua resposta…
         </p>
       </div>
     );

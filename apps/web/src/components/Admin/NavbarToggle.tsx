@@ -11,7 +11,7 @@ const NavbarToggle = () => {
     <>
       <IconButton
         aria-label="Toggle navigation"
-        className="text-dark dark:text-white"
+        className="text-theme-text dark:text-theme-text"
         onClick={() => {
           dispatch(
             setNavToggle(

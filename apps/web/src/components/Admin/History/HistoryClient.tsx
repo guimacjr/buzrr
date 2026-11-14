@@ -1,5 +1,6 @@
 "use client";
 
+import DownloadReportButton from "../DownloadReportButton";
 import { useState } from "react";
 import NavbarToggle from "@/components/Admin/NavbarToggle";
 import LeaderboardView from "@/components/Admin/LeaderboardView";
@@ -19,7 +20,7 @@ function HistoryBody({
         {Array.from({ length: 4 }).map((_, index) => (
           <Skeleton
             key={index}
-            className="h-20 w-full rounded-xl bg-white dark:bg-card-dark"
+            className="h-20 w-full rounded-xl bg-theme-surface dark:bg-theme-card"
           />
         ))}
       </div>
@@ -28,7 +29,7 @@ function HistoryBody({
 
   if (isError) {
     return (
-      <p className="text-dark dark:text-white">
+      <p className="text-theme-text dark:text-theme-text">
         Could not load your game history. Try again later.
       </p>
     );
@@ -36,7 +37,7 @@ function HistoryBody({
 
   if (!results || results.length === 0) {
     return (
-      <div className="border border-gray border-dashed rounded-lg p-6 text-center text-dark dark:text-white">
+      <div className="border border-theme-border border-dashed rounded-lg p-6 text-center text-theme-text dark:text-theme-text">
         <p className="text-lg font-black">No games played yet</p>
         <p className="text-sm mt-2">
           Host a quiz and the final results will show up here.
@@ -48,22 +49,20 @@ function HistoryBody({
   return (
     <div className="flex flex-col gap-3">
       {results.map((result) => (
-        <button
-          type="button"
+        <div
           key={result.id}
-          onClick={() => onShowLeaderboard(result.id)}
-          className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-left bg-white dark:bg-card-dark rounded-xl p-4 hover:bg-card-light dark:hover:bg-cardhover-dark transition-colors hover:cursor-pointer"
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-left bg-theme-surface dark:bg-theme-card rounded-xl p-4 hover:bg-theme-card dark:hover:bg-theme-cardHover transition-colors hover:cursor-pointer"
         >
           <div>
-            <p className="font-bold text-dark dark:text-white capitalize">
+            <p className="font-bold text-theme-text dark:text-theme-text capitalize">
               {result.quizTitle}
             </p>
-            <p className="text-xs text-off-dark dark:text-off-white mt-1">
+            <p className="text-xs text-theme-muted dark:text-theme-muted mt-1">
               {new Date(result.endedAt).toLocaleString()} · Room{" "}
               {result.gameCode}
             </p>
           </div>
-          <div className="flex gap-4 text-sm text-dark dark:text-white">
+          <div className="flex gap-4 text-sm text-theme-text dark:text-theme-text">
             <span>
               {result.playerCount} player
               {result.playerCount === 1 ? "" : "s"}
@@ -73,12 +72,24 @@ function HistoryBody({
               {result.questionCount === 1 ? "" : "s"}
             </span>
             {result.mode === "duel" && (
-              <span className="font-bold text-lprimary dark:text-dprimary">
+              <span className="font-bold text-theme-primary dark:text-theme-primary">
                 Duel
               </span>
             )}
           </div>
-        </button>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              className="text-sm underline"
+              onClick={() => onShowLeaderboard(result.id)}
+            >
+              See leaderboard
+            </button>
+            {result.mode === "classic" && (
+              <DownloadReportButton resultId={result.id} />
+            )}
+          </div>
+        </div>
       ))}
     </div>
   );
@@ -93,7 +104,7 @@ export default function HistoryClient() {
         <span className="md:hidden">
           <NavbarToggle />
         </span>
-        <h1 className="text-2xl font-black text-dark dark:text-white">
+        <h1 className="text-2xl font-black text-theme-text dark:text-theme-text">
           Game History
         </h1>
       </div>

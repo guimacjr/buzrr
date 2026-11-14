@@ -27,6 +27,24 @@ export class MemoryStore {
     for (const p of players) this.players.set(p.id, p);
   }
 
+  async commitTransition(
+    _code: string,
+    expected: GameMeta,
+    patch: Partial<GameMeta>,
+    _deadline: number,
+  ) {
+    if (
+      this.meta.phase !== expected.phase ||
+      this.meta.qIndex !== expected.qIndex ||
+      (this.meta.revision ?? 0) !== (expected.revision ?? 0)
+    )
+      return false;
+    this.meta = { ...this.meta, ...patch };
+    return true;
+  }
+  async getAnswers(_code: string, index: number) {
+    return Object.fromEntries(this.answers.get(index) ?? []);
+  }
   async getMeta() {
     return { ...this.meta };
   }
@@ -65,7 +83,15 @@ export class MemoryStore {
     qIndex: number,
     playerId: string,
     answer: StoredAnswer,
+    revision = 0,
   ) {
+    if (
+      this.meta.phase !== "question" ||
+      this.meta.qIndex !== qIndex ||
+      (this.meta.revision ?? 0) !== revision ||
+      !this.players.has(playerId)
+    )
+      return null;
     const forQuestion = this.answers.get(qIndex) ?? new Map();
     this.answers.set(qIndex, forQuestion);
     if (forQuestion.has(playerId)) return null;
@@ -83,7 +109,15 @@ export class MemoryStore {
     playerId: string,
     previousRaw: string,
     next: StoredAnswer,
+    revision = 0,
   ) {
+    if (
+      this.meta.phase !== "question" ||
+      this.meta.qIndex !== qIndex ||
+      (this.meta.revision ?? 0) !== revision ||
+      !this.players.has(playerId)
+    )
+      return false;
     const forQuestion = this.answers.get(qIndex);
     if (JSON.stringify(forQuestion?.get(playerId)) !== previousRaw) {
       return false;

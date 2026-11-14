@@ -19,7 +19,7 @@ export default function GetReady({ title }: { title?: string }) {
   const counting = phase === "starting" && deadline > 0;
 
   return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col justify-center px-4 py-6 md:py-10 min-h-[calc(100dvh-7.5rem)] text-dark dark:text-white">
+    <div className="w-full max-w-3xl mx-auto flex flex-col justify-center px-4 py-6 md:py-10 min-h-[calc(100dvh-7.5rem)] text-theme-text dark:text-theme-text">
       <section
         aria-live="polite"
         className={clsx(
@@ -29,11 +29,11 @@ export default function GetReady({ title }: { title?: string }) {
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,color-mix(in_srgb,var(--color-dprimary)_16%,transparent),transparent_60%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,color-mix(in_srgb,var(--color-theme-primary)_16%,transparent),transparent_60%)]"
         />
 
-        <span className="relative text-[12.5px] font-bold tracking-[0.08em] uppercase rounded-full px-3 py-1.5 text-lprimary dark:text-dprimary bg-lprimary/8 dark:bg-white/5">
-          Get ready
+        <span className="relative text-[12.5px] font-bold tracking-[0.08em] uppercase rounded-full px-3 py-1.5 text-theme-primary dark:text-theme-primary bg-theme-primary/8 dark:bg-theme-surface/5">
+          Prepare-se
         </span>
         {title && (
           <h1 className="relative max-w-full text-2xl md:text-4xl font-bold tracking-[-0.02em] leading-tight text-pretty wrap-break-word">
@@ -51,10 +51,10 @@ export default function GetReady({ title }: { title?: string }) {
         <div className="relative min-h-6 flex items-center justify-center">
           {counting ? (
             <p className={clsx("text-base md:text-lg font-medium", mutedText)}>
-              First question coming up
+              A primeira pergunta vem a seguir
             </p>
           ) : (
-            <WaitingDots>Waiting for the question</WaitingDots>
+            <WaitingDots>Aguardando a pergunta</WaitingDots>
           )}
         </div>
       </section>
@@ -77,14 +77,20 @@ function Countdown({
   const c = 2 * Math.PI * r;
   const frac =
     counting && total > 0 ? Math.max(0, Math.min(1, remaining / total)) : 0;
-  const label = !counting ? null : seconds > 0 ? seconds : "Go!";
+  const label = !counting ? null : seconds > 0 ? seconds : "Vamos lá!";
   return (
     <div className="relative size-[150px] md:size-[190px]">
       <svg viewBox="0 0 100 100" className="block size-full -rotate-90">
         <defs>
           <linearGradient id="get-ready-ring" x1="0" x2="1">
-            <stop offset="0" style={{ stopColor: "var(--color-dprimary)" }} />
-            <stop offset="1" style={{ stopColor: "var(--color-accent)" }} />
+            <stop
+              offset="0"
+              style={{ stopColor: "var(--color-theme-primary)" }}
+            />
+            <stop
+              offset="1"
+              style={{ stopColor: "var(--color-theme-accent)" }}
+            />
           </linearGradient>
         </defs>
         <circle
@@ -93,7 +99,7 @@ function Countdown({
           r={r}
           fill="none"
           strokeWidth="6"
-          className="stroke-lprimary/10 dark:stroke-white/10"
+          className="stroke-theme-primary/10 dark:stroke-theme-border/10"
         />
         <circle
           cx="50"
@@ -119,8 +125,8 @@ function Countdown({
             key={label}
             className={clsx(
               "font-extrabold leading-none tracking-[-0.03em] tabular-nums animate-pop-in",
-              label === "Go!"
-                ? "text-4xl md:text-5xl text-lprimary dark:text-dprimary"
+              label === "Vamos lá!"
+                ? "text-4xl md:text-5xl text-theme-primary dark:text-theme-primary"
                 : "text-6xl md:text-7xl",
             )}
           >

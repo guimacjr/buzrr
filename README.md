@@ -101,6 +101,9 @@ yarn dev                 # web → http://localhost:3000   api → http://localh
 Open http://localhost:3000 and create a local account (email + password —
 `yarn setup` turns that on for development). Everything else is optional.
 
+For development at `https://buzrr.maciel.tv` through Cloudflare Tunnel, follow
+the [tunnel routing and environment setup](docs/architecture/infrastructure.md#development-through-cloudflare-tunnel).
+
 ### Optional features
 
 | Feature              | Add to `.env`                                                                                                 | Where to get it                                                                                                                           |
@@ -154,6 +157,7 @@ Run from the repo root:
 | `yarn db:push`                        | Sync the Prisma schema to the database.                                                        |
 | `yarn db:studio`                      | Open Prisma Studio.                                                                            |
 | `yarn docker:up` / `yarn docker:down` | Start / stop the Postgres + Redis containers.                                                  |
+| `yarn docker:publish`                 | Ask for the intranet host and version, build and publish Docker Hub images and latest tags.    |
 | `yarn selfhost`                       | Build and run the whole self-hosted stack in Docker.                                           |
 | `yarn docker:reset`                   | Wipe the databases and re-run setup.                                                           |
 | `yarn workspace ai setup`             | Create the AI service's Python virtualenv.                                                     |

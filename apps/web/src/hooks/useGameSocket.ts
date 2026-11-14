@@ -121,17 +121,7 @@ export function useGameSocket({
     conn.on("answer-count", (payload) => dispatch(answerCount(payload)));
     conn.on("live-summary", (payload) => dispatch(liveSummary(payload)));
     conn.on("leaderboard", (payload) => dispatch(leaderboardReceived(payload)));
-    conn.on("game-over", (payload) =>
-      dispatch(
-        gameOver({
-          entries: payload.entries,
-          eloChanges: payload.eloChanges,
-          rated: payload.rated,
-          category: payload.category,
-          streaks: payload.streaks,
-        }),
-      ),
-    );
+    conn.on("game-over", (payload) => dispatch(gameOver(payload)));
     conn.on("player-connection", (payload) =>
       dispatch(playerConnection(payload)),
     );

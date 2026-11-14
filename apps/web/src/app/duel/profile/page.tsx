@@ -13,11 +13,11 @@ export default async function Page() {
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <Link
           href="/duel"
-          className="inline-block mb-4 text-sm text-lprimary dark:text-dprimary font-bold hover:underline"
+          className="inline-block mb-4 text-sm text-theme-primary dark:text-theme-primary font-bold hover:underline"
         >
           ← Back to duel
         </Link>
-        <h1 className="text-2xl font-black text-dark dark:text-white mb-4">
+        <h1 className="text-2xl font-black text-theme-text dark:text-theme-text mb-4">
           Profile
         </h1>
         <ProfileDetails />

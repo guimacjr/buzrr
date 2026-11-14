@@ -19,11 +19,15 @@ export default function AdminGameLobbyClient({
     if (isAxiosError(error)) {
       if (error.response?.status === 404) notFound();
       if (error.response?.status === 403) {
-        return <p className="p-6 text-dark dark:text-white">Unauthorized</p>;
+        return (
+          <p className="p-6 text-theme-text dark:text-theme-text">
+            Unauthorized
+          </p>
+        );
       }
     }
     return (
-      <p className="p-6 text-dark dark:text-white">
+      <p className="p-6 text-theme-text dark:text-theme-text">
         Could not load this lobby. Try again later.
       </p>
     );
@@ -32,14 +36,14 @@ export default function AdminGameLobbyClient({
   if (isPending) {
     return (
       <div className="w-full p-6">
-        <Skeleton className="mx-auto h-[85vh] w-full max-w-5xl rounded-2xl bg-white dark:bg-card-dark" />
+        <Skeleton className="mx-auto h-[85vh] w-full max-w-5xl rounded-2xl bg-theme-surface dark:bg-theme-card" />
       </div>
     );
   }
 
   if (!data) {
     return (
-      <p className="p-6 text-dark dark:text-white">
+      <p className="p-6 text-theme-text dark:text-theme-text">
         Could not load this lobby. Try again later.
       </p>
     );
@@ -52,7 +56,7 @@ export default function AdminGameLobbyClient({
   }));
 
   return (
-    <div className="w-full bg-light-bg dark:bg-dark-bg">
+    <div className="w-full bg-theme-background dark:bg-theme-background">
       <GameLobby
         roomId={roomId}
         userId={userId}

@@ -133,6 +133,39 @@ one); the service refuses others with a message saying so. Local models are
 slower and less reliable than hosted ones at following the quiz format — if a
 generation fails, try again or use a larger model.
 
+## Docker Hub intranet deployment
+
+The `docker-compose.hub.yml` override uses `guimacieljr/buzrr:server` for
+migrations and the API, and `guimacieljr/buzrr:web` for the frontend.
+Run `yarn docker:publish` to enter an intranet IP/hostname and release version.
+The script uses your saved Docker login, builds both images, pushes `server-VERSION`
+and `web-VERSION`, then updates `server-latest`, `web-latest`, and the existing
+`server`/`web` aliases. The literal `latest` tag points to the frontend.
+Both versioned pushes finish before any moving alias is updated; registry
+updates are individual, not atomic. A failure stops subsequent steps; rerun
+after correcting it. Reusing a version replaces that version's tags.
+After a successful upload, the script updates the public URLs in
+`.env.intranet`, preserving other settings. HTTP ports are 3000/3001; the
+optional AI service is not published by this script.
+
+For a manual build and publication using the current `.env.intranet`:
+
+```sh
+docker login
+docker compose --env-file .env.intranet -f docker-compose.yml -f docker-compose.hub.yml build migrate web
+docker compose --env-file .env.intranet -f docker-compose.yml -f docker-compose.hub.yml push migrate web
+```
+
+On the target host, keep both Compose files and `.env.intranet` together:
+
+```sh
+docker compose --env-file .env.intranet -f docker-compose.yml -f docker-compose.hub.yml up -d --no-build --pull always
+```
+
+Changing public addresses requires rebuilding and republishing the web
+image as well as updating the target environment file. These tags cover the
+base stack; the optional AI profile still requires its own image build.
+
 ## Upgrade
 
 ```sh

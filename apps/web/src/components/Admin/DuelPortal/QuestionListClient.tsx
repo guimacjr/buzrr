@@ -184,19 +184,21 @@ export default function QuestionListClient({
     );
   } else if (query.isError) {
     body = (
-      <p className="mt-4 text-red-light dark:text-red-dark">
+      <p className="mt-4 text-theme-danger dark:text-theme-danger">
         {getApiErrorMessage(query.error)}
       </p>
     );
   } else if (items.length === 0) {
     body = (
-      <p className="mt-4 text-dark dark:text-white">{EMPTY_TEXT[status]}</p>
+      <p className="mt-4 text-theme-text dark:text-theme-text">
+        {EMPTY_TEXT[status]}
+      </p>
     );
   } else {
     body = (
       <>
         <div className="mt-4 flex min-h-11 flex-wrap items-center gap-x-3 gap-y-2">
-          <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-dark dark:text-white">
+          <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-theme-text dark:text-theme-text">
             <SelectBox
               checked={allSelected}
               indeterminate={someSelected}
@@ -241,7 +243,7 @@ export default function QuestionListClient({
         </div>
         <div
           ref={parentRef}
-          className="mt-2 h-[70dvh] overflow-y-auto rounded-xl border border-gray"
+          className="mt-2 h-[70dvh] overflow-y-auto rounded-xl border border-theme-border"
         >
           <div
             style={{
@@ -264,7 +266,7 @@ export default function QuestionListClient({
                     width: "100%",
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
-                  className="border-b border-gray p-4"
+                  className="border-b border-theme-border p-4"
                 >
                   <QueueRow
                     item={item}
@@ -308,7 +310,7 @@ function StatusTabs({ status }: { status: ModerationListStatus }) {
   return (
     <nav
       aria-label="Moderation status"
-      className="inline-flex max-w-full overflow-x-auto rounded-xl bg-lprimary/5 dark:bg-white/5 p-1"
+      className="inline-flex max-w-full overflow-x-auto rounded-xl bg-theme-primary/5 dark:bg-theme-surface/5 p-1"
     >
       {STATUS_TABS.map((tab) => {
         const active = tab.status === status;
@@ -321,13 +323,13 @@ function StatusTabs({ status }: { status: ModerationListStatus }) {
             className={clsx(
               "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
               active
-                ? "bg-white dark:bg-card-dark shadow-sm text-lprimary dark:text-dprimary"
-                : "text-dark/60 dark:text-white/60 hover:text-dark dark:hover:text-white",
+                ? "bg-theme-surface dark:bg-theme-card shadow-sm text-theme-primary dark:text-theme-primary"
+                : "text-theme-text/60 dark:text-theme-text/60 hover:text-theme-text dark:hover:text-theme-onPrimary",
             )}
           >
             {tab.label}
             {count !== undefined && (
-              <span className="rounded-full bg-lprimary/10 dark:bg-white/10 px-1.5 text-xs tabular-nums">
+              <span className="rounded-full bg-theme-primary/10 dark:bg-theme-surface/10 px-1.5 text-xs tabular-nums">
                 {count}
               </span>
             )}
@@ -360,7 +362,7 @@ function SelectBox({
       aria-label={label}
       checked={checked}
       onChange={onChange}
-      className="h-4 w-4 shrink-0 cursor-pointer accent-lprimary dark:accent-dprimary"
+      className="h-4 w-4 shrink-0 cursor-pointer accent-theme-primary dark:accent-theme-primary"
     />
   );
 }
@@ -395,15 +397,15 @@ function QueueRow({
             <StatusPill status={item.moderationStatus} />
             <QuestionTypeTag type={cardType(item)} />
             {item.reportCount > 0 && (
-              <span className="rounded-full bg-red-light/20 dark:bg-red-dark/20 px-2 py-0.5 text-xs font-bold text-red-light dark:text-red-dark">
+              <span className="rounded-full bg-theme-danger/20 dark:bg-theme-danger/20 px-2 py-0.5 text-xs font-bold text-theme-danger dark:text-theme-danger">
                 {item.reportCount} report{item.reportCount === 1 ? "" : "s"}
               </span>
             )}
-            <span className="min-w-0 break-words text-xs text-off-dark dark:text-off-white">
+            <span className="min-w-0 break-words text-xs text-theme-muted dark:text-theme-muted">
               {sourceLabel(item)}
             </span>
           </div>
-          <p className="mt-1 break-words font-bold text-dark dark:text-white">
+          <p className="mt-1 break-words font-bold text-theme-text dark:text-theme-text">
             {item.title}
           </p>
           <div className="mt-1 grid grid-cols-1 gap-x-4 gap-y-1 text-sm sm:grid-cols-2">
@@ -412,8 +414,8 @@ function QueueRow({
                 key={index}
                 className={`min-w-0 break-words ${
                   option.isCorrect
-                    ? "font-bold text-[#20A97C]"
-                    : "text-dark dark:text-white"
+                    ? "font-bold text-theme-success"
+                    : "text-theme-text dark:text-theme-text"
                 }`}
               >
                 {option.title}
@@ -483,7 +485,7 @@ function QueueRowCategories({ item }: { item: ModerationQueueItem }) {
         <button
           type="button"
           onClick={() => setEditing(false)}
-          className="self-start cursor-pointer text-xs font-semibold text-lprimary dark:text-dprimary"
+          className="self-start cursor-pointer text-xs font-semibold text-theme-primary dark:text-theme-primary"
         >
           Done
         </button>
@@ -494,12 +496,14 @@ function QueueRowCategories({ item }: { item: ModerationQueueItem }) {
   return (
     <div className="flex flex-wrap items-center gap-1.5 text-xs">
       {item.categories.length === 0 ? (
-        <span className="text-off-dark dark:text-off-white">No categories</span>
+        <span className="text-theme-muted dark:text-theme-muted">
+          No categories
+        </span>
       ) : (
         item.categories.map((c) => (
           <span
             key={c.id}
-            className="inline-flex items-center gap-1.5 rounded-full bg-card-light dark:bg-card-dark px-2 py-0.5 font-semibold text-dark dark:text-white"
+            className="inline-flex items-center gap-1.5 rounded-full bg-theme-card dark:bg-theme-card px-2 py-0.5 font-semibold text-theme-text dark:text-theme-text"
           >
             <span
               className="h-2 w-2 rounded-[3px]"
@@ -515,7 +519,7 @@ function QueueRowCategories({ item }: { item: ModerationQueueItem }) {
           setSelected(item.categories.map((c) => c.id));
           setEditing(true);
         }}
-        className="cursor-pointer font-semibold text-lprimary dark:text-dprimary"
+        className="cursor-pointer font-semibold text-theme-primary dark:text-theme-primary"
       >
         Edit
       </button>
@@ -525,11 +529,11 @@ function QueueRowCategories({ item }: { item: ModerationQueueItem }) {
 
 function StatusPill({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    pending: "bg-[#F2AB53]/20 text-[#F2AB53]",
+    pending: "bg-theme-warning/20 text-theme-warning",
     unapproved:
-      "bg-red-light/20 dark:bg-red-dark/20 text-red-light dark:text-red-dark",
-    approved: "bg-[#20A97C]/20 text-[#20A97C]",
-    draft: "bg-gray/20 text-off-dark dark:text-off-white",
+      "bg-theme-danger/20 dark:bg-theme-danger/20 text-theme-danger dark:text-theme-danger",
+    approved: "bg-theme-success/20 text-theme-success",
+    draft: "bg-theme-border/20 text-theme-muted dark:text-theme-muted",
   };
   return (
     <span

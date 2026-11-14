@@ -1,5 +1,13 @@
 "use client";
 
+import RegistrationFields, {
+  useRegistrationFields,
+  registrationErrorMessage,
+} from "./RegistrationFields";
+import {
+  validateRegistrationAnswers,
+  type RegistrationAnswers,
+} from "@buzrr/contract";
 import clsx from "clsx";
 import { useState, type ReactNode } from "react";
 import { LuScanLine } from "react-icons/lu";
@@ -30,13 +38,26 @@ const JoinRoomForm = ({ joiningAs }: { joiningAs?: ReactNode }) => {
   const router = useRouter();
   const mutation = useJoinRoomMutation();
   const [code, setCode] = useState("");
+  const registration = useRegistrationFields(code);
+  const [answers, setAnswers] = useState<RegistrationAnswers>({});
   const [focused, setFocused] = useState(false);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (code.length < CODE_LENGTH) return;
+    if (!registration.data) return;
+    let registrationAnswers;
+    try {
+      registrationAnswers = validateRegistrationAnswers(
+        registration.data.fields,
+        answers,
+      );
+    } catch (error) {
+      toast.error(registrationErrorMessage(error));
+      return;
+    }
     mutation.mutate(
-      { gameCode: code },
+      { gameCode: code, registrationAnswers },
       {
         onSuccess: (res) => {
           router.push(`/player/play/${res.playerId}`);
@@ -44,7 +65,7 @@ const JoinRoomForm = ({ joiningAs }: { joiningAs?: ReactNode }) => {
         onError: (err) => {
           if (isAxiosError(err) && err.response?.status === 401) {
             clearPlayerLocalSession();
-            toast.error("Your session expired. Create your player again.");
+            toast.error("Sua sessão expirou. Crie seu perfil novamente.");
             router.replace("/player");
             return;
           }
@@ -68,15 +89,15 @@ const JoinRoomForm = ({ joiningAs }: { joiningAs?: ReactNode }) => {
       {joiningAs}
       <div>
         <h1 className="text-[32px] md:text-[44px] font-extrabold tracking-[-0.03em] leading-[1.06]">
-          Enter room code
+          Digite o código da sala
         </h1>
         <p className={clsx("mt-2.5 text-base", mutedText)}>
-          Enter the 6-character code provided by the admin.
+          Digite o código de 6 caracteres fornecido pelo administrador.
         </p>
       </div>
       <div>
         <span className={joinLabelClass}>
-          Room code
+          Código da sala
           <span className={joinCounterClass}>
             {code.length}/{CODE_LENGTH}
           </span>
@@ -85,7 +106,10 @@ const JoinRoomForm = ({ joiningAs }: { joiningAs?: ReactNode }) => {
           <input
             id="gameCode"
             value={code}
-            onChange={(e) => setCode(normalizeCode(e.target.value))}
+            onChange={(e) => {
+              setCode(normalizeCode(e.target.value));
+              setAnswers({});
+            }}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             autoFocus
@@ -93,7 +117,7 @@ const JoinRoomForm = ({ joiningAs }: { joiningAs?: ReactNode }) => {
             autoComplete="off"
             spellCheck={false}
             inputMode="text"
-            aria-label="Room code"
+            aria-label="Código da sala"
             className="absolute inset-0 z-10 size-full opacity-0 text-base cursor-text"
           />
           <div
@@ -108,16 +132,17 @@ const JoinRoomForm = ({ joiningAs }: { joiningAs?: ReactNode }) => {
                 <span
                   key={i}
                   className={clsx(
-                    "aspect-[1/1.12] rounded-xl md:rounded-[14px] border-[1.5px] flex items-center justify-center text-2xl md:text-[30px] font-extrabold bg-light-bg dark:bg-card-dark transition-[border-color,box-shadow]",
+                    "aspect-[1/1.12] rounded-xl md:rounded-[14px] border-[1.5px] flex items-center justify-center text-2xl md:text-[30px] font-extrabold bg-theme-background dark:bg-theme-card transition-[border-color,box-shadow]",
                     char || isCursor
-                      ? "border-dprimary"
-                      : "border-lprimary/15 dark:border-white/10",
-                    isCursor && "shadow-[0_0_0_4px_rgba(139,92,246,0.15)]",
+                      ? "border-theme-primary"
+                      : "border-theme-primary/15 dark:border-theme-border/10",
+                    isCursor &&
+                      "shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-theme-primary)_15%,transparent)]",
                   )}
                 >
                   {char ??
                     (isCursor && (
-                      <span className="h-[30px] w-0.5 bg-dprimary animate-pulse" />
+                      <span className="h-[30px] w-0.5 bg-theme-primary animate-pulse" />
                     ))}
                 </span>
               );
@@ -129,14 +154,31 @@ const JoinRoomForm = ({ joiningAs }: { joiningAs?: ReactNode }) => {
         className={clsx("flex items-center gap-2 text-[13.5px]", mutedText)}
       >
         <LuScanLine size={16} className="shrink-0" />
-        Got a QR code? Scan it with your camera to skip this step.
+        Tem um QR code? Leia com a câmera para pular esta etapa.
       </span>
+      {registration.data && (
+        <RegistrationFields
+          fields={registration.data.fields}
+          answers={answers}
+          onChange={setAnswers}
+        />
+      )}
+      {registration.isError && (
+        <p role="alert">
+          Não foi possível carregar a sala. Confira o código e tente novamente.
+        </p>
+      )}
       <button
         type="submit"
-        disabled={code.length < CODE_LENGTH || mutation.isPending}
+        disabled={
+          code.length < CODE_LENGTH ||
+          mutation.isPending ||
+          !registration.data ||
+          registration.isFetching
+        }
         className={clsx(primaryButtonClass, "w-full py-4 text-[17px]")}
       >
-        {mutation.isPending ? "Joining..." : "Join"}
+        {mutation.isPending ? "Entrando…" : "Entrar"}
       </button>
     </form>
   );

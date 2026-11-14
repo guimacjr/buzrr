@@ -133,7 +133,7 @@ describe("poll", () => {
     config: { multiSelect },
   });
 
-  it("takes 2–4 options and clears any correct flag", () => {
+  it("takes 2–6 options and clears any correct flag", () => {
     const def = validateDefinition("poll", {
       options: [
         { title: "a", isCorrect: true },
@@ -143,9 +143,18 @@ describe("poll", () => {
     });
     expect(def.options.every((o) => !o.isCorrect)).toBe(true);
     expect(def.config).toEqual({ multiSelect: false });
+    expect(
+      validateDefinition("poll", {
+        options: Array.from({ length: 6 }, (_, i) => ({
+          title: `${i}`,
+          isCorrect: false,
+        })),
+        config: {},
+      }).options,
+    ).toHaveLength(6);
     expect(() =>
       validateDefinition("poll", {
-        options: Array.from({ length: 5 }, (_, i) => ({
+        options: Array.from({ length: 7 }, (_, i) => ({
           title: `${i}`,
           isCorrect: false,
         })),
@@ -176,6 +185,30 @@ describe("poll", () => {
         config: {},
       }),
     ).toBe(false);
+  });
+
+  it("updates multi-select votes without accumulating duplicate selections", () => {
+    const question = live(true);
+    expect(acceptsMoreAnswers(question)).toBe(true);
+    expect(acceptsMoreAnswers(live(false))).toBe(false);
+    const first = { optionIds: ["a"] };
+    const added = mergeAnswers(question, first, { optionIds: ["a", "b"] })!;
+    const removed = mergeAnswers(question, added, { optionIds: ["b"] })!;
+    expect(summarizeAnswers(question, entries([removed, first]))).toEqual({
+      type: "poll",
+      counts: [1, 1, 0],
+      responses: 2,
+    });
+    expect(checkAnswer(question, { optionIds: [] })).not.toBeNull();
+    const cleared = mergeAnswers(question, removed, { optionIds: [] })!;
+    expect(summarizeAnswers(question, entries([cleared, first]))).toEqual({
+      type: "poll",
+      counts: [1, 0, 0],
+      responses: 1,
+    });
+    expect(checkAnswer(live(false), { optionIds: [] })).toBeNull();
+    expect(checkAnswer(question, { optionIds: ["a", "a"] })).toBeNull();
+    expect(checkAnswer(question, { optionIds: ["unknown"] })).toBeNull();
   });
 
   it("counts votes per option", () => {

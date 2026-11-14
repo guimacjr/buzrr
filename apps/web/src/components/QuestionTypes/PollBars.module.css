@@ -1,0 +1,50 @@
+/* Only the presenter's panels opt in; participant results keep their layout. */
+:global([data-host-poll-panel]) .bars {
+  font-size: var(--poll-font-size, 15px);
+  flex-shrink: 0;
+  gap: 0.65em;
+}
+
+:global([data-host-poll-panel]) .row {
+  grid-template-columns: 2.4em minmax(0, 1fr) 3.7em;
+  gap: 0.8em;
+}
+
+:global([data-host-poll-panel]) .key {
+  width: 2.4em;
+  height: 2.4em;
+  font-size: inherit;
+}
+
+:global([data-host-poll-panel]) .bar {
+  height: auto;
+  min-height: 3em;
+}
+
+:global([data-host-poll-panel]) .copy {
+  padding: 0.6em 0.8em;
+  font-size: inherit;
+  line-height: 1.3;
+  gap: 0.6em;
+}
+
+:global([data-host-poll-panel]) .label {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+@media (min-width: 768px) {
+  :global([data-host-poll-panel]) .bars {
+    font-size: var(--poll-font-size, 19px);
+  }
+}
+
+:global([data-host-poll-panel]) .copy > span:last-child:not(.label) {
+  font-size: 0.8em;
+}
+
+:global([data-host-poll-panel]) .row > span {
+  font-size: 1.15em;
+}

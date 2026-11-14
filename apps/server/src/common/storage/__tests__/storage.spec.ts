@@ -141,3 +141,57 @@ describe("driver selection", () => {
     ).toBe("s3");
   });
 });
+
+// Videos must work with offline/self-hosted storage too.
+describe("video uploads", () => {
+  it("detects MP4/WebM by bytes and rejects disguised active documents", async () => {
+    const { sniffMedia } = await import("../image-sniff");
+    const mp4 = Buffer.from([
+      0,
+      0,
+      0,
+      24,
+      ...Buffer.from("ftypisom"),
+      0,
+      0,
+      0,
+      0,
+    ]);
+    const webm = Buffer.from([0x1a, 0x45, 0xdf, 0xa3, ...Buffer.from("webm")]);
+    expect(sniffMedia(mp4)).toEqual({
+      type: "video/mp4",
+      ext: "mp4",
+      mediaType: "video",
+    });
+    expect(sniffMedia(webm)).toEqual({
+      type: "video/webm",
+      ext: "webm",
+      mediaType: "video",
+    });
+    expect(() => sniffMedia(Buffer.from('<svg onload="alert(1)">'))).toThrow(
+      UnsupportedMediaError,
+    );
+    expect(() => sniffMedia(Buffer.from("ftypisom"))).toThrow(
+      UnsupportedMediaError,
+    );
+    const dir = await mkdtemp(join(tmpdir(), "buzrr-video-"));
+    try {
+      const storage = new LocalStorage({
+        dir,
+        publicUrl: "http://localhost:3001/uploads",
+      });
+      const stored = await storage.upload(mp4, {
+        contentType: "image/png",
+        filename: "wrong.png",
+      });
+      expect(stored.mediaType).toBe("video");
+      expect(stored.url).toMatch(/\.mp4$/);
+      const [file] = await readdir(dir);
+      expect(await readFile(join(dir, file!))).toEqual(mp4);
+      await storage.remove(stored.url);
+      expect(await readdir(dir)).toEqual([]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+});

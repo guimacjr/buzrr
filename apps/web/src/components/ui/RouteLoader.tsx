@@ -5,9 +5,9 @@
  */
 export function RouteLoader() {
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center gap-4 bg-light-bg dark:bg-dark-bg">
-      <div className="size-10 rounded-full border-4 border-card-light dark:border-card-dark border-t-lprimary dark:border-t-dprimary animate-spin" />
-      <p className="text-sm font-semibold text-dark/60 dark:text-gray">
+    <div className="min-h-dvh flex flex-col items-center justify-center gap-4 bg-theme-background dark:bg-theme-background">
+      <div className="size-10 rounded-full border-4 border-theme-card dark:border-theme-card border-t-lprimary dark:border-t-dprimary animate-spin" />
+      <p className="text-sm font-semibold text-theme-text/60 dark:text-theme-muted">
         Loading…
       </p>
     </div>
@@ -21,8 +21,8 @@ export function RouteLoader() {
 export function ContentLoader() {
   return (
     <div className="w-full flex flex-col items-center justify-center gap-4 py-40">
-      <div className="size-10 rounded-full border-4 border-card-light dark:border-card-dark border-t-lprimary dark:border-t-dprimary animate-spin" />
-      <p className="text-sm font-semibold text-dark/60 dark:text-gray">
+      <div className="size-10 rounded-full border-4 border-theme-card dark:border-theme-card border-t-lprimary dark:border-t-dprimary animate-spin" />
+      <p className="text-sm font-semibold text-theme-text/60 dark:text-theme-muted">
         Loading…
       </p>
     </div>

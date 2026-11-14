@@ -47,6 +47,23 @@ lobby → starting → question ⇄ reveal → final → ended
   early close is a follow-up `close-question` event (a `dispatch` effect)
   with a full load.
 
+### Presentation items and optional rankings
+
+`media_slide` uses the question phase without an answer window (`qDeadline = 0`).
+Its deadline is parked, so recovery and stale timers never advance it; answers
+and roster changes cannot close it. The host's `host-next` opens the next item
+(or the final ranking) directly, without a reveal. It is not duel-eligible.
+Optional `config.fullScreen` is projected as `PublicQuestion.fullScreen` for
+media slides and survives reconnect snapshots; omitted means normal presentation.
+The admin renders the image/video; players render only "Waiting for the next question",
+including after reconnect. Media URLs remain public assets, not confidential content.
+
+Every type accepts optional `config.showRanking` (omitted means true), projected
+as `PublicQuestion.showRanking`. When false, the reveal still sends response
+statistics and personal results, but skips the running leaderboard broadcast
+and reconnect snapshot; the admin and player reveal screens hide standings and
+show response statistics. Scores and the final leaderboard are unchanged.
+
 ### Pacing
 
 How a game moves past a reveal is a **strategy** (`core/pacing.ts`), stored
@@ -226,14 +243,12 @@ win for each player in `/users/me/stats`.
   **almost no client bookkeeping** — the whole screen re-renders from the
   snapshot (`apps/web/src/hooks/useGameSocket.ts` → `applySync` in
   `apps/web/src/state/game/gameSlice.ts`).
-- **A snapshot can be older than events already received.** It is read from
-  Redis and sent once the read finishes, so a phase change in between (for
-  example the host's next `question-start`) reaches the client first.
-  `applySync` drops any snapshot that is behind the client's current point in
-  the game (`gameProgress`; phases only move forward within a game). Without
-  that check, a stale reveal snapshot left players on the result screen after
-  the game had moved on. A new socket resets the slice to `idle`, so the
-  first snapshot on a reconnect is always applied.
+- **Snapshots and events carry a navigation revision.** Classic `host-back`
+  increments it, as does moving between items after history navigation begins.
+  Clients accept a higher revision even when the index decreases, reject lower
+  revisions, and compare phase/index progress within one revision. Reconnects
+  load the persisted revision. Submissions name the revision; Lua atomically
+  rejects writes against an old visit, closed phase or removed roster member.
 - A page coming back to the foreground emits `request-sync`
   (`resyncOnReturn`). A suspended mobile tab can still look connected after
   the server dropped it, and would otherwise miss every event until the
@@ -403,3 +418,31 @@ Games that never left the lobby (`startedAt` 0 / `qCount` 0) produce **no**
 - The early close counts only **connected** players; bots are seeded
   `connected: true` (they have no socket) — see `startDuel` comment. Don't
   "fix" that.
+
+When a classic game has `showFinalRanking=false`, advancing past the last reveal or media slide goes through finalization without broadcasting the final leaderboard. The existing single-claim end-game path still persists results/reports and tears down the room. `game-over` carries `showFinalRanking=false` and empty entries; reconnect snapshots carry the same flag and omit final standings. A due deadline retries finalization if interrupted before end-game. Duels and omitted settings preserve existing behavior.
+
+## Classic backwards navigation
+
+`host-back { revision }` is registered only for hosts and acknowledged. Each
+click returns one item (from final, the last item). Scored items reopen in
+reveal only, including on forward traversal through already-visited items;
+points and previously stored answers never reset. Slides return to presentation.
+Unscored items get a fresh normal-duration window with existing responses:
+polls/ratings replace the respondent's answer, word clouds/open text append
+up to existing submission caps even if originally single-submission. Reopened
+windows do not close early when everyone has answered. Next reveals an open
+question, then moves forward as usual. Ended sessions cannot be reopened.
+
+`maxVisitedIndex`, `reopened` and `revision` are Redis metadata. History moves
+broadcast personalized snapshots plus a refreshed host live summary. The final
+report uses the highest visited index, not the current cursor. A phase change
+atomically compares phase/index/revision and writes metadata plus deadline;
+losing concurrent transitions emit nothing. Finalization also checks the
+expected visit before claiming the end, so it cannot end a newer revisit.
+
+Multi-select polls accept replacement selections throughout their answer window,
+using the existing compare-and-set answer update. They do not close early after
+every player first votes. An empty selection clears that participant’s option
+counts and excludes them from poll-summary responses; the answer-count meter
+still counts players who have submitted at least once. Single-select polls retain
+first-answer semantics unless reopened. Scored questions are unchanged.

@@ -6,7 +6,11 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from "@nestjs/common";
-import { DEFAULT_TIME_OUT, type ImportQuiz } from "@buzrr/contract";
+import {
+  DEFAULT_TIME_OUT,
+  type ImportQuiz,
+  type RegistrationField,
+} from "@buzrr/contract";
 import { z } from "zod";
 import {
   LlmTimeoutError,
@@ -100,6 +104,34 @@ export class QuizzesService {
       });
     });
     return { quizId: quiz.id };
+  }
+
+  async updatePresentation(
+    user: AuthUser,
+    quizId: string,
+    settings: import("@buzrr/contract").QuizPresentation,
+  ) {
+    const result = await this.prisma.db.quiz.updateMany({
+      where: { id: quizId, userId: user.userId },
+      data: settings,
+    });
+    if (!result.count)
+      throw new NotFoundException("Unauthorized or quiz not found");
+    return settings;
+  }
+
+  async updateRegistration(
+    user: AuthUser,
+    quizId: string,
+    fields: RegistrationField[],
+  ) {
+    const result = await this.prisma.db.quiz.updateMany({
+      where: { id: quizId, userId: user.userId },
+      data: { registrationFields: fields },
+    });
+    if (!result.count)
+      throw new NotFoundException("Unauthorized or quiz not found");
+    return { fields };
   }
 
   async update(
@@ -196,6 +228,7 @@ export class QuizzesService {
         gameResults: {
           orderBy: { endedAt: "desc" },
           take: 50,
+          omit: { report: true },
         },
         _count: { select: { questions: true } },
       },

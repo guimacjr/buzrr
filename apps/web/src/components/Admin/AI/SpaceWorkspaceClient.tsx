@@ -58,7 +58,7 @@ export default function SpaceWorkspaceClient({ spaceId }: { spaceId: string }) {
         </span>
         <Link
           href="/admin/ai"
-          className="inline-flex items-center gap-1 text-sm text-off-dark dark:text-off-white hover:text-dark dark:hover:text-white"
+          className="inline-flex items-center gap-1 text-sm text-theme-muted dark:text-theme-muted hover:text-theme-text dark:hover:text-theme-onPrimary"
         >
           <LuChevronLeft size={16} aria-hidden />
           AI Spaces
@@ -66,18 +66,18 @@ export default function SpaceWorkspaceClient({ spaceId }: { spaceId: string }) {
       </div>
 
       {space.isPending ? (
-        <Skeleton className="mt-3 h-8 w-64 rounded-lg bg-white dark:bg-card-dark" />
+        <Skeleton className="mt-3 h-8 w-64 rounded-lg bg-theme-surface dark:bg-theme-card" />
       ) : space.isError || !space.data ? (
-        <p className="mt-3 text-sm text-dark dark:text-white">
+        <p className="mt-3 text-sm text-theme-text dark:text-theme-text">
           Could not load this space.
         </p>
       ) : (
         <>
-          <h1 className="mt-2 text-2xl font-black text-dark dark:text-white">
+          <h1 className="mt-2 text-2xl font-black text-theme-text dark:text-theme-text">
             {space.data.name}
           </h1>
           {space.data.description && (
-            <p className="mt-1 text-sm text-off-dark dark:text-off-white">
+            <p className="mt-1 text-sm text-theme-muted dark:text-theme-muted">
               {space.data.description}
             </p>
           )}
@@ -101,7 +101,7 @@ export default function SpaceWorkspaceClient({ spaceId }: { spaceId: string }) {
                   max={total}
                   label="Documents processed"
                 />
-                <p className="mt-1 text-2xs text-off-dark dark:text-off-white">
+                <p className="mt-1 text-2xs text-theme-muted dark:text-theme-muted">
                   {readyCount} of {total} ready
                   {counts?.failed ? ` · ${counts.failed} failed` : ""}
                 </p>

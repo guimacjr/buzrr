@@ -102,7 +102,7 @@ Read `schema.prisma` for fields; what matters is the _meaning_:
 | `DuelDay`                            | One row per local calendar day on which a user finished a duel — the streak calendar.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Written in the `persistResult` transaction; `@db.Date` in the user's time zone, not UTC.                                                                                                                                                                                              |
 | `QuestionReport`                     | One row per distinct reporter (`@@unique([questionId, reporterUserId])`); >5 distinct reports auto-unapprove.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Reports are deleted on approve/unapprove/edit.                                                                                                                                                                                                                                        |
 | `GameSession`                        | Classic **lobby record only**: `gameCode` (unique, 6-char), `quizId`, `creatorId`, `isPlaying`. Deleted when the game ends.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `isPlaying` is the only gameplay flag here — phase and question index live in Redis. Duels have **no** GameSession.                                                                                                                                                                   |
-| `GameResult` / `GameResultEntry`     | The only durable trace of a finished game (schema comment: "Immutable record of a finished game"). Entries snapshot `playerName`/`profilePic` because Player rows are ephemeral; `userId` set for signed-in participants; `eloBefore/After` for rated duels (category rating for category duels); `outcome` (win/loss/draw) for duels; `GameResult.categoryId` for category duels (null = Random). Nullable `quizId`/`hostId`/`categoryId` survive later deletion.                                                                                                                                                                                                                                                                                                                                                                 | Never mutate results; append-only. Read paths: host history, duel history, profile stats.                                                                                                                                                                                             |
+| `GameResult` / `GameResultEntry`     | The only durable trace of a finished game (schema comment: "Immutable record of a finished game"). Entries snapshot `playerName`/`profilePic` so later identity changes cannot rewrite results; `userId` set for signed-in participants; `eloBefore/After` for rated duels (category rating for category duels); `outcome` (win/loss/draw) for duels; `GameResult.categoryId` for category duels (null = Random). Nullable `quizId`/`hostId`/`categoryId` survive later deletion.                                                                                                                                                                                                                                                                                                                                                  | Never mutate results; append-only. Read paths: host history, duel history, profile stats.                                                                                                                                                                                             |
 | `Subscription`                       | Mirror of a Dodo subscription: status, period dates, `cancelAtPeriodEnd`, customer, product. Plans are derived from these rows on every check.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Written only by `SubscriptionSyncService` from Dodo-fetched state. `userId` is `SET NULL` on account deletion so billing history survives.                                                                                                                                            |
 | `BillingEvent`                       | Webhook idempotency ledger keyed by Dodo's `webhook-id`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | The claim commits in the same transaction as the event's effects — never insert it on its own.                                                                                                                                                                                        |
 | `Payment`                            | Audit trail of `payment.succeeded` / `payment.failed`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Informational only; access never depends on it.                                                                                                                                                                                                                                       |
@@ -120,6 +120,10 @@ backfill; also documents the seeded system user and initial superadmin).
 optional, adds `createdById`, categories, per-category ratings, duel
 outcomes and the daily streak ([ADR-015](../adr/015-duel-categories-and-standalone-questions.md));
 it backfills `createdById` from quizzes and historical duel outcomes by score.
+
+Question presentation uses existing fields: `config.showRanking` is optional
+(default true), and `media_slide` reuses `media`/`mediaType` with no options.
+These settings require no new columns or migration.
 
 ## Billing data (Buzrr Pro)
 
@@ -208,3 +212,46 @@ transaction → Redis wiped.
 - The 6h TTL is the hard ceiling on game length and also the garbage
   collector for abandoned rooms — don't remove TTL renewals from store
   methods.
+
+## Classic entry fields and detailed reports
+
+`Quiz.registrationFields` is a validated JSON definition array. Creating a room
+copies it to `GameSession.registrationFields`; later quiz edits affect new rooms
+only. `GameRegistration` stores one entry per `(sessionId, playerId)` with the
+player name and validated answers. It belongs to lobby membership data, not
+live gameplay, and survives a kick/ban/rejoin until the room is deleted.
+
+At finalization, the engine reads the original questions and answers from Redis
+and lobby registrations from Postgres into immutable `GameResult.report` JSON
+(version 1). The snapshot retains labels, choice text, participant IDs/names,
+entry answers, per-question response status, correctness, points and response
+time. Missing submissions, unpresented questions and media slides are distinct.
+Anonymous open-text submissions keep their text hidden in player-linked reports.
+Registrations cascade-delete with the room after persistence; per-answer writes
+still never touch Postgres during play. A null report denotes an older result
+(or duel); old answers cannot be reconstructed. Migration:
+`20261018000001_registration_reports`.
+
+## Global avatar catalog
+
+`AvatarCatalog` has one application-owned row (`id=global`) holding validated JSON
+and an integer revision. Before customization, the shared bundled definitions
+supply the original eleven choices. Mutations initialize the row if needed and
+use revision compare-and-swap with bounded retries to avoid lost concurrent
+uploads/settings. At least one avatar must remain enabled; hiding the initial
+avatar selects the next enabled one. Hiding never deletes assets or old player
+references. The JSON `mode` defaults to `images` for legacy catalogs;
+`colors` preserves the image catalog while exposing bundled solid-color assets.
+No additional migration is required. Migration: `20261018000002_avatar_catalog`.
+
+## Global branding
+
+`BrandingSettings` stores the singleton `global` row: light/dark JSON palettes and nullable `logoUrl`. Missing settings use contract defaults. Migration `20261018000003_branding` adds the table. Palette and logo writes update separate columns; this configuration does not touch live game state.
+
+Quiz.showFinalRanking defaults to true (migration `20261112000001_quiz_final_ranking`). The engine snapshots it into boolean Redis metadata at start, so later edits do not change a running game.
+
+Classic history navigation adds optional numeric `revision`, `maxVisitedIndex`
+and boolean `reopened` to Redis metadata (legacy defaults are zero/current
+index/false). Existing per-question answer hashes remain in place: unscored
+replacements use compare-and-set; scored hashes and totals are never reset.
+No Postgres schema change is required.

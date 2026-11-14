@@ -27,6 +27,7 @@ import type { GameSocket } from "@/types/socket";
 interface QuestionScreenProps {
   gameCode: string;
   socket: GameSocket;
+  fullScreen?: boolean;
 }
 
 /**
@@ -35,7 +36,7 @@ interface QuestionScreenProps {
  * to skip ahead.
  */
 export default function QuestionScreen(props: QuestionScreenProps) {
-  const { gameCode, socket } = props;
+  const { gameCode, socket, fullScreen = false } = props;
   const question = useAppSelector((state) => state.game.question);
   const deadline = useAppSelector((state) => state.game.deadline);
   const qIndex = useAppSelector((state) => state.game.qIndex);
@@ -79,6 +80,83 @@ export default function QuestionScreen(props: QuestionScreenProps) {
 
   if (!question) return null;
 
+  if (question.type === "media_slide")
+    return (
+      <section
+        className={
+          fullScreen
+            ? "h-dvh w-full overflow-hidden"
+            : clsx(panelClass, "flex flex-col items-center gap-5 p-6")
+        }
+      >
+        {!fullScreen && (
+          <>
+            <QuestionTypePill type="media_slide" />
+            <h2>{question.title}</h2>
+          </>
+        )}
+        {question.media &&
+          (question.mediaType === "video" ? (
+            <video
+              key={question.id}
+              src={question.media}
+              controls={!fullScreen}
+              autoPlay
+              onLoadedData={async (event) => {
+                const video = event.currentTarget;
+                try {
+                  await video.play();
+                } catch (error) {
+                  // Browsers may block audible autoplay; keep playback automatic
+                  // and let the host enable sound using the native controls.
+                  if (
+                    error instanceof DOMException &&
+                    error.name === "NotAllowedError"
+                  ) {
+                    video.muted = true;
+                    await video.play().catch(() => undefined);
+                  }
+                }
+              }}
+              playsInline
+              className={
+                fullScreen
+                  ? "h-full w-full object-contain"
+                  : "max-h-[65dvh] max-w-full"
+              }
+            />
+          ) : (
+            <Image
+              src={question.media}
+              alt={question.title}
+              width={1200}
+              height={800}
+              unoptimized
+              className={
+                fullScreen
+                  ? "h-full w-full object-contain cursor-pointer"
+                  : "max-h-[65dvh] w-auto object-contain"
+              }
+            />
+          ))}
+        {!fullScreen && (
+          <>
+            <p>Os participantes estão aguardando a próxima pergunta.</p>
+            <button
+              type="button"
+              className={primaryButtonClass}
+              data-host-next
+              aria-keyshortcuts="ArrowRight"
+              title="Avançar (→)"
+              onClick={() => socket.emit("host-next")}
+            >
+              Avançar <LuPlay />
+            </button>
+          </>
+        )}
+      </section>
+    );
+
   const joinUrl = buildJoinUrl(gameCode);
   const total = Math.max(players.filter((p) => p.connected).length, answered);
   const answeredPct = total > 0 ? (answered / total) * 100 : 0;
@@ -102,34 +180,34 @@ export default function QuestionScreen(props: QuestionScreenProps) {
             valueClassName="text-4xl md:text-[58px]"
           />
           <div className="flex-1 min-w-0 flex flex-col gap-2">
-            <span className={labelClass}>Answers in</span>
+            <span className={labelClass}>Respostas recebidas</span>
             <span className={clsx("text-[13.5px]", mutedText)}>
-              <b className="text-[22px] font-bold text-dark dark:text-white">
+              <b className="text-[22px] font-bold text-theme-text dark:text-theme-text">
                 {answered}
               </b>{" "}
               / {total}
             </span>
-            <div className="h-2 rounded-lg overflow-hidden bg-lprimary/8 dark:bg-white/5">
+            <div className="h-2 rounded-lg overflow-hidden bg-theme-primary/8 dark:bg-theme-surface/5">
               <div
-                className="h-full rounded-lg bg-linear-to-br from-[#9a6cf5] to-[#7c4ddb] dark:from-accent dark:to-accent-deep transition-[width] duration-300"
+                className="h-full rounded-lg bg-linear-to-br from-theme-accent to-theme-accentDeep dark:from-theme-accent dark:to-theme-accentDeep transition-[width] duration-300"
                 style={{ width: `${answeredPct}%` }}
               />
             </div>
             <span className={clsx("text-[13px]", mutedText)}>
-              {Math.max(0, total - answered)} still thinking
+              {Math.max(0, total - answered)} ainda pensando
             </span>
           </div>
         </div>
 
         <div className="flex flex-col gap-2.5">
-          <span className={labelClass}>Late joiners</span>
+          <span className={labelClass}>Novos participantes</span>
           <div
             className={clsx(
               "flex items-center gap-4 rounded-[18px] p-4",
               subtleCardClass,
             )}
           >
-            <div className="size-[90px] md:size-[136px] shrink-0 rounded-[10px] bg-white p-1.5">
+            <div className="size-[90px] md:size-[136px] shrink-0 rounded-[10px] bg-theme-surface p-1.5">
               <QRCodeSVG
                 value={joinUrl}
                 marginSize={0}
@@ -138,7 +216,7 @@ export default function QuestionScreen(props: QuestionScreenProps) {
               />
             </div>
             <div className="flex-1 min-w-0 flex flex-col gap-2">
-              <span className="text-[28px] font-extrabold tracking-[0.12em] leading-none text-lprimary dark:text-dprimary">
+              <span className="text-[28px] font-extrabold tracking-[0.12em] leading-none text-theme-primary dark:text-theme-primary">
                 {gameCode}
               </span>
               <div className="flex flex-wrap gap-2">
@@ -147,20 +225,24 @@ export default function QuestionScreen(props: QuestionScreenProps) {
                   onClick={() =>
                     (
                       navigator.clipboard?.writeText(joinUrl) ??
-                      Promise.reject(new Error("Clipboard unavailable"))
+                      Promise.reject(
+                        new Error("Área de transferência indisponível"),
+                      )
                     )
                       .then(() => setCopied(true))
-                      .catch(() => toast.error("Failed to copy link"))
+                      .catch(() =>
+                        toast.error("Não foi possível copiar o link"),
+                      )
                   }
                   className={clsx(
-                    "flex-1 flex items-center justify-center gap-1.5 rounded-xl border-[1.5px] bg-white dark:bg-dark px-3 py-2 text-[13px] font-semibold whitespace-nowrap cursor-pointer transition-colors",
+                    "flex-1 flex items-center justify-center gap-1.5 rounded-xl border-[1.5px] bg-theme-surface dark:bg-theme-surface px-3 py-2 text-[13px] font-semibold whitespace-nowrap cursor-pointer transition-colors",
                     copied
-                      ? "border-green-500 text-green-500"
-                      : "border-lprimary/15 dark:border-white/5 hover:border-dprimary",
+                      ? "border-theme-success text-theme-success"
+                      : "border-theme-primary/15 dark:border-theme-border/5 hover:border-theme-primary",
                   )}
                 >
                   {copied ? <LuCheck size={15} /> : <LuCopy size={15} />}
-                  {copied ? "Copied" : "Copy link"}
+                  {copied ? "Copiado" : "Copiar link"}
                 </button>
                 {canShare && (
                   <button
@@ -168,10 +250,10 @@ export default function QuestionScreen(props: QuestionScreenProps) {
                     onClick={() =>
                       navigator.share({ url: joinUrl }).catch(() => {})
                     }
-                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border-[1.5px] bg-white dark:bg-dark border-lprimary/15 dark:border-white/5 hover:border-dprimary px-3 py-2 text-[13px] font-semibold cursor-pointer transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border-[1.5px] bg-theme-surface dark:bg-theme-surface border-theme-primary/15 dark:border-theme-border/5 hover:border-theme-primary px-3 py-2 text-[13px] font-semibold cursor-pointer transition-colors"
                   >
                     <LuShare2 size={15} />
-                    Share
+                    Compartilhar
                   </button>
                 )}
               </div>
@@ -182,29 +264,30 @@ export default function QuestionScreen(props: QuestionScreenProps) {
 
       <section
         ref={promptRef}
+        data-host-poll-panel={question.type === "poll" ? "" : undefined}
         className={clsx(
           panelClass,
           "flex flex-col p-5 md:px-[34px] md:py-8 md:min-h-0 md:overflow-y-auto",
         )}
       >
         <div className="flex flex-wrap items-center gap-2.5">
-          <span className="text-[12.5px] font-bold tracking-[0.06em] uppercase rounded-full px-3 py-1.5 text-lprimary dark:text-dprimary bg-lprimary/8 dark:bg-white/5">
-            Question {qIndex + 1} of {qCount}
+          <span className="text-[12.5px] font-bold tracking-[0.06em] uppercase rounded-full px-3 py-1.5 text-theme-primary dark:text-theme-primary bg-theme-primary/8 dark:bg-theme-surface/5">
+            Pergunta {qIndex + 1} de {qCount}
           </span>
           {question.type !== "multiple_choice" && (
             <QuestionTypePill type={question.type} />
           )}
           <span className={clsx("text-[13px]", mutedText)}>
             {scored
-              ? `${question.timeOut}s to answer`
-              : "Not scored · results update live"}
+              ? `${question.timeOut}s para responder`
+              : "Sem pontuação · resultados em tempo real"}
           </span>
         </div>
         {question.mediaType === "image" && question.media && (
           <Image
             src={question.media}
             className="mt-5 mx-auto max-h-[26dvh] w-auto rounded-2xl"
-            alt="Question image"
+            alt="Imagem da pergunta"
             height={300}
             width={500}
           />
@@ -221,7 +304,7 @@ export default function QuestionScreen(props: QuestionScreenProps) {
           question={question}
           live={live?.index === qIndex ? live.summary : null}
         />
-        <div className="flex flex-wrap md:flex-nowrap items-center gap-3.5 mt-[22px] pt-5 border-t border-lprimary/15 dark:border-white/10">
+        <div className="flex flex-wrap md:flex-nowrap items-center gap-3.5 mt-[22px] pt-5 border-t border-theme-primary/15 dark:border-theme-border/10">
           <p
             className={clsx(
               "basis-full md:basis-auto flex-1 text-sm",
@@ -229,15 +312,18 @@ export default function QuestionScreen(props: QuestionScreenProps) {
             )}
           >
             {left > 0
-              ? `${left} question${left === 1 ? "" : "s"} left after this one`
-              : "This is the last question"}
+              ? `${left} pergunta${left === 1 ? "" : "s"} restante${left === 1 ? "" : "s"} após esta`
+              : "Esta é a última pergunta"}
           </p>
           <button
             type="button"
+            data-host-next
+            aria-keyshortcuts="ArrowRight"
+            title="Avançar (→)"
             onClick={() => socket.emit("host-next")}
             className={clsx(primaryButtonClass, "flex-1 md:flex-none")}
           >
-            Next
+            Avançar
             <LuPlay size={17} className="fill-current" />
           </button>
         </div>

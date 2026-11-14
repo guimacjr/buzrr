@@ -20,9 +20,9 @@ export function BackSquare({ href }: { href: string }) {
   return (
     <button
       type="button"
-      aria-label="Go back"
+      aria-label="Voltar"
       onClick={() => router.push(href)}
-      className="size-11 rounded-xl border border-lprimary/15 dark:border-white/10 flex items-center justify-center hover:bg-lprimary/8 dark:hover:bg-white/5 transition-colors cursor-pointer"
+      className="size-11 rounded-xl border border-theme-primary/15 dark:border-theme-border/10 flex items-center justify-center hover:bg-theme-primary/8 dark:hover:bg-theme-surface/5 transition-colors cursor-pointer"
     >
       <LuArrowLeft size={20} />
     </button>
@@ -43,12 +43,12 @@ export function Steps({ step, total = 2 }: { step: number; total?: number }) {
           className={clsx(
             "h-1.5 w-[26px] rounded",
             i < step
-              ? "bg-linear-to-br from-[#9a6cf5] to-[#7c4ddb] dark:from-accent dark:to-accent-deep"
-              : "bg-lprimary/10 dark:bg-white/10",
+              ? "bg-linear-to-br from-theme-accent to-theme-accentDeep dark:from-theme-accent dark:to-theme-accentDeep"
+              : "bg-theme-primary/10 dark:bg-theme-surface/10",
           )}
         />
       ))}
-      Step {step} of {total}
+      Etapa {step} de {total}
     </span>
   );
 }
@@ -67,9 +67,10 @@ export function MeCard({
 }) {
   return (
     <div className="flex flex-col items-center gap-3.5">
-      <span className="rounded-full p-1.5 bg-linear-to-br from-[#9a6cf5] to-[#7c4ddb] dark:from-accent dark:to-accent-deep shadow-[0_24px_50px_-20px_#7c4ddb]">
-        <span className="block rounded-full border-[5px] border-light-bg dark:border-card-dark">
+      <span className="rounded-full p-1.5 bg-linear-to-br from-theme-accent to-theme-accentDeep dark:from-theme-accent dark:to-theme-accentDeep shadow-[0_24px_50px_-20px_var(--color-theme-accentDeep)]">
+        <span className="block rounded-full border-[5px] border-theme-border dark:border-theme-card">
           <Image
+            unoptimized
             src={image || DEFAULT_AVATAR}
             width={180}
             height={180}
@@ -85,10 +86,10 @@ export function MeCard({
         <span
           className={clsx(
             "flex items-center gap-3 text-[26px] font-bold tracking-[-0.01em] max-w-full",
-            !name && "text-[#8a8896] dark:text-muted-dark",
+            !name && "text-theme-muted dark:text-theme-muted",
           )}
         >
-          <span className="truncate">{name || "Your Name"}</span>
+          <span className="truncate">{name || "Seu nome"}</span>
           {action}
         </span>
       )}
@@ -108,13 +109,16 @@ export default function JoinShell({
   preview: ReactNode;
 }) {
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col pb-16 md:pb-6 md:min-h-[calc(100dvh-3rem)] text-dark dark:text-white">
+    <div
+      lang="pt-BR"
+      className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col pb-16 md:pb-6 md:min-h-[calc(100dvh-3rem)] text-theme-text dark:text-theme-text"
+    >
       <div className="py-4">
         <ClientImage
           props={{
             src: "/images/logo.svg",
             darksrc: "/images/logo-dark.svg",
-            alt: "Buzrr Logo",
+            alt: "Logo do Buzrr",
             width: 80,
             height: 80,
           }}
@@ -132,7 +136,7 @@ export default function JoinShell({
         <section
           className={clsx(
             panelClass,
-            "hidden md:flex flex-col items-center justify-center gap-[26px] p-9 !bg-light-bg dark:!bg-card-dark",
+            "hidden md:flex flex-col items-center justify-center gap-[26px] p-9 !bg-theme-background dark:!bg-theme-card",
           )}
         >
           {preview}

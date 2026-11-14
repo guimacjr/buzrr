@@ -89,7 +89,7 @@ export function InputField(props: InputFieldProps) {
   }
 
   const baseInputClasses =
-    "text-slate-900 my-2 focus:bg-[#EEEEF0] focus:outline-none focus:dark:bg-card-dark";
+    "text-theme-muted my-2 focus:bg-theme-card focus:outline-none focus:dark:bg-theme-card";
   const variantClasses = variantInputClasses[variant];
   const sizeClassesStr = sizeClasses[size];
 
@@ -97,9 +97,9 @@ export function InputField(props: InputFieldProps) {
     baseInputClasses,
     variantClasses,
     sizeClassesStr,
-    props.error && "border-2 border-red-500 dark:border-red-400",
+    props.error && "border-2 border-theme-danger dark:border-theme-danger",
     props.disabled && "opacity-60 cursor-not-allowed",
-    props.accept && "text-white",
+    props.accept && "text-theme-onPrimary",
     props.className,
   );
 
@@ -107,7 +107,7 @@ export function InputField(props: InputFieldProps) {
     baseInputClasses,
     sizeClassesStr,
     "rounded-lg max-h-40 min-h-20",
-    props.error && "border-2 border-red-500 dark:border-red-400",
+    props.error && "border-2 border-theme-danger dark:border-theme-danger",
     props.disabled && "opacity-60 cursor-not-allowed",
     props.className,
   );
@@ -117,7 +117,7 @@ export function InputField(props: InputFieldProps) {
       {props.label && (
         <label
           className={clsx(
-            "text-sm text-dark dark:text-white mb-0",
+            "text-sm text-theme-text dark:text-theme-text mb-0",
             props.labelClass,
           )}
           htmlFor={inputId}
@@ -173,7 +173,7 @@ export function InputField(props: InputFieldProps) {
       {props.error && props.errorMessage && (
         <p
           id={`${props.name}-error`}
-          className="text-sm text-red-500 dark:text-red-400 mt-1"
+          className="text-sm text-theme-danger dark:text-theme-danger mt-1"
           role="alert"
         >
           {props.errorMessage}

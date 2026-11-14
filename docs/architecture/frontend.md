@@ -270,3 +270,87 @@ the Prisma runtime out of the client bundle).
   country header on `/billing/checkout`, the browser timezone/locale via
   `usePriceRegion` on the static `/pricing` page); Dodo decides the
   charged amount from the billing country.
+
+### Presentation settings in classic quizzes
+
+The type menu includes **Media slide**: image/video upload, optional title, no
+answer or timer controls. During play only the admin renders media and advances
+with Next; players see the waiting message. Each question card has a ranking
+toggle, also available in the editor. Disabling it replaces player results with
+response statistics and hides the admin's standings, preserving the final board.
+The settings apply when the next room starts, like other authored changes.
+Media slides can enable full-screen presentation: the host media fills the
+viewport with its aspect ratio preserved and all slide/game controls hidden.
+Right arrow or a mouse click on an image advances; Escape or a double tap
+restores controls for the current slide (double-click also works on videos). Video controls are hidden in this mode.
+
+### Classic entry fields and reports
+
+The quiz editor's `RegistrationEditor` adds/removes entry fields and saves them
+before hosting a new room. `RegistrationFields` is shared by code entry and the
+link/QR profile form. Both fetch the room snapshot and validate before joining;
+REST validation remains authoritative. Required checkboxes must be checked;
+alphanumeric fields accept Unicode letters/numbers without spaces or symbols.
+`DownloadReportButton` fetches an authenticated CSV from each previous-session
+card and classic history row, then downloads it as a browser Blob.
+
+### Global player avatars
+
+The global appearance selector can disable image avatars in favor of random
+solid colors. Code/QR entry assigns one color per mounted profile form and hides
+the image picker. The validated color URL is saved on the player, so lobby,
+gameplay and results retain it. Existing profiles are unchanged; switching back
+restores the configured image choices.
+
+Settings → Player avatars manages the shared catalog for admin/superadmin;
+ordinary hosts see an explanation of the required role. Code and QR entry share
+the public catalog query and choose its initial avatar unless the player has
+selected another active choice. Entry waits for the catalog to load. Avatar
+images are fetched directly by browsers so local/LAN storage works in previews,
+lobbies and results without the Next image optimizer's private-IP restriction.
+
+## Platform branding
+
+`BrandingProvider` loads the public `/api/branding` configuration and refreshes every 30 seconds. Semantic `theme-*` CSS variables drive the main backgrounds, text, buttons, status colors, answer colors and podium. Light and dark palettes are independent; the existing local mode preference still chooses which applies. Defaults render before the API responds. Canvas effects resolve these variables to concrete colors.
+
+Settings includes global color and logo controls for admins/superadmins. Color preview is temporary browser state; saving publishes both palettes, cancel discards changes, and loading defaults requires saving. Logo upload/reset is saved separately. `ClientImage` replaces platform logo occurrences with the uploaded image. Static favicons and social preview assets are unchanged.
+
+The question editor supports 2–6 options for multiple choice and polls, with add/remove controls and shared contract bounds. Question titles and options for these types accept up to 400 characters; option fields support multiple lines.
+
+The quiz editor has a global “Mostrar classificação final e participantes” switch, saved immediately. Disabling it replaces the final podium/list with a simple ended message; guest clients then follow the existing session-ended redirect. Per-question ranking toggles remain independent.
+
+Next resolves `@buzrr/contract` directly to `packages/contract/src/index.ts` via
+the web tsconfig path mapping and explicit Turbopack/Webpack aliases in
+`next.config.ts`. Vitest uses the same source entry, so new schema
+exports do not depend on an up-to-date CommonJS `dist` bundle during development.
+The Nest server continues to consume the compiled package.
+
+`packages/contract/src/package.json` marks source files as ES modules for
+Turbopack. The parent package and compiled `dist` remain CommonJS for Nest.
+
+Classic gameplay exposes “← Voltar” and ArrowLeft (also available while media
+is full-screen). The server selects the previous item. Scored items show the
+stored reveal; reopened polls/ratings allow changes and word-cloud/open-text
+inputs allow additions. Navigation revisions reset local drafts and reject
+late acknowledgements/events from an earlier visit. The existing ArrowRight
+and Next controls continue forward through visited items without rescoring.
+
+The contract package also exports its source entry for ESM imports and its
+compiled entry for CommonJS require. This keeps dependencies in the client
+graph on source even when a bundler resolves the package without tsconfig aliases.
+
+Poll options submit on click without a confirmation button. Multi-select polls
+send the complete selection on each toggle and unlock after server acknowledgement;
+scored question inputs are unchanged.
+
+### Portable packages
+
+The quiz card menu exports a `.buzrr.zip`; the quiz list's “Importar quiz ZIP”
+action accepts file selection or drag/drop, validates on the server, previews
+question/media counts and creates a private copy. Spreadsheet import stays
+available separately. Settings → “Transferir personalização” is visible only to
+admin/superadmin and exports saved global settings. Its import dialog previews
+theme swatches, logo presence and avatar/media counts, then lets the admin apply
+colors, logo and avatar additions/replacement independently. Upload progress,
+validation failures and plan-limit feedback are shown before navigation/cache
+refresh. Both dialogs explain what the operation changes; preview writes nothing.

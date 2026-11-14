@@ -26,7 +26,7 @@ function Cell({ value }: { value: string | true }) {
   return value === true ? (
     <LuCheck
       aria-label="Included"
-      className="mx-auto text-lprimary dark:text-dprimary"
+      className="mx-auto text-theme-primary dark:text-theme-primary"
       size={18}
     />
   ) : (
@@ -37,16 +37,16 @@ function Cell({ value }: { value: string | true }) {
 export default function PlanComparison() {
   return (
     <section className="mt-20">
-      <h2 className="text-2xl font-black text-center text-dark dark:text-white">
+      <h2 className="text-2xl font-black text-center text-theme-text dark:text-theme-text">
         Compare plans
       </h2>
-      <div className="mt-8 overflow-x-auto rounded-2xl border border-card-light dark:border-card-dark bg-white dark:bg-card-dark">
-        <table className="w-full min-w-[480px] text-sm text-dark dark:text-white">
+      <div className="mt-8 overflow-x-auto rounded-2xl border border-theme-card dark:border-theme-card bg-theme-surface dark:bg-theme-card">
+        <table className="w-full min-w-[480px] text-sm text-theme-text dark:text-theme-text">
           <thead>
-            <tr className="border-b border-card-light dark:border-dark">
+            <tr className="border-b border-theme-card dark:border-theme-border">
               <th className="text-left font-bold p-4">Feature</th>
               <th className="font-bold p-4 w-32">Free</th>
-              <th className="font-bold p-4 w-32 text-lprimary dark:text-dprimary">
+              <th className="font-bold p-4 w-32 text-theme-primary dark:text-theme-primary">
                 Pro
               </th>
             </tr>
@@ -55,7 +55,7 @@ export default function PlanComparison() {
             {ROWS.map((row) => (
               <tr
                 key={row.feature}
-                className="border-b last:border-b-0 border-card-light dark:border-dark"
+                className="border-b last:border-b-0 border-theme-card dark:border-theme-border"
               >
                 <td className="p-4">{row.feature}</td>
                 <td className="p-4 text-center">

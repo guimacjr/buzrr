@@ -31,11 +31,11 @@ const ThemeToggle = () => {
 
   return (
     <div className="flex items-center justify-end gap-3">
-      <div className="flex flex-col leading-tight text-2xs text-left text-dark dark:text-gray">
+      <div className="flex flex-col leading-tight text-2xs text-left text-theme-text dark:text-theme-muted">
         <span>DARK</span>
         <span>MODE</span>
       </div>
-      <div className="p-[6px] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.15)] rounded-full bg-white dark:bg-card-dark">
+      <div className="p-[6px] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.15)] rounded-full bg-theme-surface dark:bg-theme-card">
         <Switch
           checked={shown === PageTheme.dark}
           aria-label="Toggle dark mode"

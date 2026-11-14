@@ -59,7 +59,7 @@ as a handler.
 
 ## Amendment (2026-10-14): six types, scoring and live results
 
-- Types now: `multiple_choice` (4 options; single choice by default, or
+- Types now: `multiple_choice` (2–6 options; single choice by default, or
   `config.multiSelect` — the editor's "Multiple correct answers" toggle —
   where players tick a set and only the exact set scores; unset on older
   rows means "multiple if more than one option is correct"), `true_false`,
@@ -111,3 +111,19 @@ as a handler.
 `apps/web/src/components/QuestionTypes/`, migrations
 `20261006000001_add_question_type_and_config`,
 `20261018000001_true_false_answer_in_config`.
+
+## Amendment (2026-10-18): media slides and per-question ranking display
+
+Hosts can insert an image/video without collecting answers, and can hide the
+ranking after individual questions while retaining response statistics. A seventh
+type, `media_slide`, reuses the existing media columns and has no options,
+answers, score or duel eligibility. `config.showRanking` is optional on all types
+and defaults to visible for existing content; no schema migration is needed.
+
+Unlike an ordinary question type, a slide requires an engine transition rule:
+it stays in the question phase with a parked deadline and only `host-next` can
+advance, skipping reveal. This is a deliberate exception to the earlier claim
+that adding a type never changes the engine, because presentation has no answer
+window. Players show a waiting message; only the host UI renders the media.
+Local and S3 storage now support sniffed MP4/WebM in addition to raster images,
+so this feature does not require a hosted media provider.

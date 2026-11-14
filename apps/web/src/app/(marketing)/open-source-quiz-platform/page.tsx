@@ -140,11 +140,11 @@ export default function OpenSourcePage() {
         title="What's in the repository"
         intro="A Turborepo monorepo with Yarn 4 workspaces. The Python service is optional; the rest is TypeScript."
       >
-        <div className="overflow-x-auto rounded-2xl border border-card-light dark:border-off-dark bg-white dark:bg-dark">
-          <table className="w-full min-w-[560px] text-sm text-left text-dark dark:text-off-white">
+        <div className="overflow-x-auto rounded-2xl border border-theme-card dark:border-theme-border bg-theme-surface dark:bg-theme-surface">
+          <table className="w-full min-w-[560px] text-sm text-left text-theme-text dark:text-theme-muted">
             <caption className="sr-only">Buzrr repository layout</caption>
             <thead>
-              <tr className="border-b border-card-light dark:border-off-dark text-dark dark:text-white">
+              <tr className="border-b border-theme-card dark:border-theme-border text-theme-text dark:text-theme-text">
                 <th scope="col" className="p-4 font-bold">
                   Path
                 </th>
@@ -160,7 +160,7 @@ export default function OpenSourcePage() {
               {REPO_PARTS.map((part) => (
                 <tr
                   key={part.path}
-                  className="border-b last:border-b-0 border-card-light dark:border-off-dark align-top"
+                  className="border-b last:border-b-0 border-theme-card dark:border-theme-border align-top"
                 >
                   <th
                     scope="row"
@@ -182,11 +182,11 @@ export default function OpenSourcePage() {
         intro="The design decisions that make a live quiz fair, from the repository's ARCHITECTURE.md."
       >
         <PointGrid points={ENGINEERING} />
-        <p className="mt-4 text-dark/80 dark:text-off-white">
+        <p className="mt-4 text-theme-text/80 dark:text-theme-muted">
           Read the full write-up in{" "}
           <a
             href={`${REPO_URL}/blob/main/ARCHITECTURE.md`}
-            className="font-semibold text-lprimary dark:text-dprimary underline underline-offset-4"
+            className="font-semibold text-theme-primary dark:text-theme-primary underline underline-offset-4"
             target="_blank"
             rel="noreferrer"
           >
@@ -228,7 +228,7 @@ export default function OpenSourcePage() {
             "Bugs and ideas go to GitHub issues.",
           ]}
         />
-        <p className="mt-4 text-dark/80 dark:text-off-white">
+        <p className="mt-4 text-theme-text/80 dark:text-theme-muted">
           Want to run it rather than change it? See{" "}
           <InlineLink href="/self-hosted-quiz">
             how to self-host Buzrr

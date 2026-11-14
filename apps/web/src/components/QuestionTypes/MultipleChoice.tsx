@@ -46,13 +46,13 @@ function ResultBar({
 }) {
   const entered = useEntered();
   return (
-    <div className="relative h-[38px] rounded-xl overflow-hidden bg-lprimary/8 dark:bg-white/5">
+    <div className="relative h-[38px] rounded-xl overflow-hidden bg-theme-primary/8 dark:bg-theme-surface/5">
       <div
         className={clsx(
           "h-full rounded-xl transition-[width] ease-out motion-reduce:transition-none",
           correct
-            ? "bg-green-500"
-            : "bg-bar-muted/45 dark:bg-bar-muted-dark/45",
+            ? "bg-theme-success"
+            : "bg-theme-barMuted/45 dark:bg-theme-barMuted/45",
         )}
         style={{
           width: `${entered ? fill * 100 : 0}%`,
@@ -110,7 +110,7 @@ export function OptionsReveal({
             <div
               className={clsx(
                 "flex items-center gap-2.5 text-[15px] font-semibold",
-                ok && "text-green-600 dark:text-green-500",
+                ok && "text-theme-success dark:text-theme-success",
               )}
             >
               <Tooltip
@@ -121,9 +121,9 @@ export function OptionsReveal({
                 {renderKey(i)} {opt.title}
               </Tooltip>
               {ok && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-green-500 px-2 py-0.5 text-[11.5px] font-bold tracking-[0.04em] uppercase text-white">
+                <span className="inline-flex items-center gap-1 rounded-full bg-theme-success px-2 py-0.5 text-[11.5px] font-bold tracking-[0.04em] uppercase text-theme-onPrimary">
                   <LuCheck size={13} strokeWidth={3} />
-                  Correct
+                  Correta
                 </span>
               )}
               <span className={clsx("text-sm font-medium", mutedText)}>
@@ -161,7 +161,7 @@ function MultiSelectInput({
   return (
     <>
       <p className={clsx("mt-3 text-sm font-medium", mutedText)}>
-        Select all that apply.
+        Selecione todas as alternativas corretas.
       </p>
       <ChoiceList
         options={question.options}
@@ -204,10 +204,10 @@ export const multipleChoiceRenderer: QuestionRenderer<"multiple_choice"> = {
                 "flex items-center gap-4 rounded-[18px] border-[1.5px] px-3.5 py-2.5 md:px-[22px] md:py-[18px] min-h-14 md:min-h-[84px] font-semibold leading-snug text-left text-pretty wrap-break-word min-w-0 transition-all duration-150",
                 textClass,
                 isPicked
-                  ? "border-lprimary dark:border-dprimary bg-lprimary/10 dark:bg-dprimary/15 shadow-[0_10px_24px_-14px_#7c4ddb] animate-pop"
+                  ? "border-theme-primary dark:border-theme-primary bg-theme-primary/10 dark:bg-theme-primary/15 shadow-[0_10px_24px_-14px_var(--color-theme-accentDeep)] animate-pop"
                   : subtleCardClass,
                 !disabled &&
-                  "cursor-pointer hover:border-dprimary hover:-translate-y-0.5 active:scale-[0.98]",
+                  "cursor-pointer hover:border-theme-primary hover:-translate-y-0.5 active:scale-[0.98]",
                 disabled && !isPicked && "opacity-50 cursor-default",
               )}
             >
@@ -226,7 +226,7 @@ export const multipleChoiceRenderer: QuestionRenderer<"multiple_choice"> = {
       <>
         {question.multiSelect && (
           <p className={clsx("mt-3 text-sm font-medium", mutedText)}>
-            Players select all that apply
+            Os participantes selecionam todas as alternativas corretas
           </p>
         )}
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 md:auto-rows-fr gap-3.5 mt-7">

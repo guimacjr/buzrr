@@ -30,7 +30,7 @@ export default function DuelInviteClient({ code }: { code: string }) {
 
   return (
     <div className="flex flex-col min-h-dvh">
-      <header className="sticky top-0 z-40 bg-light-bg/90 dark:bg-dark-bg/90 backdrop-blur border-b border-card-light dark:border-card-dark">
+      <header className="sticky top-0 z-40 bg-theme-background/90 dark:bg-theme-background/90 backdrop-blur border-b border-theme-card dark:border-theme-card">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
           <Link href="/" aria-label="Buzrr home">
             <ClientImage
@@ -48,7 +48,7 @@ export default function DuelInviteClient({ code }: { code: string }) {
 
       <div className="flex-1 flex flex-col items-center justify-center gap-6 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         {isPending ? (
-          <Skeleton className="h-64 w-full max-w-sm rounded-2xl bg-white dark:bg-card-dark" />
+          <Skeleton className="h-64 w-full max-w-sm rounded-2xl bg-theme-surface dark:bg-theme-card" />
         ) : isError || !invite ? (
           <InviteGone reason="This challenge link has expired or was cancelled." />
         ) : invite.status === "claimed" ? (
@@ -79,7 +79,7 @@ function RejoiningDuel({ code }: { code: string }) {
   }, [code, router]);
 
   return (
-    <p className="font-bold text-dark dark:text-white animate-pulse">
+    <p className="font-bold text-theme-text dark:text-theme-text animate-pulse">
       Rejoining your duel…
     </p>
   );
@@ -87,11 +87,11 @@ function RejoiningDuel({ code }: { code: string }) {
 
 function InviteGone({ reason }: { reason: string }) {
   return (
-    <div className="flex flex-col items-center gap-4 bg-white dark:bg-dark rounded-2xl p-6 w-full max-w-sm shadow border border-card-light dark:border-off-dark animate-fade-up">
-      <p className="text-2xl font-black text-dark dark:text-white text-center">
+    <div className="flex flex-col items-center gap-4 bg-theme-surface dark:bg-theme-surface rounded-2xl p-6 w-full max-w-sm shadow border border-theme-card dark:border-theme-border animate-fade-up">
+      <p className="text-2xl font-black text-theme-text dark:text-theme-text text-center">
         Challenge unavailable
       </p>
-      <p className="text-sm text-off-dark dark:text-off-white text-center">
+      <p className="text-sm text-theme-muted dark:text-theme-muted text-center">
         {reason}
       </p>
       <Link href="/duel" className="w-full">

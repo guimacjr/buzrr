@@ -172,8 +172,8 @@ export default function BulkUploadClient() {
     upload.kind === "idle";
 
   return (
-    <div className="mt-4 flex max-w-3xl flex-col gap-6 text-dark dark:text-white">
-      <p className="text-sm text-off-dark dark:text-off-white">
+    <div className="mt-4 flex max-w-3xl flex-col gap-6 text-theme-text dark:text-theme-text">
+      <p className="text-sm text-theme-muted dark:text-theme-muted">
         Upload hundreds of duel questions at once. They go into the Pending tab
         for review; only single-answer multiple choice and true / false
         questions can be used in duels.
@@ -185,7 +185,7 @@ export default function BulkUploadClient() {
             No categories yet —{" "}
             <Link
               href="/admin/duel-portal/categories"
-              className="font-semibold text-lprimary dark:text-dprimary"
+              className="font-semibold text-theme-primary dark:text-theme-primary"
             >
               create one first
             </Link>
@@ -198,7 +198,7 @@ export default function BulkUploadClient() {
               onChange={setCategoryIds}
               disabled={uploading}
             />
-            <p className="text-xs text-off-dark dark:text-off-white">
+            <p className="text-xs text-theme-muted dark:text-theme-muted">
               Every question in the file gets the selected categories.
             </p>
           </>
@@ -207,7 +207,7 @@ export default function BulkUploadClient() {
 
       <Step n={2} title="Download the template">
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex rounded-xl bg-lprimary/5 dark:bg-white/5 p-1">
+          <div className="flex rounded-xl bg-theme-primary/5 dark:bg-theme-surface/5 p-1">
             {(
               [
                 {
@@ -229,8 +229,8 @@ export default function BulkUploadClient() {
                 className={clsx(
                   "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors cursor-pointer",
                   format === option.value
-                    ? "bg-white dark:bg-card-dark shadow-sm text-lprimary dark:text-dprimary"
-                    : "text-dark/60 dark:text-white/60 hover:text-dark dark:hover:text-white",
+                    ? "bg-theme-surface dark:bg-theme-card shadow-sm text-theme-primary dark:text-theme-primary"
+                    : "text-theme-text/60 dark:text-theme-text/60 hover:text-theme-text dark:hover:text-theme-onPrimary",
                 )}
               >
                 {option.icon} {option.label}
@@ -240,13 +240,13 @@ export default function BulkUploadClient() {
           <a
             href={`/sample-questions.${format === "excel" ? "xlsx" : "csv"}`}
             download
-            className="flex items-center gap-2 rounded-xl border border-lprimary/20 dark:border-white/20 bg-white dark:bg-white/10 px-4 py-2 text-sm font-semibold shadow-sm transition-colors hover:bg-lprimary/5 dark:hover:bg-white/20"
+            className="flex items-center gap-2 rounded-xl border border-theme-primary/20 dark:border-theme-border/20 bg-theme-surface dark:bg-theme-surface/10 px-4 py-2 text-sm font-semibold shadow-sm transition-colors hover:bg-theme-primary/5 dark:hover:bg-theme-surface/20"
           >
             <LuDownload size={16} />
             Download {format === "excel" ? "Excel" : "CSV"} template
           </a>
         </div>
-        <ul className="list-disc pl-5 text-xs text-off-dark dark:text-off-white space-y-0.5">
+        <ul className="list-disc pl-5 text-xs text-theme-muted dark:text-theme-muted space-y-0.5">
           <li>
             <b>Type</b>: MCQ (default) or True/False.
           </li>
@@ -268,13 +268,13 @@ export default function BulkUploadClient() {
           accept={format === "excel" ? ".xlsx, .xls" : ".csv"}
           onChange={(e) => void handleFile(e.target.files?.[0])}
           disabled={uploading || isParsing}
-          className="block w-full text-sm text-dark/70 dark:text-white/70
+          className="block w-full text-sm text-theme-text/70 dark:text-theme-text/70
             file:mr-4 file:py-2.5 file:px-4
             file:rounded-xl file:border-0
             file:text-sm file:font-semibold
-            file:bg-lprimary/10 file:text-lprimary
-            dark:file:bg-dprimary/20 dark:file:text-dprimary
-            hover:file:bg-lprimary/20 dark:hover:file:bg-dprimary/30
+            file:bg-theme-primary/10 file:text-theme-primary
+            dark:file:bg-theme-primary/20 dark:file:text-theme-primary
+            hover:file:bg-theme-primary/20 dark:hover:file:bg-theme-primary/30
             transition-all file:cursor-pointer cursor-pointer disabled:opacity-50"
         />
         {isParsing && <p className="text-sm">Reading {fileName}…</p>}
@@ -294,7 +294,7 @@ export default function BulkUploadClient() {
         </div>
       )}
       {upload.kind === "failed" && (
-        <p className="rounded-xl bg-red-light/10 dark:bg-red-dark/10 p-3 text-sm text-red-light dark:text-red-dark">
+        <p className="rounded-xl bg-theme-danger/10 dark:bg-theme-danger/10 p-3 text-sm text-theme-danger dark:text-theme-danger">
           Upload stopped at the batch starting on row {upload.fromRow}:{" "}
           {upload.message}. {upload.created} question
           {upload.created === 1 ? " was" : "s were"} saved before it. To
@@ -302,20 +302,20 @@ export default function BulkUploadClient() {
         </p>
       )}
       {upload.kind === "done" && (
-        <div className="flex flex-wrap items-center gap-3 rounded-xl bg-[#20A97C]/10 p-3 text-sm">
-          <span className="font-semibold text-[#20A97C]">
+        <div className="flex flex-wrap items-center gap-3 rounded-xl bg-theme-success/10 p-3 text-sm">
+          <span className="font-semibold text-theme-success">
             Uploaded {upload.created} question{upload.created === 1 ? "" : "s"}.
           </span>
           <Link
             href="/admin/duel-portal?status=pending"
-            className="font-semibold text-lprimary dark:text-dprimary"
+            className="font-semibold text-theme-primary dark:text-theme-primary"
           >
             Review pending questions →
           </Link>
           <button
             type="button"
             onClick={resetFile}
-            className="cursor-pointer font-semibold text-off-dark dark:text-off-white"
+            className="cursor-pointer font-semibold text-theme-muted dark:text-theme-muted"
           >
             Upload another file
           </button>
@@ -333,7 +333,7 @@ export default function BulkUploadClient() {
           {parsed?.valid.length === 1 ? "" : "s"}
         </Button>
         {parsed && parsed.valid.length > 0 && categoryIds.length === 0 && (
-          <span className="text-sm text-off-dark dark:text-off-white">
+          <span className="text-sm text-theme-muted dark:text-theme-muted">
             Pick a category first.
           </span>
         )}
@@ -354,7 +354,7 @@ function Step({
   return (
     <section className="flex flex-col gap-3">
       <h2 className="flex items-center gap-2 font-bold">
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-lprimary/10 dark:bg-dprimary/20 text-xs text-lprimary dark:text-dprimary">
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-theme-primary/10 dark:bg-theme-primary/20 text-xs text-theme-primary dark:text-theme-primary">
           {n}
         </span>
         {title}
@@ -369,15 +369,15 @@ function Preview({ parsed }: { parsed: ParseResult }) {
   return (
     <div className="flex flex-col gap-3">
       <p className="text-sm font-semibold">
-        <span className="text-[#20A97C]">{valid.length} valid</span>
+        <span className="text-theme-success">{valid.length} valid</span>
         {errors.length > 0 && (
-          <span className="text-red-light dark:text-red-dark">
+          <span className="text-theme-danger dark:text-theme-danger">
             {" "}
             · {errors.length} with errors (skipped)
           </span>
         )}
         {truncated > 0 && (
-          <span className="text-red-light dark:text-red-dark">
+          <span className="text-theme-danger dark:text-theme-danger">
             {" "}
             · {truncated} rows past the {MAX_UPLOAD_ROWS}-row limit ignored
           </span>
@@ -385,7 +385,7 @@ function Preview({ parsed }: { parsed: ParseResult }) {
       </p>
 
       {errors.length > 0 && (
-        <ul className="max-h-48 overflow-y-auto rounded-xl border border-red-light/30 dark:border-red-dark/30 p-3 text-sm space-y-1">
+        <ul className="max-h-48 overflow-y-auto rounded-xl border border-theme-danger/30 dark:border-theme-danger/30 p-3 text-sm space-y-1">
           {errors.map((error) => (
             <li key={`${error.row}-${error.message}`}>
               <span className="font-semibold">Row {error.row}:</span>{" "}
@@ -396,21 +396,21 @@ function Preview({ parsed }: { parsed: ParseResult }) {
       )}
 
       {valid.length > 0 && (
-        <div className="overflow-x-auto rounded-xl border border-gray">
+        <div className="overflow-x-auto rounded-xl border border-theme-border">
           <table className="w-full text-left text-sm">
-            <thead className="bg-lprimary/5 dark:bg-white/5 text-xs uppercase tracking-wide">
+            <thead className="bg-theme-primary/5 dark:bg-theme-surface/5 text-xs uppercase tracking-wide">
               <tr>
                 <th className="px-3 py-2">Row</th>
                 <th className="px-3 py-2">Question</th>
                 <th className="px-3 py-2">Answer</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray">
+            <tbody className="divide-y divide-theme-border">
               {valid.slice(0, PREVIEW_ROWS).map((q) => (
                 <tr key={q.row}>
                   <td className="px-3 py-2 tabular-nums">{q.row}</td>
                   <td className="px-3 py-2 break-words">{q.title}</td>
-                  <td className="px-3 py-2 font-semibold text-[#20A97C] break-words">
+                  <td className="px-3 py-2 font-semibold text-theme-success break-words">
                     {correctAnswerLabel(q)}
                   </td>
                 </tr>
@@ -418,7 +418,7 @@ function Preview({ parsed }: { parsed: ParseResult }) {
             </tbody>
           </table>
           {valid.length > PREVIEW_ROWS && (
-            <p className="px-3 py-2 text-xs text-off-dark dark:text-off-white">
+            <p className="px-3 py-2 text-xs text-theme-muted dark:text-theme-muted">
               …and {valid.length - PREVIEW_ROWS} more
             </p>
           )}

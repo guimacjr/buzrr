@@ -13,7 +13,7 @@ export default function Home() {
         <AdminHomeHeader />
         <GridListToggle />
       </div>
-      <div className="mt-4 bg-white dark:bg-dark rounded-2xl p-4 md:p-6 min-h-[60vh]">
+      <div className="mt-4 bg-theme-surface dark:bg-theme-surface rounded-2xl p-4 md:p-6 min-h-[60vh]">
         <Buzrrs />
       </div>
     </div>

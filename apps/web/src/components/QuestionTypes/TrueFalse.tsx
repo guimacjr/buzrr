@@ -8,11 +8,11 @@ import type { QuestionRenderer } from "./types";
 
 /** The two fixed answers, "True" first; questions carry no options. */
 const TRUTHS = [
-  { id: "true", value: true, title: "True" },
-  { id: "false", value: false, title: "False" },
+  { id: "true", value: true, title: "Verdadeiro" },
+  { id: "false", value: false, title: "Falso" },
 ] as const;
 
-const titleOf = (value: boolean) => (value ? "True" : "False");
+const titleOf = (value: boolean) => (value ? "Verdadeiro" : "Falso");
 
 /** "True" gets the check, "False" the cross. */
 function TruthKey({
@@ -26,8 +26,8 @@ function TruthKey({
     <span
       aria-hidden="true"
       className={clsx(
-        "shrink-0 flex items-center justify-center rounded-xl text-white",
-        truth ? "bg-[#2f9e6a]" : "bg-[#e5544e]",
+        "shrink-0 flex items-center justify-center rounded-xl text-theme-onPrimary",
+        truth ? "bg-theme-success" : "bg-theme-danger",
         className,
       )}
     >
@@ -71,10 +71,10 @@ export const trueFalseRenderer: QuestionRenderer<"true_false"> = {
                 cardClass,
                 "text-left transition-all duration-150",
                 picked
-                  ? "border-lprimary dark:border-dprimary bg-lprimary/10 dark:bg-dprimary/15 shadow-[0_10px_24px_-14px_#7c4ddb] animate-pop"
+                  ? "border-theme-primary dark:border-theme-primary bg-theme-primary/10 dark:bg-theme-primary/15 shadow-[0_10px_24px_-14px_var(--color-theme-accentDeep)] animate-pop"
                   : subtleCardClass,
                 !disabled &&
-                  "cursor-pointer hover:border-dprimary hover:-translate-y-0.5 active:scale-[0.98]",
+                  "cursor-pointer hover:border-theme-primary hover:-translate-y-0.5 active:scale-[0.98]",
                 disabled && !picked && "opacity-50 cursor-default",
               )}
             >

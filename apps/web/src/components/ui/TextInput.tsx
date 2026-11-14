@@ -1,11 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import type {
-  ComponentPropsWithRef,
-  ForwardedRef,
-  ReactNode,
-} from "react";
+import type { ComponentPropsWithRef, ForwardedRef, ReactNode } from "react";
 import { forwardRef } from "react";
 
 type BaseProps = {
@@ -51,7 +47,10 @@ function renderField({
       {label ? (
         <label
           htmlFor={fieldId}
-          className={clsx("text-sm text-dark dark:text-white mb-1", labelClassName)}
+          className={clsx(
+            "text-sm text-theme-text dark:text-theme-text mb-1",
+            labelClassName,
+          )}
         >
           {label}
         </label>
@@ -59,8 +58,10 @@ function renderField({
       {renderControl()}
       {error ? (
         <p
-          {...(fieldId ? { id: `${fieldId}-error`, role: "alert" as const } : {})}
-          className="text-sm text-red-500 mt-1"
+          {...(fieldId
+            ? { id: `${fieldId}-error`, role: "alert" as const }
+            : {})}
+          className="text-sm text-theme-danger mt-1"
         >
           {error}
         </p>
@@ -74,7 +75,7 @@ const TextInputInner = (
   ref: ForwardedRef<HTMLInputElement | HTMLTextAreaElement>,
 ) => {
   const baseClassName =
-    "w-full border border-gray rounded-lg outline-none text-dark dark:text-white dark:bg-dark-bg focus:border-blue-600 px-4 py-3";
+    "w-full border border-theme-border rounded-lg outline-none text-theme-text dark:text-theme-text dark:bg-theme-background focus:border-blue-600 px-4 py-3";
 
   if (props.textarea) {
     const {
@@ -89,7 +90,8 @@ const TextInputInner = (
     } = props;
     void _textarea;
 
-    const fieldId = id ?? (typeof props.name === "string" ? props.name : undefined);
+    const fieldId =
+      id ?? (typeof props.name === "string" ? props.name : undefined);
     const describedBy = error && fieldId ? `${fieldId}-error` : undefined;
 
     return renderField({
@@ -123,7 +125,8 @@ const TextInputInner = (
     ...inputProps
   } = props;
   void _textarea;
-  const fieldId = id ?? (typeof props.name === "string" ? props.name : undefined);
+  const fieldId =
+    id ?? (typeof props.name === "string" ? props.name : undefined);
   const describedBy = error && fieldId ? `${fieldId}-error` : undefined;
 
   return renderField({

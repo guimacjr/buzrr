@@ -21,14 +21,14 @@ const SAMPLE_PLAYERS = [
 ];
 
 const previewCardClass =
-  "rounded-[20px] border bg-white dark:bg-dark border-lprimary/15 dark:border-white/5 p-6 flex flex-col gap-[18px]";
+  "rounded-[20px] border bg-theme-surface dark:bg-theme-surface border-theme-primary/15 dark:border-theme-border/5 p-6 flex flex-col gap-[18px]";
 
 export default function CreateQuiz() {
   const [values, setValues] = useState({ title: "", description: "" });
   const title = values.title.trim();
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4 md:pb-[18px] md:h-[calc(100dvh-10rem)] flex flex-col text-dark dark:text-white">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4 md:pb-[18px] md:h-[calc(100dvh-10rem)] flex flex-col text-theme-text dark:text-theme-text">
       <div className="flex-1 min-h-0 flex flex-col md:grid md:grid-cols-2 gap-3.5 md:gap-5 pt-1">
         <section
           className={clsx(
@@ -42,20 +42,20 @@ export default function CreateQuiz() {
         <section
           className={clsx(
             panelClass,
-            "!bg-light-bg dark:!bg-card-dark hidden md:flex flex-col gap-5 p-8 min-h-0 overflow-y-auto",
+            "!bg-theme-background dark:!bg-theme-card hidden md:flex flex-col gap-5 p-8 min-h-0 overflow-y-auto",
           )}
         >
           <span className={labelClass}>What it looks like in the lobby</span>
           <div className={previewCardClass}>
             <div className="flex items-center gap-3.5">
-              <div className="size-[52px] shrink-0 rounded-[14px] bg-linear-to-br from-[#9a6cf5] to-[#7c4ddb] dark:from-accent dark:to-accent-deep text-white flex items-center justify-center text-2xl font-extrabold">
+              <div className="size-[52px] shrink-0 rounded-[14px] bg-linear-to-br from-theme-accent to-theme-accentDeep dark:from-theme-accent dark:to-theme-accentDeep text-theme-onAccent flex items-center justify-center text-2xl font-extrabold">
                 {(title[0] ?? "Q").toUpperCase()}
               </div>
               <div className="min-w-0">
                 <h3
                   className={clsx(
                     "text-2xl font-bold tracking-[-0.01em] leading-[1.2] wrap-break-word",
-                    !title && "text-[#8a8896] dark:text-muted-dark",
+                    !title && "text-theme-muted dark:text-theme-muted",
                   )}
                 >
                   {title || "Quiz Title"}
@@ -78,7 +78,7 @@ export default function CreateQuiz() {
               {SAMPLE_PLAYERS.map((p) => (
                 <span
                   key={p.name}
-                  className="flex items-center gap-2 rounded-full border py-1 pl-1 pr-3 text-[13.5px] font-medium bg-light-bg dark:bg-card-dark border-lprimary/15 dark:border-white/5"
+                  className="flex items-center gap-2 rounded-full border py-1 pl-1 pr-3 text-[13.5px] font-medium bg-theme-background dark:bg-theme-card border-theme-primary/15 dark:border-theme-border/5"
                 >
                   <Image
                     src={p.image}

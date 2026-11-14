@@ -23,6 +23,91 @@
 - Resets: `yarn docker:reset` (wipe volumes + re-setup). DB browsing:
   `yarn db:studio`.
 
+### Development through Cloudflare Tunnel
+
+For `https://buzrr.maciel.tv`, set these values in `apps/web/.env` and restart
+Next (public variables are compiled into the browser bundle):
+
+```dotenv
+BETTER_AUTH_URL="https://buzrr.maciel.tv"
+TRUSTED_ORIGINS="https://buzrr.maciel.tv,http://localhost:3000"
+NEXT_PUBLIC_APP_URL="https://buzrr.maciel.tv"
+NEXT_PUBLIC_API_URL="https://buzrr.maciel.tv"
+NEXT_PUBLIC_SOCKET_URL="https://buzrr.maciel.tv"
+API_INTERNAL_URL="http://localhost:3001"
+```
+
+`next.config.ts` derives `allowedDevOrigins` from the hostname in
+`BETTER_AUTH_URL`, allowing dev assets and HMR through the tunnel.
+In `apps/server/.env`, use:
+
+```dotenv
+WEB_ORIGIN="https://buzrr.maciel.tv,http://localhost:3000"
+APP_URL="https://buzrr.maciel.tv"
+STORAGE_PUBLIC_URL="https://buzrr.maciel.tv/uploads"
+TRUST_PROXY="loopback"
+```
+
+Keep the existing shared auth secret and database/Redis settings. The storage
+URL applies to the local driver; previously saved absolute localhost media
+URLs need re-uploading to become accessible remotely. Leave
+`NEXT_PUBLIC_AI_API_URL` empty unless the optional Python service has its own
+public route and CORS configuration. Google OAuth, if enabled, needs
+`https://buzrr.maciel.tv/api/auth/callback/google` registered at Google.
+
+Run `yarn dev:web` and `yarn dev:server` in separate terminals (and keep
+Postgres/Redis running). Configure the tunnel's published application routes
+in this exact order, all for hostname `buzrr.maciel.tv`:
+
+| Path (regex)             | HTTP service            |
+| ------------------------ | ----------------------- | -------------- | ----------- | ----------------------- |
+| `^/api/auth(/.*)?$`      | `http://localhost:3000` |
+| `^/api/webhooks/dodo/?$` | `http://localhost:3000` |
+| `^/(api(/.\*)?           | socket[.]io(/.\*)?      | uploads(/.\*)? | health/?)$` | `http://localhost:3001` |
+| No path (catch-all)      | `http://localhost:3000` |
+
+Auth and Dodo forwarding belong to Next and must precede the general API rule.
+The Socket.IO path must reach Nest; Next's `/_next/*` (including HMR) goes to
+port 3000. Preserve the public Host header. Use HTTPS externally and HTTP
+between cloudflared and the local apps. Avoid cache-everything rules on this
+development hostname.
+
+For a locally managed tunnel, the equivalent ingress configuration is:
+
+```yaml
+tunnel: YOUR_TUNNEL_UUID
+credentials-file: /absolute/path/to/YOUR_TUNNEL_UUID.json
+ingress:
+  - hostname: buzrr.maciel.tv
+    path: "^/api/auth(/.*)?$"
+    service: http://localhost:3000
+  - hostname: buzrr.maciel.tv
+    path: "^/api/webhooks/dodo/?$"
+    service: http://localhost:3000
+  - hostname: buzrr.maciel.tv
+    path: "^/(api(/.*)?|socket[.]io(/.*)?|uploads(/.*)?|health/?)$"
+    service: http://localhost:3001
+  - hostname: buzrr.maciel.tv
+    service: http://localhost:3000
+  - service: http_status:404
+```
+
+Validate with `cloudflared tunnel --config /path/config.yml ingress validate`,
+then run `cloudflared tunnel --config /path/config.yml run YOUR_TUNNEL_UUID`.
+The hostname must already route to this tunnel in Cloudflare DNS.
+These localhost targets and `TRUST_PROXY=loopback` assume cloudflared runs on
+the same host/network namespace as the apps. If it runs in Docker or another
+machine, use reachable host addresses and trust only that proxy's address.
+
+Check `/health`, `/api/auth/methods` and
+`/socket.io/?EIO=4&transport=polling` on the public hostname, then sign in,
+create a room and join from another device. The socket endpoint should return
+an Engine.IO open packet (`0{...}`); also check the browser's WebSocket
+upgrade, live answers, uploaded media and HMR.
+
+References: [Cloudflare ingress rules](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/local-management/configuration-file/)
+and [Next allowedDevOrigins](https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins).
+
 ### Exercising each mode locally (non-obvious recipes)
 
 - **Classic room**: sign in as host in one browser, open `/player` (or the
@@ -148,6 +233,13 @@ Templates are the truth: root `.env.example`, `apps/web/.env.example`,
   `ai-migrate`/`ai`/`ai-worker`, profile `ollama` a local model server.
   Defaults: `BILLING=OFF`, `STORAGE_DRIVER=local` on the `buzrr-uploads`
   volume, local accounts on, `LANDING_VIDEO_URL` empty — nothing external.
+  `yarn docker:publish` prompts for the LAN host and version, builds and pushes
+  both version tags, then updates latest aliases (`latest` is the frontend)
+  and the compatible `web`/`server` tags. See the self-hosting guide for details.
+  The optional `docker-compose.hub.yml` override tags API/migrations as
+  `guimacieljr/buzrr:server` and web as `guimacieljr/buzrr:web`; use it with
+  `--env-file .env.intranet` for the configured LAN addresses. Deploy with
+  `--no-build --pull always`; public URLs still require a web rebuild.
   Upgrades: `git pull && docker compose up -d --build`. A Helm chart does not
   exist yet.
 - Scale-out of the server is designed-for (Redis adapter + locks — see
@@ -215,3 +307,7 @@ lint-staged + lint + typecheck locally.
 | GitHub REST                                                         | `apps/web/src/lib/github-stats.ts` (landing stats, 1h cache)                                                                      | nulls → UI hides numbers                                                                                          |
 | Vercel Analytics                                                    | web root layout                                                                                                                   | no-op outside Vercel                                                                                              |
 | Dodo Payments                                                       | `apps/server/src/modules/billing` (checkout, portal, `subscriptions.retrieve`); webhooks via `apps/web/src/app/api/webhooks/dodo` | only with `BILLING=ON`; outage ⇒ webhooks 503 and get redelivered, checkout/portal 502; existing plans unaffected |
+
+The web workspace runs `next dev --webpack` during local development. This
+avoids recurring stale Turbopack module-factory references after shared-contract
+entry changes. Production builds keep their existing command.

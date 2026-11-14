@@ -34,7 +34,26 @@ const selfHostedOrigins = selfHostedImageOrigins();
 // (never the any-https-host pattern, which would reach internal hosts too).
 const allowLocalIP = process.env.NEXT_IMAGE_ALLOW_LOCAL_IP === "1";
 
+// Resolve the contract consistently in client and SSR graphs. The package's
+// CommonJS entry remains available to Nest, but must not enter Next's chunks.
+const contractSource = fileURLToPath(
+  new URL("../../packages/contract/src/index.ts", import.meta.url),
+);
+
 const nextConfig: NextConfig = {
+  turbopack: {
+    resolveAlias: { "@buzrr/contract": contractSource },
+  },
+  webpack(config) {
+    config.resolve.alias["@buzrr/contract$"] = contractSource;
+    return config;
+  },
+  experimental: { agentUpgrade: "security" },
+  devIndicators: false,
+  // The configured public hostname also serves dev assets/HMR through tunnels.
+  allowedDevOrigins: process.env.BETTER_AUTH_URL
+    ? [new URL(process.env.BETTER_AUTH_URL).hostname]
+    : [],
   output: "standalone",
   outputFileTracingRoot: fileURLToPath(new URL("../../", import.meta.url)),
   outputFileTracingExcludes: {

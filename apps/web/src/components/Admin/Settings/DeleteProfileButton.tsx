@@ -47,7 +47,7 @@ export default function DeleteProfileButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="text-sm text-white dark:text-dark dark:font-bold rounded-lg py-2 px-4 bg-red-light dark:bg-red-dark w-full cursor-pointer"
+        className="text-sm text-theme-onPrimary dark:text-theme-onPrimary dark:font-bold rounded-lg py-2 px-4 bg-theme-danger dark:bg-theme-danger w-full cursor-pointer"
       >
         Delete profile
       </button>
@@ -60,19 +60,19 @@ export default function DeleteProfileButton() {
       >
         <Box
           sx={style}
-          className="bg-light-bg dark:bg-card-dark rounded-xl w-4/5 sm:w-3/5 md:w-2/5 max-w-[600px]"
+          className="bg-theme-background dark:bg-theme-card rounded-xl w-4/5 sm:w-3/5 md:w-2/5 max-w-[600px]"
         >
           <ModalCloseButton onClose={handleClose} />
           <div className="p-6 flex flex-col">
             <p
               id="delete-profile-title"
-              className="text-xl font-bold mb-2 text-dark dark:text-white"
+              className="text-xl font-bold mb-2 text-theme-text dark:text-theme-text"
             >
               Delete your profile?
             </p>
             <p
               id="delete-profile-desc"
-              className="text-[#4E4E56] dark:text-off-white mb-4 text-sm"
+              className="text-theme-muted dark:text-theme-muted mb-4 text-sm"
             >
               This permanently deletes your account, your quizzes and your game
               history. This cannot be undone.
@@ -87,7 +87,7 @@ export default function DeleteProfileButton() {
             <button
               onClick={handleDelete}
               disabled={!matches || pending}
-              className="mt-4 text-sm text-white dark:text-dark dark:font-bold rounded-lg py-2 px-4 bg-red-light dark:bg-red-dark w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="mt-4 text-sm text-theme-onPrimary dark:text-theme-onPrimary dark:font-bold rounded-lg py-2 px-4 bg-theme-danger dark:bg-theme-danger w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {pending ? "Deleting..." : "Delete profile"}
             </button>

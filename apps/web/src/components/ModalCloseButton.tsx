@@ -18,7 +18,7 @@ export default function ModalCloseButton({
       className={clsx(
         "absolute top-3 right-3 z-10 rounded-full",
         className ??
-          "text-dark dark:text-white hover:bg-card-light dark:hover:bg-card-dark",
+          "text-theme-text dark:text-theme-text hover:bg-theme-card dark:hover:bg-theme-card",
       )}
       onClick={onClose}
       icon={<RxCross2 size={20} />}

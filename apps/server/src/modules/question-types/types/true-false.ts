@@ -35,7 +35,14 @@ export const trueFalseHandler: QuestionTypeHandler<"true_false"> = {
   validateDefinition({ options, config }) {
     const raw = (config ?? {}) as Record<string, unknown>;
     if (raw.answer === undefined && options.length > 0) {
-      return { options: [], config: { answer: legacyAnswer(options) } };
+      return {
+        options: [],
+        config: parseConfig(
+          trueFalse.config,
+          { ...raw, answer: legacyAnswer(options) },
+          "true / false",
+        ),
+      };
     }
     return {
       options: checkNoOptions(options, "true / false"),

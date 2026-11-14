@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex flex-col h-full">
+    <div lang="pt-BR" className="flex flex-col h-full">
       {children}
       <ToastViewport />
     </div>

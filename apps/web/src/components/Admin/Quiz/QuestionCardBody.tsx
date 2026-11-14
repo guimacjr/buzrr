@@ -47,7 +47,7 @@ export function cardOptions<O extends { title?: string; isCorrect?: boolean }>(
 /** The type tag shown beside the time on a question card. */
 export function QuestionTypeTag({ type }: { type: QuestionType }) {
   return (
-    <span className="shrink-0 inline-flex items-center gap-1.5 whitespace-nowrap rounded-[9px] px-3 py-1.5 text-[13px] font-bold bg-lprimary/10 dark:bg-white/5 text-lprimary dark:text-dprimary">
+    <span className="shrink-0 inline-flex items-center gap-1.5 whitespace-nowrap rounded-[9px] px-3 py-1.5 text-[13px] font-bold bg-theme-primary/10 dark:bg-theme-surface/5 text-theme-primary dark:text-theme-primary">
       <QuestionTypeIcon type={type} size={14} />
       {QUESTION_TYPE_META[type].name}
     </span>
@@ -55,11 +55,11 @@ export function QuestionTypeTag({ type }: { type: QuestionType }) {
 }
 
 const dashClass = clsx(
-  "flex flex-wrap items-center gap-2 rounded-xl border-[1.5px] border-dashed border-lprimary/20 dark:border-white/10 p-3.5 text-sm",
+  "flex flex-wrap items-center gap-2 rounded-xl border-[1.5px] border-dashed border-theme-primary/20 dark:border-theme-border/10 p-3.5 text-sm",
   mutedText,
 );
 const chipClass =
-  "rounded-full px-3 py-1 text-[13px] font-bold bg-lprimary/10 dark:bg-white/5 text-lprimary dark:text-dprimary";
+  "rounded-full px-3 py-1 text-[13px] font-bold bg-theme-primary/10 dark:bg-theme-surface/5 text-theme-primary dark:text-theme-primary";
 
 function configOf<T>(
   schema: { safeParse: (v: unknown) => { success: boolean; data?: T } },
@@ -78,6 +78,13 @@ export default function QuestionCardBody({
 }) {
   const type = cardType(question);
   const options = cardOptions(question);
+  if (type === "media_slide")
+    return (
+      <p className={dashClass}>
+        Image or video on the admin screen · manual advance · no answers or
+        points
+      </p>
+    );
 
   if (type === "multiple_choice" || type === "true_false") {
     return (
@@ -88,8 +95,8 @@ export default function QuestionCardBody({
             className={clsx(
               "flex items-center gap-[11px] rounded-xl border-[1.5px] px-3.5 py-3 text-[14.5px] wrap-break-word min-w-0",
               op.isCorrect
-                ? "font-semibold border-lprimary dark:border-dprimary bg-lprimary/10 dark:bg-dprimary/15"
-                : "font-medium border-lprimary/15 dark:border-white/10",
+                ? "font-semibold border-theme-primary dark:border-theme-primary bg-theme-primary/10 dark:bg-theme-primary/15"
+                : "font-medium border-theme-primary/15 dark:border-theme-border/10",
             )}
           >
             <span
@@ -97,8 +104,8 @@ export default function QuestionCardBody({
               className={clsx(
                 "relative size-5 shrink-0 rounded-full border-2",
                 op.isCorrect
-                  ? "border-lprimary dark:border-dprimary after:absolute after:inset-[3px] after:rounded-full after:bg-lprimary dark:after:bg-dprimary"
-                  : "border-[#8a8896] dark:border-off-dark",
+                  ? "border-theme-primary dark:border-theme-primary after:absolute after:inset-[3px] after:rounded-full after:bg-theme-primary dark:after:bg-theme-primary"
+                  : "border-theme-muted dark:border-theme-border",
               )}
             />
             <span className="min-w-0">{op.title}</span>
@@ -116,7 +123,7 @@ export default function QuestionCardBody({
           {options.map((op, opIndex) => (
             <p
               key={opIndex}
-              className="flex items-center gap-3 rounded-xl border-[1.5px] px-3.5 py-3 text-[14.5px] font-medium wrap-break-word min-w-0 border-lprimary/15 dark:border-white/10"
+              className="flex items-center gap-3 rounded-xl border-[1.5px] px-3.5 py-3 text-[14.5px] font-medium wrap-break-word min-w-0 border-theme-primary/15 dark:border-theme-border/10"
             >
               <OptionKey
                 index={opIndex}
@@ -167,7 +174,7 @@ export default function QuestionCardBody({
         {Array.from({ length: max }, (_, i) => (
           <i
             key={i}
-            className="not-italic size-9 md:size-10 rounded-[10px] border-[1.5px] border-lprimary/15 dark:border-white/10 flex items-center justify-center font-bold text-sm"
+            className="not-italic size-9 md:size-10 rounded-[10px] border-[1.5px] border-theme-primary/15 dark:border-theme-border/10 flex items-center justify-center font-bold text-sm"
           >
             {cfg.scale === "stars" ? "★" : i + 1}
           </i>

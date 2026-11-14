@@ -51,7 +51,7 @@ export const multipleChoiceHandler: QuestionTypeHandler<"multiple_choice"> = {
           : "A single-answer question needs exactly one correct option",
       );
     }
-    return { options: trimmed, config: { multiSelect } };
+    return { options: trimmed, config: { ...parsed, multiSelect } };
   },
 
   checkAnswer(question, raw) {

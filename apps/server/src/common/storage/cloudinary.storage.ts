@@ -1,3 +1,5 @@
+import { readRemoteMedia } from "./read-media";
+import { sniffMedia } from "./image-sniff";
 import { v2 as cloudinary } from "cloudinary";
 import {
   MediaStorage,
@@ -24,11 +26,13 @@ function getPublicIdFromUrl(url: string): string {
 export class CloudinaryStorage extends MediaStorage {
   readonly driver = "cloudinary" as const;
 
-  constructor(config: {
-    cloudName?: string;
-    apiKey?: string;
-    apiSecret?: string;
-  }) {
+  constructor(
+    private readonly config: {
+      cloudName?: string;
+      apiKey?: string;
+      apiSecret?: string;
+    },
+  ) {
     super();
     cloudinary.config({
       cloud_name: config.cloudName,
@@ -38,19 +42,37 @@ export class CloudinaryStorage extends MediaStorage {
     });
   }
 
+  async read(url: string, maxBytes: number): Promise<Buffer> {
+    const parsed = new URL(url);
+    if (
+      parsed.origin !== "https://res.cloudinary.com" ||
+      parsed.username ||
+      parsed.password ||
+      !parsed.pathname.startsWith(`/${this.config.cloudName}/`) ||
+      !/^\/[^/]+\/(image|video)\/upload\//.test(parsed.pathname)
+    )
+      return super.read(url, maxBytes);
+    return readRemoteMedia(parsed.href, maxBytes);
+  }
+
   async remove(url: string): Promise<void> {
     if (!isCloudinaryUrl(url)) return;
     const publicId = getPublicIdFromUrl(url);
     if (!publicId) return;
     await new Promise<void>((resolve) => {
-      cloudinary.uploader.destroy(publicId, () => resolve());
+      cloudinary.uploader.destroy(
+        publicId,
+        { resource_type: url.includes("/video/upload/") ? "video" : "image" },
+        () => resolve(),
+      );
     });
   }
 
   async upload(buffer: Buffer, _meta?: UploadMeta): Promise<StoredMedia> {
+    const { mediaType } = sniffMedia(buffer);
     return new Promise((resolve, reject) => {
       cloudinary.uploader
-        .upload_stream({}, (error, result) => {
+        .upload_stream({ resource_type: mediaType }, (error, result) => {
           if (error) {
             reject(error);
             return;

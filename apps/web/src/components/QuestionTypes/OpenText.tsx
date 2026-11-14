@@ -38,7 +38,7 @@ function SentList({ entries }: { entries: Entry[] }) {
             <small
               className={clsx("block mt-1 text-xs font-semibold", mutedText)}
             >
-              Posted anonymously
+              Enviado anonimamente
             </small>
           )}
         </div>
@@ -77,7 +77,9 @@ function AnswerForm({
           sent.length > 0 ? "mt-3" : "mt-4 md:mt-7",
           "min-h-[130px] resize-none leading-normal",
         )}
-        placeholder={sent.length ? "Add another answer" : "Type your answer"}
+        placeholder={
+          sent.length ? "Adicione outra resposta" : "Digite sua resposta"
+        }
         value={text}
         maxLength={question.maxLength}
         disabled={disabled || full}
@@ -94,10 +96,10 @@ function AnswerForm({
             <Switch
               checked={anonymous}
               onCheckedChange={setAnonymous}
-              aria-label="Post anonymously"
+              aria-label="Enviar anonimamente"
               disabled={disabled || full}
             />
-            Post anonymously
+            Enviar anonimamente
           </label>
         ) : (
           <span />
@@ -109,15 +111,15 @@ function AnswerForm({
       {repeat && (
         <span className={clsx("mt-2 text-[13.5px]", mutedText)}>
           {full
-            ? "That's the most answers you can send"
-            : "You can send as many answers as you like while time's left"}
+            ? "Você atingiu o limite de respostas"
+            : "Você pode enviar quantas respostas quiser enquanto houver tempo"}
         </span>
       )}
       <SubmitButton
         disabled={disabled || full || text.trim() === ""}
         onClick={send}
       >
-        {sent.length ? "Submit another" : "Submit"}
+        {sent.length ? "Enviar outra" : "Enviar"}
       </SubmitButton>
     </>
   );

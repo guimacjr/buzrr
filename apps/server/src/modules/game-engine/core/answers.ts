@@ -1,3 +1,4 @@
+import { playableQuestion } from "./revisit";
 import { resolveAnswerTiming } from "../../../common/utils/answer-timing";
 import { checkAnswer, scoreAnswer } from "../../question-types";
 import type { StoredAnswer } from "../game-engine.types";
@@ -17,14 +18,22 @@ export type AnswerJudgement =
  */
 export function judgeAnswer(
   state: GameState,
-  input: { playerId: string; qIndex: number; answer: unknown },
+  input: {
+    playerId: string;
+    qIndex: number;
+    answer: unknown;
+    revision?: number;
+  },
   receivedAt: number,
 ): AnswerJudgement {
   const { meta } = state;
   if (meta.phase !== "question") {
     return { accepted: false, reason: "No question is active" };
   }
-  if (input.qIndex !== meta.qIndex) {
+  if (
+    (input.revision ?? 0) !== (meta.revision ?? 0) ||
+    input.qIndex !== meta.qIndex
+  ) {
     return { accepted: false, reason: "Question already advanced" };
   }
   // The window is stamped before `question-start` is broadcast; an unstamped
@@ -54,7 +63,10 @@ export function judgeAnswer(
   if (!question) {
     return { accepted: false, reason: "Question not found" };
   }
-  const check = checkAnswer(question, input.answer);
+  const check = checkAnswer(
+    playableQuestion(question, meta.reopened),
+    input.answer,
+  );
   if (!check) {
     return { accepted: false, reason: "Invalid answer" };
   }

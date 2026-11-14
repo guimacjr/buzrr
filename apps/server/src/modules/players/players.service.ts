@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import { AvatarsService } from "../avatars/avatars.service";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "../../prisma/prisma.service";
 import { CreatePlayerDto } from "./dto/create-player.dto";
@@ -13,11 +14,13 @@ export class PlayersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
+    private readonly avatars: AvatarsService,
   ) {}
 
   async create(
     dto: CreatePlayerDto,
   ): Promise<{ playerId: string; accessToken: string }> {
+    await this.avatars.assertSelectable(dto.profile);
     const player = await this.prisma.db.player.create({
       data: {
         name: dto.username,
@@ -31,7 +34,9 @@ export class PlayersService {
     return { playerId: player.id, accessToken };
   }
 
-  async updateName(dto: UpdatePlayerNameDto): Promise<{ playerId: string; name: string }> {
+  async updateName(
+    dto: UpdatePlayerNameDto,
+  ): Promise<{ playerId: string; name: string }> {
     const cleanedName = dto.username.replace(/[^a-zA-Z0-9_]/g, "").slice(0, 30);
     if (!cleanedName) {
       throw new BadRequestException("Display name is required");

@@ -31,8 +31,8 @@ export default function ActionCard({
       ? "flex-col p-4 md:p-[22px] min-h-[124px]"
       : "flex-row items-center p-4",
     variant === "ai"
-      ? "bg-linear-to-br from-[#9a6cf5] to-[#7c4ddb] dark:from-accent dark:to-accent-deep border-transparent text-white"
-      : "bg-light-bg dark:bg-card-dark border-lprimary/15 dark:border-white/5 text-dark dark:text-white",
+      ? "bg-linear-to-br from-theme-accent to-theme-accentDeep dark:from-theme-accent dark:to-theme-accentDeep border-transparent text-theme-onAccent"
+      : "bg-theme-background dark:bg-theme-card border-theme-primary/15 dark:border-theme-border/5 text-theme-text dark:text-theme-text",
     variant === "soon"
       ? "opacity-85 cursor-default"
       : "cursor-pointer hover:-translate-y-[3px] hover:shadow-[0_14px_30px_-14px_rgba(0,0,0,0.5)]",
@@ -42,7 +42,7 @@ export default function ActionCard({
   const body = (
     <>
       {variant === "soon" && (
-        <span className="absolute top-3 right-3 md:top-4 md:right-4 text-[10.5px] font-semibold tracking-[0.04em] uppercase rounded-full px-2.5 py-1 bg-lprimary/10 dark:bg-white/5 text-off-dark dark:text-muted-dark">
+        <span className="absolute top-3 right-3 md:top-4 md:right-4 text-[10.5px] font-semibold tracking-[0.04em] uppercase rounded-full px-2.5 py-1 bg-theme-primary/10 dark:bg-theme-surface/5 text-theme-muted dark:text-theme-muted">
           Soon
         </span>
       )}
@@ -50,8 +50,8 @@ export default function ActionCard({
         className={clsx(
           "size-10 md:size-[46px] shrink-0 rounded-xl flex items-center justify-center [&>svg]:size-5 md:[&>svg]:size-6",
           variant === "ai"
-            ? "bg-white/20 text-white"
-            : "bg-lprimary/10 dark:bg-white/5 text-lprimary dark:text-dprimary",
+            ? "bg-theme-surface/20 text-theme-onPrimary"
+            : "bg-theme-primary/10 dark:bg-theme-surface/5 text-theme-primary dark:text-theme-primary",
         )}
       >
         {icon}
@@ -64,8 +64,8 @@ export default function ActionCard({
           className={clsx(
             "block text-xs md:text-[13.5px]",
             variant === "ai"
-              ? "text-white/85"
-              : "text-off-dark dark:text-muted-dark",
+              ? "text-theme-onPrimary/85"
+              : "text-theme-muted dark:text-theme-muted",
           )}
         >
           {subtitle}

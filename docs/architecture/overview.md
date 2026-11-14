@@ -19,7 +19,7 @@ flowchart LR
     S -. "optional (rate limit, REST)" .-> UP["Upstash Redis REST"]
 ```
 
-Two deployable apps, one shared DB package:
+Two core deployable apps, an optional AI service, and one shared DB package:
 
 - **`apps/web`** — Next.js App Router frontend. Its only API routes are Better
   Auth (`src/app/api/auth/[...all]/route.ts`) and a JWT minting endpoint
@@ -128,11 +128,12 @@ Detail: [ai.md](ai.md) · rationale: [ADR-009](../adr/009-buzrr-ai-rag-service.m
 
 - **No message queue / event bus** — cross-instance coordination is Redis
   (socket.io adapter pub/sub, locks, sorted-set deadlines), not a broker.
-- **No end-to-end or web test suite** — `apps/server` has vitest specs
-  (billing against Postgres; the pure engine core, question types, storage
-  and LLM adapters without infrastructure) and `apps/ai` has pytest; the web
-  app and the engine's I/O shell are covered only by lint/types/build
-  (`.github/workflows/ci.yml`).
+- **No end-to-end suite** — `apps/server` has vitest specs (billing against
+  Postgres; core, presence handling, question types, storage, portability and
+  other services against fakes). The web app has focused Vitest suites for
+  game state, socket recovery and authoring helpers; its rendered components
+  and the engine's timer/recovery shell still lack end-to-end coverage.
+  `apps/ai` has pytest (`.github/workflows/ci.yml`).
 - **No web middleware auth** — route protection is per-layout/per-page server
   components (`apps/web/src/app/admin/layout.tsx`, `lib/duel-session.ts`).
 

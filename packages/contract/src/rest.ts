@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+  choiceQuestionTextSchema,
   DEFAULT_QUESTION_TYPE,
   MAX_OPTIONS,
   MIN_TIME_OUT,
@@ -15,18 +16,38 @@ import {
 /** A question can be tagged with at most this many categories. */
 export const MAX_QUESTION_CATEGORIES = 5;
 
+export const quizPresentationSchema = z.object({
+  showFinalRanking: z.boolean(),
+});
+export type QuizPresentation = z.infer<typeof quizPresentationSchema>;
+
 export const authoredOptionSchema = z.object({
   title: z.string().trim().min(1).max(500),
   isCorrect: z.boolean(),
 });
 
-export const questionDefinitionSchema = z.object({
-  type: questionTypeSchema.default(DEFAULT_QUESTION_TYPE),
-  title: z.string().trim().min(1).max(2000),
-  timeOut: z.number().int().min(MIN_TIME_OUT).optional(),
-  options: z.array(authoredOptionSchema).max(MAX_OPTIONS).default([]),
-  config: z.record(z.string(), z.unknown()).default({}),
-});
+export const questionDefinitionSchema = z
+  .object({
+    type: questionTypeSchema
+      .exclude(["media_slide"])
+      .default(DEFAULT_QUESTION_TYPE),
+    title: z.string().trim().min(1).max(2000),
+    timeOut: z.number().int().min(MIN_TIME_OUT).optional(),
+    options: z.array(authoredOptionSchema).max(MAX_OPTIONS).default([]),
+    config: z.record(z.string(), z.unknown()).default({}),
+  })
+  .superRefine((value, ctx) => {
+    if (value.type !== "poll" && value.type !== "multiple_choice") return;
+    const parsed = choiceQuestionTextSchema.safeParse(value);
+    if (!parsed.success)
+      parsed.error.issues.forEach((issue) =>
+        ctx.addIssue({
+          code: "custom",
+          path: issue.path,
+          message: issue.message,
+        }),
+      );
+  });
 
 /** Category ids for a question (zero or more). Only admins tag questions. */
 export const questionCategoryIdsSchema = z
@@ -50,7 +71,7 @@ export const importQuizSchema = z.object({
 export const createStandaloneQuestionsSchema = z.object({
   questions: z
     .array(
-      questionDefinitionSchema.extend({
+      questionDefinitionSchema.safeExtend({
         categoryIds: questionCategoryIdsSchema.optional(),
       }),
     )

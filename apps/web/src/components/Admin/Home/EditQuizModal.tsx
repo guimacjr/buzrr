@@ -67,7 +67,7 @@ export default function EditQuizModal({
     >
       <Box
         sx={style}
-        className="bg-light-bg dark:bg-card-dark rounded-xl w-4/5 md:w-1/2 max-w-[600px]"
+        className="bg-theme-background dark:bg-theme-card rounded-xl w-4/5 md:w-1/2 max-w-[600px]"
       >
         <ModalCloseButton
           onClose={() => {
@@ -77,7 +77,7 @@ export default function EditQuizModal({
         <div className="p-6">
           <p
             id="edit-quiz-title"
-            className="text-xl font-bold mb-2 text-dark dark:text-white"
+            className="text-xl font-bold mb-2 text-theme-text dark:text-theme-text"
           >
             Edit quiz
           </p>
@@ -90,7 +90,7 @@ export default function EditQuizModal({
                   type="text"
                   name="title"
                   placeholder="Enter quiz title"
-                  className="text-dark dark:text-white dark:bg-dark my-2 rounded-xl mt-1 border"
+                  className="text-theme-text dark:text-theme-text dark:bg-theme-surface my-2 rounded-xl mt-1 border"
                   required
                   autoComplete="off"
                   label="Quiz title"
@@ -110,7 +110,7 @@ export default function EditQuizModal({
                   name="description"
                   placeholder="Description"
                   autoComplete="off"
-                  className="text-dark dark:text-white dark:bg-dark mt-1 border rounded-xl"
+                  className="text-theme-text dark:text-theme-text dark:bg-theme-surface mt-1 border rounded-xl"
                   textarea={true}
                   label="Description (Optional)"
                   fieldValue={field.value ?? ""}

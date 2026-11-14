@@ -282,3 +282,83 @@ describe("standing", () => {
     ).toBeNull();
   });
 });
+
+describe("final ranking visibility", () => {
+  it("keeps hidden finals hidden after game-over and reconnect", () => {
+    const ended = reducer(
+      undefined,
+      gameOver({ entries: [], showFinalRanking: false }),
+    );
+    expect(ended.phase).toBe("ended");
+    expect(ended.showFinalRanking).toBe(false);
+    const restored = reducer(
+      undefined,
+      applySync(sync({ phase: "final", showFinalRanking: false })),
+    );
+    expect(restored.showFinalRanking).toBe(false);
+    expect(reducer(ended, resetGame()).showFinalRanking).toBe(true);
+    expect(reducer(undefined, gameOver({ entries: [] })).showFinalRanking).toBe(
+      true,
+    );
+  });
+});
+
+describe("backwards navigation revisions", () => {
+  it("accepts a newer visit to an earlier item and rejects stale events and snapshots", () => {
+    const current = reducer(
+      undefined,
+      applySync(sync({ qIndex: 2, phase: "question" })),
+    );
+    const previous = reducer(
+      current,
+      applySync(sync({ qIndex: 1, phase: "question", revision: 1 })),
+    );
+    expect(previous.qIndex).toBe(1);
+    expect(previous.revision).toBe(1);
+    expect(
+      reducer(previous, applySync(sync({ qIndex: 2, phase: "reveal" }))),
+    ).toEqual(previous);
+    expect(
+      reducer(
+        previous,
+        questionStart({
+          index: 2,
+          question: question("q2"),
+          qCount: 3,
+          remainingMs: 1000,
+        }),
+      ),
+    ).toEqual(previous);
+    expect(reducer(previous, questionEnd(reveal(1)))).toEqual(previous);
+    const revealed = reducer(
+      previous,
+      questionEnd({ ...reveal(1), revision: 1 }),
+    );
+    expect(revealed.phase).toBe("reveal");
+    expect(
+      reducer(
+        revealed,
+        applySync(sync({ qIndex: 1, phase: "question", revision: 1 })),
+      ),
+    ).toEqual(revealed);
+    const reopened = reducer(
+      revealed,
+      applySync(sync({ qIndex: 0, phase: "question", revision: 2 })),
+    );
+    expect(reopened.qIndex).toBe(0);
+  });
+});
+
+it("never resurrects an ended session with a late history snapshot", () => {
+  const ended = reducer(undefined, gameOver({ entries: [] }));
+  const lateSync = applySync(sync({ phase: "question", revision: 10 }));
+  const lateStart = questionStart({
+    index: 0,
+    question: question("q"),
+    qCount: 2,
+    remainingMs: 1000,
+    revision: 10,
+  });
+  expect(reducer(ended, lateSync)).toEqual(ended);
+  expect(reducer(ended, lateStart)).toEqual(ended);
+});

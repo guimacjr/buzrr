@@ -6,7 +6,7 @@ import ClientImage from "@/components/ClientImage";
 export default function NotFound() {
   return (
     <div className="h-screen w-screen flex flex-col">
-      <div className="p-2 px-4 md:px-8 bg-light-bg dark:bg-dark-bg">
+      <div className="p-2 px-4 md:px-8 bg-theme-background dark:bg-theme-background">
         <Link href="/">
           <ClientImage
             props={{
@@ -20,10 +20,10 @@ export default function NotFound() {
         </Link>
       </div>
       <div className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-4xl font-bold dark:text-white">
+        <h1 className="text-4xl font-bold dark:text-theme-text">
           404 - Page Not Found
         </h1>
-        <p className="text-lg dark:text-white">
+        <p className="text-lg dark:text-theme-text">
           The page you are looking for does not exist.
         </p>
         <Link href="/" className="text-blue-500">

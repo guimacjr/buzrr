@@ -1,6 +1,10 @@
 import { ANSWER_GRACE_MS } from "../../../common/utils/answer-timing";
 import { planBotAnswer } from "../../../common/utils/duel-bot";
-import { acceptsMoreAnswers, toPublicQuestion } from "../../question-types";
+import {
+  acceptsMoreAnswers,
+  isScored,
+  toPublicQuestion,
+} from "../../question-types";
 import type { LiveQuestion } from "../game-engine.types";
 import { pacingFor, type PacingStrategy } from "./pacing";
 import {
@@ -23,9 +27,15 @@ export const START_COUNTDOWN_MS = 5_000;
  */
 export type EngineEvent =
   /** The host started a classic lobby; questions come from Postgres. */
-  | { type: "start"; questions: LiveQuestion[]; quizTitle: string }
+  | {
+      type: "start";
+      questions: LiveQuestion[];
+      quizTitle: string;
+      showFinalRanking?: boolean;
+    }
   /** The host's single pacing intent — the machine decides what it means. */
   | { type: "host-next" }
+  | { type: "host-back"; revision: number }
   /** The game's scheduled deadline came due (local timer or sweeper). */
   | { type: "deadline" }
   /**
@@ -35,7 +45,7 @@ export type EngineEvent =
    */
   | { type: "answer-recorded"; qIndex: number; answered: readonly string[] }
   /** Close the open question now (everyone connected has answered). */
-  | { type: "close-question"; qIndex: number }
+  | { type: "close-question"; qIndex: number; revision?: number }
   /** The roster shrank or a player dropped (kick, ban, leave, disconnect). */
   | { type: "roster-changed" };
 
@@ -49,6 +59,7 @@ export type EngineEvent =
 export const PARTS_FOR: Record<EngineEvent["type"], readonly StatePart[]> = {
   start: [],
   "host-next": ["questions", "roster", "answers", "scores"],
+  "host-back": ["questions", "roster", "answers", "scores"],
   deadline: ["questions", "roster", "answers", "scores"],
   "answer-recorded": ["questions", "roster"],
   "close-question": ["questions", "roster", "answers", "scores"],
@@ -62,6 +73,31 @@ export interface StepContext {
 }
 
 const defaultContext: StepContext = { random: Math.random };
+
+export function step(
+  state: GameState,
+  event: EngineEvent,
+  now: number,
+  ctx: StepContext = defaultContext,
+): Transition {
+  const result = stepInternal(state, event, now, ctx);
+  const revision = result.state.meta.revision ?? 0;
+  if (revision > 0) {
+    result.effects = result.effects.map((effect): Effect => {
+      if (effect.kind === "emit" && effect.message.event !== "game-started") {
+        return {
+          ...effect,
+          message: {
+            ...effect.message,
+            payload: { ...effect.message.payload, revision },
+          },
+        } as Effect;
+      }
+      return effect;
+    });
+  }
+  return result;
+}
 
 const noop = (state: GameState, ...effects: Effect[]): Transition => ({
   state,
@@ -79,7 +115,7 @@ const noop = (state: GameState, ...effects: Effect[]): Transition => ({
  * answers, the end-of-game claim, pause/resume claims). That split is what
  * lets the rules of the game be unit-tested without infrastructure.
  */
-export function step(
+function stepInternal(
   state: GameState,
   event: EngineEvent,
   now: number,
@@ -96,6 +132,18 @@ export function step(
   switch (event.type) {
     case "start":
       return start(state, event, now);
+    case "host-back": {
+      const { meta } = state;
+      if (
+        meta.mode !== "classic" ||
+        !pacing.hostControlled ||
+        event.revision !== (meta.revision ?? 0) ||
+        !["question", "reveal", "final"].includes(meta.phase)
+      )
+        return noop(state);
+      const index = meta.phase === "final" ? meta.qIndex : meta.qIndex - 1;
+      return index < 0 ? noop(state) : revisit(state, index, now);
+    }
     case "host-next":
       return hostNext(state, now, pacing, ctx);
     case "deadline":
@@ -105,7 +153,8 @@ export function step(
     case "close-question":
       // Only the question that met the early-close condition: if another
       // path already revealed it and opened the next, this is stale.
-      return event.qIndex === state.meta.qIndex
+      return event.qIndex === state.meta.qIndex &&
+        (event.revision ?? 0) === (state.meta.revision ?? 0)
         ? reveal(state, now, pacing)
         : noop(state);
     case "roster-changed":
@@ -115,7 +164,11 @@ export function step(
 
 function start(
   state: GameState,
-  event: { questions: LiveQuestion[]; quizTitle: string },
+  event: {
+    questions: LiveQuestion[];
+    quizTitle: string;
+    showFinalRanking?: boolean;
+  },
   now: number,
 ): Transition {
   if (state.meta.phase !== "lobby") return noop(state);
@@ -130,6 +183,7 @@ function start(
   const patch = {
     phase: "starting" as const,
     quizTitle: event.quizTitle,
+    showFinalRanking: event.showFinalRanking ?? true,
     qCount: event.questions.length,
     startedAt: now,
     qDeadline: firstQuestionAt,
@@ -161,7 +215,9 @@ function hostNext(
   if (!pacing.hostControlled) return noop(state);
   switch (state.meta.phase) {
     case "question":
-      return reveal(state, now, pacing);
+      return state.questions[state.meta.qIndex]?.type === "media_slide"
+        ? advance(state, now, pacing, ctx)
+        : reveal(state, now, pacing);
     case "reveal":
       return advance(state, now, pacing, ctx);
     case "final":
@@ -181,9 +237,15 @@ function onDeadline(
   // A paused duel advances for nobody; resuming re-arms what is due.
   if (meta.pausedAt) return noop(state);
   switch (meta.phase) {
+    case "final":
+      if (meta.mode === "classic" && meta.showFinalRanking === false)
+        return noop(state, { kind: "end-game" });
+      return noop(state, { kind: "clear-deadline" });
     case "starting":
       return openQuestion(state, 0, now, ctx);
     case "question":
+      if (state.questions[meta.qIndex]?.type === "media_slide")
+        return noop(state, { kind: "park-deadline" });
       if (!meta.qStartAt) {
         // Legacy meta only — the window and the phase are one write now.
         return openQuestion(state, meta.qIndex, now, ctx);
@@ -214,9 +276,49 @@ function advance(
 ): Transition {
   const { meta } = state;
   if (meta.qIndex + 1 < meta.qCount) {
-    return openQuestion(state, meta.qIndex + 1, now, ctx);
+    const next = meta.qIndex + 1;
+    return next <= (meta.maxVisitedIndex ?? meta.qIndex)
+      ? revisit(state, next, now)
+      : openQuestion(state, next, now, ctx);
   }
   return enterFinal(state, pacing);
+}
+
+/** History navigation never opens scored answers again. Answers were loaded for index by the shell. */
+function revisit(state: GameState, index: number, now: number): Transition {
+  const question = state.questions[index];
+  if (!question) return noop(state);
+  const scored = isScored(question.type);
+  const manual = question.type === "media_slide";
+  const deadline = scored || manual ? 0 : now + question.timeOut * 1000;
+  const patch = {
+    phase: scored ? ("reveal" as const) : ("question" as const),
+    qIndex: index,
+    qId: question.id,
+    qStartAt: now,
+    qDeadline: deadline,
+    maxVisitedIndex: Math.max(
+      state.meta.maxVisitedIndex ?? state.meta.qIndex,
+      state.meta.qIndex,
+    ),
+    reopened: !scored && !manual,
+    revision: (state.meta.revision ?? 0) + 1,
+  };
+  return {
+    state: withMeta(state, patch),
+    effects: [
+      { kind: "clear-timer" },
+      { kind: "cancel-bot" },
+      deadline
+        ? { kind: "set-deadline", at: deadline + ANSWER_GRACE_MS }
+        : { kind: "park-deadline" },
+      { kind: "patch-meta", patch },
+      { kind: "sync-all" },
+      ...(deadline
+        ? [{ kind: "arm-timer" as const, at: deadline + ANSWER_GRACE_MS }]
+        : []),
+    ],
+  };
 }
 
 function openQuestion(
@@ -234,7 +336,8 @@ function openQuestion(
       message: `Question ${index} is missing`,
     });
   }
-  const deadline = now + question.timeOut * 1000;
+  const manual = question.type === "media_slide";
+  const deadline = manual ? 0 : now + question.timeOut * 1000;
   // Answers are taken until the grace runs out; the reveal waits for it.
   const closeAt = deadline + ANSWER_GRACE_MS;
 
@@ -250,6 +353,9 @@ function openQuestion(
     phase: "question" as const,
     qIndex: index,
     qId: question.id,
+    maxVisitedIndex: Math.max(meta.maxVisitedIndex ?? meta.qIndex, index),
+    reopened: false,
+    ...(meta.revision ? { revision: meta.revision + 1 } : {}),
     qStartAt: now,
     qDeadline: deadline,
     ...(plan ? { botAnswer: JSON.stringify(plan.answer), botAnswerAt } : {}),
@@ -261,7 +367,7 @@ function openQuestion(
   // started". The schedule entry goes first so the sweeper never reads the
   // previous phase's (already due) entry as this question's.
   const effects: Effect[] = [
-    { kind: "set-deadline", at: closeAt },
+    manual ? { kind: "park-deadline" } : { kind: "set-deadline", at: closeAt },
     { kind: "patch-meta", patch },
     {
       kind: "emit",
@@ -272,12 +378,14 @@ function openQuestion(
           index,
           qCount: state.questions.length,
           question: toPublicQuestion(question),
-          remainingMs: deadline - now,
+          remainingMs: manual ? 0 : deadline - now,
         },
         deadline,
       },
     },
-    { kind: "arm-timer", at: closeAt },
+    ...(manual
+      ? [{ kind: "clear-timer" } as const]
+      : [{ kind: "arm-timer", at: closeAt } as const]),
   ];
   // Armed here rather than at duel start so the bot's timer lives on
   // whichever instance currently owns the game's deadlines.
@@ -304,7 +412,7 @@ function reveal(
   const { meta, answers, roster, scores } = state;
   if (meta.phase !== "question") return noop(state);
   const question = state.questions[meta.qIndex];
-  if (!question) return noop(state);
+  if (!question || question.type === "media_slide") return noop(state);
 
   const revealUntil = pacing.revealEndsAt(now);
   const patch = { phase: "reveal" as const, qDeadline: revealUntil ?? 0 };
@@ -343,24 +451,44 @@ function reveal(
       payload: buildReveal(question, meta.qIndex, answers, roster),
     },
   });
-  // Running leaderboard so the host screen needs no REST round trip.
-  effects.push({
-    kind: "emit",
-    to: ROOM,
-    message: {
-      event: "leaderboard",
-      payload: {
-        entries: buildLeaderboard(scores, roster, answers),
-        isFinal: false,
+  // Hidden per-question rankings do not affect accumulated scores.
+  if (question.config.showRanking !== false)
+    effects.push({
+      kind: "emit",
+      to: ROOM,
+      message: {
+        event: "leaderboard",
+        payload: {
+          entries: buildLeaderboard(scores, roster, answers),
+          isFinal: false,
+        },
       },
-    },
-  });
+    });
   return { state: withMeta(state, patch), effects };
 }
 
 function enterFinal(state: GameState, pacing: PacingStrategy): Transition {
-  if (state.meta.phase !== "reveal") return noop(state);
+  if (
+    state.meta.phase !== "reveal" &&
+    !(
+      state.meta.phase === "question" &&
+      state.questions[state.meta.qIndex]?.type === "media_slide"
+    )
+  )
+    return noop(state);
   const patch = { phase: "final" as const, qDeadline: 0 };
+  if (state.meta.mode === "classic" && state.meta.showFinalRanking === false) {
+    return {
+      state: withMeta(state, patch),
+      effects: [
+        { kind: "clear-timer" },
+        // Keep finalization due if the process stops before end-game runs.
+        { kind: "set-deadline", at: 0 },
+        { kind: "patch-meta", patch },
+        { kind: "end-game" },
+      ],
+    };
+  }
   const effects: Effect[] = [
     { kind: "clear-timer" },
     // Waits on the host until the game ends; parked so the abandon sweep
@@ -398,6 +526,7 @@ function onAnswerRecorded(
   // An answer that lost a race with the question closing has nothing left
   // to count toward.
   if (meta.phase !== "question" || qIndex !== meta.qIndex) return noop(state);
+  if (state.questions[qIndex]?.type === "media_slide") return noop(state);
   const connected = roster.filter((p) => p.connected);
   if (connected.length === 0) return noop(state);
 
@@ -413,11 +542,17 @@ function onAnswerRecorded(
   ];
   const done = new Set(answered);
   const question = state.questions[qIndex];
-  const holdsOpen = question ? acceptsMoreAnswers(question) : false;
+  const holdsOpen =
+    meta.reopened || (question ? acceptsMoreAnswers(question) : false);
   if (!holdsOpen && connected.every((p) => done.has(p.id))) {
     // Closing needs the full state (questions, scores), which the per-answer
     // path doesn't load — so it is a follow-up event with a fresh read.
-    effects.push({ kind: "dispatch", event: "close-question", qIndex });
+    effects.push({
+      kind: "dispatch",
+      event: "close-question",
+      qIndex,
+      ...(meta.revision ? { revision: meta.revision } : {}),
+    });
   }
   return { state, effects };
 }
@@ -434,6 +569,10 @@ function onRosterChanged(state: GameState): Transition {
   }
   if (meta.phase === "reveal" || meta.phase === "final") {
     const inReveal = meta.phase === "reveal";
+    if (!inReveal && meta.mode === "classic" && meta.showFinalRanking === false)
+      return noop(state);
+    if (inReveal && state.questions[meta.qIndex]?.config.showRanking === false)
+      return noop(state);
     return noop(state, {
       kind: "emit",
       to: ROOM,

@@ -41,7 +41,7 @@ export default function CategoriesClient() {
   return (
     <div className="mt-4 flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-off-dark dark:text-off-white">
+        <p className="text-sm text-theme-muted dark:text-theme-muted">
           Categories decide which duel topics serve a question. A category shows
           up for players once it has 7 approved questions.
         </p>
@@ -83,13 +83,15 @@ export default function CategoriesClient() {
           ))}
         </div>
       ) : query.isError ? (
-        <p className="text-red-light dark:text-red-dark">
+        <p className="text-theme-danger dark:text-theme-danger">
           {getApiErrorMessage(query.error)}
         </p>
       ) : query.data.length === 0 ? (
-        <p className="text-dark dark:text-white">No categories yet.</p>
+        <p className="text-theme-text dark:text-theme-text">
+          No categories yet.
+        </p>
       ) : (
-        <ul className="divide-y divide-gray rounded-xl border border-gray">
+        <ul className="divide-y divide-theme-border rounded-xl border border-theme-border">
           {query.data.map((category) =>
             editingId === category.id ? (
               <li key={category.id} className="p-3">
@@ -108,10 +110,10 @@ export default function CategoriesClient() {
                   style={{ background: categorySwatch(category.hue) }}
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="break-words font-semibold text-dark dark:text-white">
+                  <p className="break-words font-semibold text-theme-text dark:text-theme-text">
                     {category.name}
                   </p>
-                  <p className="text-xs text-off-dark dark:text-off-white">
+                  <p className="text-xs text-theme-muted dark:text-theme-muted">
                     {category.slug} · {category.questionCount} question
                     {category.questionCount === 1 ? "" : "s"}
                   </p>
@@ -119,7 +121,7 @@ export default function CategoriesClient() {
                 <IconButton
                   aria-label={`Edit ${category.name}`}
                   icon={<LuPencil size={16} />}
-                  className="rounded-lg text-dark dark:text-white hover:bg-card-light dark:hover:bg-card-dark"
+                  className="rounded-lg text-theme-text dark:text-theme-text hover:bg-theme-card dark:hover:bg-theme-card"
                   onClick={() => {
                     setAdding(false);
                     setEditingId(category.id);
@@ -128,7 +130,7 @@ export default function CategoriesClient() {
                 <IconButton
                   aria-label={`Delete ${category.name}`}
                   icon={<LuTrash2 size={16} />}
-                  className="rounded-lg text-red-light dark:text-red-dark hover:bg-card-light dark:hover:bg-card-dark"
+                  className="rounded-lg text-theme-danger dark:text-theme-danger hover:bg-theme-card dark:hover:bg-theme-card"
                   onClick={() => setDeleting(category)}
                 />
               </li>
@@ -212,9 +214,9 @@ function CategoryForm({
         e.preventDefault();
         if (trimmed) onSubmit({ name: trimmed, hue });
       }}
-      className="flex flex-col gap-3 rounded-xl border border-gray p-4 sm:flex-row sm:items-end"
+      className="flex flex-col gap-3 rounded-xl border border-theme-border p-4 sm:flex-row sm:items-end"
     >
-      <label className="flex min-w-0 flex-1 flex-col gap-1 text-sm font-semibold text-dark dark:text-white">
+      <label className="flex min-w-0 flex-1 flex-col gap-1 text-sm font-semibold text-theme-text dark:text-theme-text">
         Name
         <input
           autoFocus
@@ -222,10 +224,10 @@ function CategoryForm({
           maxLength={60}
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g. History"
-          className="w-full rounded-lg border border-gray bg-transparent px-3 py-2 font-normal outline-none focus:border-blue-600 dark:bg-dark-bg"
+          className="w-full rounded-lg border border-theme-border bg-transparent px-3 py-2 font-normal outline-none focus:border-blue-600 dark:bg-theme-background"
         />
       </label>
-      <label className="flex flex-col gap-1 text-sm font-semibold text-dark dark:text-white sm:w-48">
+      <label className="flex flex-col gap-1 text-sm font-semibold text-theme-text dark:text-theme-text sm:w-48">
         <span className="flex items-center gap-2">
           Colour
           <span
@@ -240,7 +242,7 @@ function CategoryForm({
           value={hue}
           onChange={(e) => setHue(Number(e.target.value))}
           aria-label="Colour hue"
-          className="h-9 w-full cursor-pointer accent-lprimary dark:accent-dprimary"
+          className="h-9 w-full cursor-pointer accent-theme-primary dark:accent-theme-primary"
         />
       </label>
       <div className="flex gap-2">

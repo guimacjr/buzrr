@@ -7,7 +7,7 @@ import ResetReduxStates from "@/components/Player/ResetReduxStates";
 import clsx from "clsx";
 import JoinShell from "@/components/Player/Setup/JoinShell";
 import ProfilePreview from "@/components/Player/Setup/ProfilePreview";
-import { PROFILES } from "@/components/Player/SelectProfile";
+import { useAvatarSelection } from "@/lib/modules/avatars/hooks";
 import { mutedText } from "@/components/Game/GameUI";
 
 /**
@@ -25,8 +25,11 @@ export default function JoinViaLinkClient({ gameCode }: { gameCode: string }) {
 
   const [data, setData] = useState({
     name: "",
-    image: PROFILES[0],
+    image: "",
   });
+
+  const selectedImage = useAvatarSelection(data.image);
+  const profile = { ...data, image: selectedImage };
 
   return (
     <>
@@ -36,22 +39,22 @@ export default function JoinViaLinkClient({ gameCode }: { gameCode: string }) {
         form={
           <>
             <CreatePlayerForm
-              data={data}
+              data={profile}
               setData={setData}
               joinGameCode={normalizedCode}
             />
             <p className={clsx("text-sm", mutedText)}>
-              Having trouble?{" "}
+              Está com dificuldades?{" "}
               <Link
                 href="/player"
-                className="font-semibold text-lprimary dark:text-dprimary hover:underline"
+                className="font-semibold text-theme-primary dark:text-theme-primary hover:underline"
               >
-                Join with a room code instead
+                Entrar usando o código da sala
               </Link>
             </p>
           </>
         }
-        preview={<ProfilePreview name={data.name} image={data.image} />}
+        preview={<ProfilePreview name={data.name} image={selectedImage} />}
       />
     </>
   );

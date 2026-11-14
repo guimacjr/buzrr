@@ -1,3 +1,4 @@
+import { AvatarsModule } from "../avatars/avatars.module";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
@@ -6,6 +7,7 @@ import { PlayersService } from "./players.service";
 
 @Module({
   imports: [
+    AvatarsModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

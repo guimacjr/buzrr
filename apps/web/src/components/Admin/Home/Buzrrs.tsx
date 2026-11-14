@@ -16,11 +16,11 @@ function SectionLabel({
 }) {
   return (
     <h2
-      className={`flex items-center gap-2.5 whitespace-nowrap text-xs md:text-[13px] font-semibold tracking-[0.08em] uppercase text-[#8a8896] dark:text-muted-dark ${className ?? ""}`}
+      className={`flex items-center gap-2.5 whitespace-nowrap text-xs md:text-[13px] font-semibold tracking-[0.08em] uppercase text-theme-muted dark:text-theme-muted ${className ?? ""}`}
     >
       {children}
       {count !== undefined && (
-        <span className="rounded-full px-2.5 py-0.5 text-xs tracking-normal bg-lprimary/10 dark:bg-white/5 text-off-dark dark:text-muted-dark">
+        <span className="rounded-full px-2.5 py-0.5 text-xs tracking-normal bg-theme-primary/10 dark:bg-theme-surface/5 text-theme-muted dark:text-theme-muted">
           {count}
         </span>
       )}
@@ -45,7 +45,7 @@ const Buzrrs = () => {
       {isPending ? (
         <LoaderBuzrrs cardCount={3} />
       ) : isError || !quizzes ? (
-        <p className="text-dark dark:text-white text-sm">
+        <p className="text-theme-text dark:text-theme-text text-sm">
           Could not load quizzes. Check your connection and API configuration.
         </p>
       ) : (

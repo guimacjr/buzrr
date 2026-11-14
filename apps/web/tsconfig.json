@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@buzrr/contract": ["../../packages/contract/src/index.ts"]
     }
   },
   "include": [

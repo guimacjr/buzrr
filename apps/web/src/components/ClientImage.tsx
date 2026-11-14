@@ -1,4 +1,5 @@
 "use client";
+import { useBranding } from "@/components/Branding/BrandingProvider";
 import clsx from "clsx";
 import Image from "next/image";
 import { PageTheme } from "@/state/pageThemeSlice";
@@ -17,15 +18,25 @@ const ClientImage = ({
   };
 }) => {
   const theme = useRenderedTheme();
+  const { branding } = useBranding();
+  const customLogo = props.src === "/images/logo.svg" ? branding.logoUrl : null;
 
   return (
     <>
       <Image
-        src={theme === PageTheme.light ? props.src : props.darksrc || props.src}
-        alt={props.alt}
+        src={
+          customLogo ||
+          (theme === PageTheme.light ? props.src : props.darksrc || props.src)
+        }
+        unoptimized={Boolean(customLogo)}
+        alt={customLogo ? "Platform logo" : props.alt}
         width={props.width}
         height={props.height}
-        className={clsx(props.classname, "inline")}
+        className={clsx(
+          props.classname,
+          "inline",
+          customLogo && "object-contain",
+        )}
       />
     </>
   );

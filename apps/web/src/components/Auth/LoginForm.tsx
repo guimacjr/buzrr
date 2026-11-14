@@ -23,7 +23,7 @@ function sanitizeCallbackURL(value: string | null): string {
 }
 
 const inputClass =
-  "w-full rounded-xl border border-lprimary/15 dark:border-white/10 bg-light-bg dark:bg-card-dark px-4 py-3 text-base outline-none focus:border-dprimary";
+  "w-full rounded-xl border border-theme-primary/15 dark:border-theme-border/10 bg-theme-background dark:bg-theme-card px-4 py-3 text-base outline-none focus:border-theme-primary";
 
 /**
  * Local accounts (AUTH_EMAIL_PASSWORD=ON) — the sign-in that needs nothing
@@ -95,7 +95,9 @@ function EmailPasswordForm({
         className={inputClass}
       />
       {error && (
-        <p className="text-sm text-red-light dark:text-red-dark">{error}</p>
+        <p className="text-sm text-theme-danger dark:text-theme-danger">
+          {error}
+        </p>
       )}
       <Button type="submit" fullWidth disabled={pending}>
         {pending
@@ -107,7 +109,7 @@ function EmailPasswordForm({
       {allowSignUp && (
         <button
           type="button"
-          className="text-sm text-lprimary dark:text-dprimary cursor-pointer"
+          className="text-sm text-theme-primary dark:text-theme-primary cursor-pointer"
           onClick={() => {
             setError(null);
             setMode(mode === "signIn" ? "signUp" : "signIn");
@@ -146,7 +148,7 @@ const LoginForm = () => {
   if (isError) {
     return (
       <div className="py-4 flex flex-col gap-4">
-        <p className="text-sm text-red-light dark:text-red-dark my-2">
+        <p className="text-sm text-theme-danger dark:text-theme-danger my-2">
           Couldn&apos;t load sign-in options.
         </p>
         <Button variant="outline" fullWidth onClick={() => void refetch()}>
@@ -193,7 +195,7 @@ function LoginMethods({ methods }: { methods: AuthMethods }) {
   return (
     <div className="py-4 flex flex-col gap-4">
       {oauthError && (
-        <p className="text-sm text-red-light dark:text-red-dark my-2">
+        <p className="text-sm text-theme-danger dark:text-theme-danger my-2">
           Sign in was cancelled or failed. Please try again.
         </p>
       )}

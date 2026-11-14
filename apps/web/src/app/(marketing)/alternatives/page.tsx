@@ -113,13 +113,13 @@ export default function AlternativesHubPage() {
         title="The tools at a glance"
         intro={`One-line summaries from each product's own public pages (checked ${FACTS_CHECKED}). Follow a link for the full comparison and sources.`}
       >
-        <div className="overflow-x-auto rounded-2xl border border-card-light dark:border-off-dark bg-white dark:bg-dark">
-          <table className="w-full min-w-160 text-sm text-left text-dark dark:text-off-white">
+        <div className="overflow-x-auto rounded-2xl border border-theme-card dark:border-theme-border bg-theme-surface dark:bg-theme-surface">
+          <table className="w-full min-w-160 text-sm text-left text-theme-text dark:text-theme-muted">
             <caption className="sr-only">
               Overview of Buzrr and popular live quiz tools
             </caption>
             <thead>
-              <tr className="border-b border-card-light dark:border-off-dark text-dark dark:text-white">
+              <tr className="border-b border-theme-card dark:border-theme-border text-theme-text dark:text-theme-text">
                 <th scope="col" className="p-4 font-bold w-40">
                   Tool
                 </th>
@@ -132,10 +132,10 @@ export default function AlternativesHubPage() {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-card-light dark:border-off-dark align-top">
+              <tr className="border-b border-theme-card dark:border-theme-border align-top">
                 <th
                   scope="row"
-                  className="p-4 font-semibold text-lprimary dark:text-dprimary"
+                  className="p-4 font-semibold text-theme-primary dark:text-theme-primary"
                 >
                   Buzrr
                 </th>
@@ -151,12 +151,12 @@ export default function AlternativesHubPage() {
                 return (
                   <tr
                     key={slug}
-                    className="border-b last:border-b-0 border-card-light dark:border-off-dark align-top"
+                    className="border-b last:border-b-0 border-theme-card dark:border-theme-border align-top"
                   >
                     <th scope="row" className="p-4 font-semibold">
                       <Link
                         href={alternativePath(slug)}
-                        className="underline underline-offset-4 hover:text-lprimary dark:hover:text-dprimary"
+                        className="underline underline-offset-4 hover:text-theme-primary dark:hover:text-theme-primary"
                       >
                         {c.displayName}
                       </Link>
@@ -167,7 +167,7 @@ export default function AlternativesHubPage() {
                         href={source.href}
                         target="_blank"
                         rel="noreferrer nofollow"
-                        className="text-xs underline underline-offset-2 text-dark/60 dark:text-gray"
+                        className="text-xs underline underline-offset-2 text-theme-text/60 dark:text-theme-muted"
                       >
                         source
                       </a>
@@ -220,7 +220,7 @@ export default function AlternativesHubPage() {
 
       <Section title="Common questions">
         <FaqList faqs={FAQS} />
-        <p className="mt-4 text-dark/80 dark:text-off-white">
+        <p className="mt-4 text-theme-text/80 dark:text-theme-muted">
           Plan details are on{" "}
           <Link href="/pricing" className="underline underline-offset-4">
             Buzrr pricing
