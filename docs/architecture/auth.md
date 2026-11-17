@@ -112,6 +112,14 @@ state on `io server disconnect` (`useGameSocket.ts`).
   API (`UpdateUserRoleDto` allows only `admin|user`). The first superadmin was
   bootstrapped in migration `20260714000001` by email.
 
+- `/admin/superadmin/accounts` provisions up to 100 local accounts per batch
+  through a Server Action delegating to `lib/auth.ts`. The auth helper checks
+  the session and current DB role, requires `AUTH_EMAIL_PASSWORD=ON`, and works
+  with public signup disabled. Shared contract validation normalizes emails and
+  rejects duplicates; existing accounts are never modified. Each user and its
+  `credential` account are inserted atomically with Better Auth's configured
+  password hash. Results contain no passwords and failures are per account.
+
 ## Plans, billing webhooks & AI tokens
 
 - **Plan checks hit the DB, like role checks.**

@@ -6,3 +6,4 @@ export * from "./avatars";
 export * from "./branding";
 
 export * from "./portability";
+export * from "./bulk-admin";

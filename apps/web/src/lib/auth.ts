@@ -2,7 +2,10 @@ import "server-only";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError } from "better-auth/api";
-import { prisma } from "@buzrr/prisma";
+import { randomUUID } from "node:crypto";
+import { bulkAccountsSchema, type BulkAccountResult } from "@buzrr/contract";
+import { getUserRole } from "./get-current-role";
+import { prisma, Prisma } from "@buzrr/prisma";
 import { getAuthMethods } from "./auth-methods";
 
 type Auth = ReturnType<typeof betterAuth>;
@@ -79,3 +82,58 @@ export const auth = new Proxy({} as Auth, {
     return prop in getAuth();
   },
 });
+
+/** Privileged local provisioning stays in the web-owned auth boundary. */
+export async function provisionBulkAccounts(
+  input: unknown,
+  requestHeaders: Headers,
+): Promise<BulkAccountResult[]> {
+  const session = await auth.api.getSession({ headers: requestHeaders });
+  if (!session?.user || (await getUserRole(session.user.id)) !== "superadmin") {
+    throw new Error("Acesso restrito a superadmins.");
+  }
+  if (!getAuthMethods().emailPassword)
+    throw new Error("Ative AUTH_EMAIL_PASSWORD para criar contas locais.");
+  const rows = bulkAccountsSchema.parse(input);
+  const context = await auth.$context;
+  const results: BulkAccountResult[] = [];
+  for (const row of rows) {
+    try {
+      const existing = await prisma.user.findFirst({
+        where: { email: { equals: row.email, mode: "insensitive" } },
+        select: { id: true },
+      });
+      if (existing) {
+        results.push({
+          email: row.email,
+          error: "E-mail já cadastrado; conta preservada.",
+        });
+        continue;
+      }
+      const id = randomUUID();
+      const password = await context.password.hash(row.password);
+      await prisma.user.create({
+        data: {
+          id,
+          email: row.email,
+          name: row.email.split("@")[0],
+          role: "user",
+          accounts: {
+            create: { providerId: "credential", accountId: id, password },
+          },
+        },
+      });
+      results.push({ email: row.email, userId: id });
+    } catch (error) {
+      results.push({
+        email: row.email,
+        error:
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === "P2002"
+            ? "E-mail já cadastrado; conta preservada."
+            : "Não foi possível criar esta conta.",
+      });
+    }
+  }
+  return results;
+}

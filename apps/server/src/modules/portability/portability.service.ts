@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  HttpException,
   Logger,
   NotFoundException,
   ServiceUnavailableException,
@@ -17,6 +18,7 @@ import {
   portableQuizSchema,
   type AppearanceImportOptions,
   type PackagePreview,
+  type BulkQuizResult,
   type PortableAppearance,
   type PortableQuiz,
 } from "@buzrr/contract";
@@ -287,6 +289,38 @@ export class PortabilityService {
         throw new BadRequestException(error.message);
       throw error;
     }
+  }
+
+  async importQuizBulk(
+    userIds: string[],
+    buffer: Buffer,
+  ): Promise<BulkQuizResult[]> {
+    // Reject a malformed archive before creating any copies.
+    this.preview(buffer, "quiz");
+    const users = await this.prisma.db.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true },
+    });
+    const existing = new Set(users.map((user) => user.id));
+    const results: BulkQuizResult[] = [];
+    for (const userId of userIds) {
+      if (!existing.has(userId)) {
+        results.push({ userId, error: "Conta não encontrada." });
+        continue;
+      }
+      try {
+        results.push({ userId, ...(await this.importQuiz(userId, buffer)) });
+      } catch (error) {
+        results.push({
+          userId,
+          error:
+            error instanceof HttpException && error.getStatus() < 500
+              ? error.message
+              : "Não foi possível importar o quiz nesta conta.",
+        });
+      }
+    }
+    return results;
   }
 
   async importQuiz(userId: string, buffer: Buffer) {

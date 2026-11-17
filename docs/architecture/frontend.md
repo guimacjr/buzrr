@@ -24,6 +24,13 @@ setup exists (see [infrastructure.md](infrastructure.md#vinext)).
 | `/billing/checkout` (pay page), `/billing/success` (Dodo `return_url`)                                                                           | account                   | per-page `requireBillingSession(callbackURL)`                 |
 | `/admin/(mains)/billing` — plan, usage, portal                                                                                                   | host (account)            | session in `admin/layout.tsx`                                 |
 
+Superadmins also have `/admin/superadmin/accounts` (one `email;password` per
+line, per-account results and a link selecting newly created recipients) and
+`/admin/superadmin/import-quiz` (ZIP preview, searchable/paginated account
+selection and per-recipient import results). Both share the existing superadmin
+layout gate and sidebar. Password input stays in component memory and is cleared
+after a completed batch; it is never persisted in browser storage.
+
 Server components handle session/role gating and param unwrapping; nearly all
 real UI is in `"use client"` components under `src/components/` (`Admin/`,
 `Player/`, `Duel/`, `Landing/`, shared `ui/`). The root layout wires

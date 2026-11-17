@@ -39,3 +39,23 @@ export const adminUsersApi = {
   setRole: (userId: string, role: "admin" | "user") =>
     setUserRole(getAuthApiClient(), userId, role),
 };
+
+export async function listBulkUsers(search: string, cursor?: string) {
+  return (
+    await getAuthApiClient().get<AdminUsersPage>("/superadmin/users", {
+      params: { scope: "all", search, cursor, limit: 100 },
+    })
+  ).data;
+}
+
+export async function distributeQuiz(file: File, userIds: string[]) {
+  const body = new FormData();
+  body.append("file", file);
+  body.append("userIds", JSON.stringify(userIds));
+  return (
+    await getAuthApiClient().post<import("@buzrr/contract").BulkQuizResult[]>(
+      "/packages/quizzes/import-bulk",
+      body,
+    )
+  ).data;
+}

@@ -17,6 +17,11 @@ stats/history, health endpoint, Vercel Analytics.
 
 ## Recent architectural moves (still fresh, know they exist)
 
+- **Superadmin bulk provisioning (2026-11-17):** local account batches and
+  `.buzrr.zip` distribution to selected accounts, with independent results and
+  existing plan limits. Account provisioning stays in web auth; quiz copies
+  stay in Nest portability. No schema migration. See auth.md and backend.md.
+
 - **Portable packages (2026-11-14):** versioned `.buzrr.zip` export/import for
   a single quiz (all seven types, media, entry-field definitions and ranking
   settings; no game reports) and global appearance (palettes, logo, avatars).

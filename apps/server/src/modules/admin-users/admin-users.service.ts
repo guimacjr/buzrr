@@ -1,4 +1,9 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { Prisma } from "@buzrr/prisma";
 import { PrismaService } from "../../prisma/prisma.service";
 
@@ -13,7 +18,12 @@ export class AdminUsersService {
    * to promote). Without it, defaults to the current admins/superadmins
    * (the "who's an admin" view for demoting).
    */
-  async list(params: { search?: string; cursor?: string; limit?: number }) {
+  async list(params: {
+    scope?: "all";
+    search?: string;
+    cursor?: string;
+    limit?: number;
+  }) {
     const limit = params.limit ?? DEFAULT_LIMIT;
     const where: Prisma.UserWhereInput = params.search
       ? {
@@ -22,7 +32,9 @@ export class AdminUsersService {
             { email: { contains: params.search, mode: "insensitive" } },
           ],
         }
-      : { role: { in: ["admin", "superadmin"] } };
+      : params.scope === "all"
+        ? {}
+        : { role: { in: ["admin", "superadmin"] } };
 
     const rows = await this.prisma.db.user.findMany({
       where,

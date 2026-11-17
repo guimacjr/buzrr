@@ -63,6 +63,16 @@ export default function Navbar() {
     ...(role === "superadmin"
       ? [
           {
+            href: "/admin/superadmin/accounts",
+            label: "Contas em massa",
+            icon: LuUserCog,
+          },
+          {
+            href: "/admin/superadmin/import-quiz",
+            label: "Distribuir quiz",
+            icon: LuBookText,
+          },
+          {
             href: "/admin/superadmin/admins",
             label: "Manage Admins",
             icon: LuUserCog,

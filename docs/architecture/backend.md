@@ -46,6 +46,18 @@ bodies defined in `@buzrr/contract` — `@Body(new ZodValidationPipe(schema))`
 such plain-typed params). Errors are thrown as Nest `HttpException`s from
 services.
 
+`GET /superadmin/users?scope=all` includes ordinary accounts for recipient
+selection, retaining search and cursor pagination; omitted scope preserves the
+admin-management default. `POST /packages/quizzes/import-bulk` is superadmin-only
+(DB-backed guard), accepting multipart `file` and JSON `userIds` (1–100 unique
+IDs, shared contract). It validates the package before writes, then runs the
+existing import for each destination owner, preserving per-owner plan limits,
+private draft status, independent media and failure cleanup. Results report each
+copy/failure independently; successful accounts are deselected in the UI. A new
+submission creates new copies; this is synchronous and has no durable job/replay
+tracking, so after a transport interruption users must inspect the destination
+accounts before repeating the request.
+
 ## Quiz & question authoring
 
 - `quizzes.service.ts` — plain CRUD with `userId` ownership checks. Every

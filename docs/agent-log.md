@@ -93,3 +93,5 @@ Format:
 - 2026-11-13: Polls submit on click; multi-select votes replace selections atomically and refresh live totals without duplicate counts.
 
 - 2026-11-14 — Added versioned quiz/appearance ZIP packages, validated preview/import, storage transfer and admin/host UI (ADR-018).
+
+- 2026-11-17 — Added superadmin bulk local-account provisioning and quiz-package distribution, preserving web auth ownership and Nest import limits.

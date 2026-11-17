@@ -14,6 +14,7 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import {
   PACKAGE_MAX_BYTES,
+  bulkQuizTargetsSchema,
   appearanceImportOptionsSchema,
 } from "@buzrr/contract";
 import {
@@ -76,6 +77,27 @@ export class PortabilityController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     return this.packages.importQuiz(user.userId, bytes(file));
+  }
+
+  @Post("quizzes/import-bulk")
+  @UseGuards(RolesGuard)
+  @Roles("superadmin")
+  @UseInterceptors(upload())
+  importQuizBulk(
+    @CurrentAccountUser() _user: AuthUser,
+    @UploadedFile() file: Express.Multer.File | undefined,
+    @Body("userIds") raw: string | undefined,
+  ) {
+    let input: unknown;
+    try {
+      input = JSON.parse(raw ?? "null");
+    } catch {
+      throw new BadRequestException("Contas inválidas.");
+    }
+    const parsed = bulkQuizTargetsSchema.safeParse(input);
+    if (!parsed.success)
+      throw new BadRequestException("Selecione de 1 a 100 contas distintas.");
+    return this.packages.importQuizBulk(parsed.data, bytes(file));
   }
 
   @Get("appearance")
